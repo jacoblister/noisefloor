@@ -10,7 +10,7 @@ func Process() {
 func main() {
 	// var x = 20
 	var z = common.Add(1, 2)
-	var event common.Midievent
+	var event common.MidiEvent
 	fmt.Println("hello world: %d", z)
 	fmt.Println("%v", event)
 }
