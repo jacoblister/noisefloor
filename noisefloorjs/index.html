@@ -4,19 +4,23 @@
 <body>
     <script type="text/javascript">
         var frameLength  = 512
-        var sampleBuffer = new Float32Array(Array(frameLength).fill(0));
+        var sampleBuffer = [
+            new Float32Array(Array(frameLength).fill(0)),
+            new Float32Array(Array(frameLength).fill(0))
+            ];
         var audioContext = new AudioContext();
 
         noisefloorjs.start(audioContext.sampleRate)
+        var midiIn = [{time:100, data:[1,2,3]}];
 
         var node = audioContext.createScriptProcessor(frameLength, 2, 2);
         node.onaudioprocess = function (event) {
             var output     = event.outputBuffer.getChannelData(0);
             // var midiEvents = frontend.getMIDIEvents();
 
-            noisefloorjs.process(sampleBuffer, sampleBuffer);
-            event.outputBuffer.copyToChannel(sampleBuffer, 0);
-            event.outputBuffer.copyToChannel(sampleBuffer, 1);
+            noisefloorjs.process(sampleBuffer, sampleBuffer, midiIn, midiIn);
+            event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
+            event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
         }
         node.connect(audioContext.destination);
 
