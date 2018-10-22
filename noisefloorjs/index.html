@@ -3,6 +3,8 @@
 </head>
 <body>
     <script type="text/javascript">
+        var midiEvent = noisefloorjs.makeMidiEvent(20, [60, 127, 0]);
+
         var frameLength  = 512
         var sampleBuffer = [
             new Float32Array(Array(frameLength).fill(0)),
@@ -10,7 +12,7 @@
             ];
         var audioContext = new AudioContext();
 
-        noisefloorjs.start(audioContext.sampleRate)
+        noisefloorjs.start(audioContext.sampleRate);
         var midiIn = [{time:100, data:[1,2,3]}];
 
         var node = audioContext.createScriptProcessor(frameLength, 2, 2);

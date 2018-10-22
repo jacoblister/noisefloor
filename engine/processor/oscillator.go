@@ -11,20 +11,24 @@ type Waveform int
 
 // Basic wave shapes
 const (
-	Sin      Waveform = 0
-	Saw      Waveform = 1
-	Square   Waveform = 2
-	Triangle Waveform = 3
+	Sin Waveform = iota
+	Saw
+	Square
+	Triangle
+	MAX
 )
 
 // Oscillator - basic wave function generator
 type Oscillator struct {
-	Waveform Waveform   `value:"Sin"`
-	Freq     AudioFloat `value:"440" min:"20" max:"20000"`
+	inputs  Inputs  `name:"input,gain"`
+	outputs Outputs `name:"output"`
+
+	Waveform Waveform   `default:"Sin"`
+	Freq     AudioFloat `default:"440" min:"20" max:"20000"`
 
 	sampleRate    AudioFloat
 	currentSample AudioFloat
-	waveTable     [4][]AudioFloat
+	waveTable     [MAX][]AudioFloat
 }
 
 // Start - init oscillaor waveforms

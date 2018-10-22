@@ -10,6 +10,16 @@ import (
 
 var oscillator processor.Oscillator
 
+func makeMidiEvent(time int, data []byte) MidiEvent {
+	return MidiEvent{Time: time, Data: data}
+}
+
+func jsMidiEvent(midiEvent MidiEvent) *js.Object {
+	jsMidiEvent := js.Global.Get("Object").New()
+	jsMidiEvent.Set("time", midiEvent.Time)
+	return jsMidiEvent
+}
+
 func start(sampleRate int) {
 	fmt.Println("do DSP start, sample rate:", sampleRate)
 	oscillator.Start(sampleRate)
@@ -33,9 +43,11 @@ func process(samplesIn *js.Object, samplesOut *js.Object, midiIn *js.Object, mid
 
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"start":   start,
-		"stop":    stop,
-		"process": process,
+		"makeMidiEvent": makeMidiEvent,
+		"jsMidiEvent":   jsMidiEvent,
+		"start":         start,
+		"stop":          stop,
+		"process":       process,
 	})
 	fmt.Println("main")
 }
