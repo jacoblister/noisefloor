@@ -8,5 +8,5 @@ import (
 type Processor interface {
 	Start(sampleRate int)
 	Stop()
-	Process(args ...AudioFloat) AudioFloat
+	Process(vars ...[]*AudioFloat)
 }

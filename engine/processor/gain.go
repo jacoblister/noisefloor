@@ -6,10 +6,7 @@ import (
 
 // Gain - linear of exponential gain
 type Gain struct {
-	// inputs  Inputs  `name:"input,gain"`
-	// outputs Outputs `name:"output"`
-
-	Exponential bool `default:"FALSE"`
+	Exponential bool
 }
 
 // Process - produce next sample

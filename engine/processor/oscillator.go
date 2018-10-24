@@ -15,27 +15,28 @@ const (
 	Saw
 	Square
 	Triangle
-	MAX
+	maxWaveform
 )
+
+const maxSamples = 48000
 
 // Oscillator - basic wave function generator
 type Oscillator struct {
-	inputs  Inputs  `name:"input,gain"`
-	outputs Outputs `name:"output"`
-
 	Waveform Waveform   `default:"Sin"`
 	Freq     AudioFloat `default:"440" min:"20" max:"20000"`
 
 	sampleRate    AudioFloat
 	currentSample AudioFloat
-	waveTable     [MAX][]AudioFloat
+	waveTable     [maxWaveform][maxSamples]AudioFloat
 }
 
 // Start - init oscillaor waveforms
 func (o *Oscillator) Start(sampleRate int) {
+	if sampleRate > maxSamples {
+		panic("sample rate is out of range")
+	}
+
 	o.sampleRate = AudioFloat(sampleRate)
-	o.waveTable[Sin] = make([]AudioFloat, sampleRate)
-	o.waveTable[Saw] = make([]AudioFloat, sampleRate)
 	o.Freq = 220
 
 	for i := 0; i < sampleRate; i++ {
@@ -45,18 +46,16 @@ func (o *Oscillator) Start(sampleRate int) {
 }
 
 // Stop - deallocate oscialltor
-func (o *Oscillator) Stop() {
-	o.waveTable[Sin] = nil
-}
+func (o *Oscillator) Stop() {}
 
 // Process - produce next sample
-func (o *Oscillator) Process() AudioFloat {
-	var result = o.waveTable[o.Waveform][int(o.currentSample)]
+func (o *Oscillator) Process() (output AudioFloat) {
+	output = o.waveTable[o.Waveform][int(o.currentSample)]
 
 	o.currentSample += o.Freq
 	if o.currentSample >= o.sampleRate {
 		o.currentSample -= o.sampleRate
 	}
 
-	return result
+	return
 }
