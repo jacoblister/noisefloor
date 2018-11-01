@@ -1,8 +1,8 @@
 package engine
 
-import . "github.com/jacoblister/noisefloor/common"
-
-import "fmt"
+import (
+	. "github.com/jacoblister/noisefloor/common"
+)
 
 // Engine - DSP processing engine
 type Engine struct {
@@ -27,7 +27,6 @@ func Stop() {
 func Process(samplesIn [][]AudioFloat, samplesOut [][]AudioFloat, midiIn []MidiEvent, midiOut []MidiEvent) {
 	midiinput.ProcessMIDI(midiIn)
 	freqs := midiinput.Process()
-	fmt.Println(freqs)
 
 	var len = len(samplesOut[0])
 	for i := 0; i < len; i++ {
