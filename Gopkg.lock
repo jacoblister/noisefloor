@@ -31,6 +31,7 @@
   ]
   pruneopts = "UT"
   revision = "52c9d7f2f11a3b6fe1bd940d42e07c69a5691dd3"
+  source = "https://github.com/jacoblister/gr"
 
 [[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
@@ -141,7 +142,7 @@
     "html/atom",
   ]
   pruneopts = "UT"
-  revision = "e11730110bbd884bbf19550bfafe9d69519ce29e"
+  revision = "c10e9556a7bc0e7c942242b606f0acf024ad5d6a"
 
 [[projects]]
   branch = "master"
@@ -166,7 +167,7 @@
     "go/types/typeutil",
   ]
   pruneopts = "UT"
-  revision = "45ff765b4815d34d8b80220fd05c79063b185ce1"
+  revision = "96e9e165b75e735822645eff82850b08c377be36"
 
 [[projects]]
   branch = "master"
