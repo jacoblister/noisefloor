@@ -32,6 +32,10 @@ type Envelope struct {
 // Start - init envelope generator
 func (e *Envelope) Start(sampleRate int) {
 	e.sampleRate = AudioFloat(sampleRate)
+	e.Attack = 2
+	e.Decay = 100
+	e.Sustain = 0.5
+	e.Release = 1000
 }
 
 // Process - produce next sample
@@ -39,37 +43,31 @@ func (e *Envelope) Process(gate AudioFloat, trigger AudioFloat) (output AudioFlo
 	if trigger > 0 {
 		e.output = 0
 		e.delta = (1000 / e.Attack) / e.sampleRate
-		e.phase = 1
+		e.phase = Attack
 	}
 
 	switch phase := e.phase; phase {
-	case Inactive:
-		if gate > 0 {
-			output = 0
-			e.delta = (1000 / e.Attack) / e.sampleRate
-			e.phase = 1
-		}
 	case Attack:
 		e.output += e.delta
-		if output > 1 {
+		if e.output > 1 {
 			e.delta = (1000 / e.Decay) / e.sampleRate
-			e.phase = 2
+			e.phase = Decay
 		}
 	case Decay:
 		e.output -= e.delta
 		if e.output < e.Sustain {
-			e.phase = 3
+			e.phase = Sustain
 		}
 	case Sustain:
 		if gate == 0 {
 			e.delta = (1000 / e.Release) / e.sampleRate
-			e.phase = 4
+			e.phase = Release
 		}
 	case Release:
 		e.output -= e.delta
 		if e.output < 0 {
 			e.output = 0
-			e.phase = 0
+			e.phase = Inactive
 		}
 	}
 
