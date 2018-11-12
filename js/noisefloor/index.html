@@ -37,7 +37,6 @@
         node.onaudioprocess = function (event) {
             var output = event.outputBuffer.getChannelData(0);
             var midiIn = noisefloorjs.getMIDIEvents();
-            console.log(midiIn)
 
             noisefloorjs.process(sampleBuffer, sampleBuffer, midiIn, midiIn);
             event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
