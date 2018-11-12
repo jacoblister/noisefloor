@@ -20,7 +20,7 @@ func (p *PatchMultiply) Start(sampleRate int) {
 }
 
 // Process - produce sum off multiplied patches
-func (p *PatchMultiply) Process(freqs [maxChannels][3]AudioFloat) (output AudioFloat) {
+func (p *PatchMultiply) Process(freqs *[maxChannels][3]AudioFloat) (output AudioFloat) {
 	output = 0
 	for i := 0; i < maxChannels; i++ {
 		output += p.patch[i].Process(freqs[i][0], freqs[i][1], freqs[i][2])

@@ -6,7 +6,7 @@ import (
 	. "github.com/jacoblister/noisefloor/common"
 )
 
-const maxChannels = 4
+const maxChannels = 16
 const maxNote = 127
 
 // MIDIInput - MIDI to CV converter
@@ -77,7 +77,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []MidiEvent) {
 }
 
 // Process returns to next sample CV data
-func (m *MIDIInput) Process() [maxChannels][3]AudioFloat {
+func (m *MIDIInput) Process() *[maxChannels][3]AudioFloat {
 	if m.triggerClear > 0 {
 		m.triggerClear--
 		if m.triggerClear == 0 {
@@ -87,5 +87,5 @@ func (m *MIDIInput) Process() [maxChannels][3]AudioFloat {
 			}
 		}
 	}
-	return m.channelData
+	return &m.channelData
 }
