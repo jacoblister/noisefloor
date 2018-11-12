@@ -23,10 +23,17 @@ var midiEvents []MidiEvent
 
 // GetMIDIEvents returns the currently pending MIDI events
 func GetMIDIEvents() []MidiEvent {
-	return midiEvents
+	result := midiEvents
+	midiEvents = nil
+	return result
 }
 
 func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
+	if k.keydown[keyNumber] == keyDown {
+		// return early if key already is same state
+		return
+	}
+
 	k.keydown[keyNumber] = keyDown
 	k.SetState(gr.State{"keydown": k.keydown})
 
@@ -34,7 +41,7 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 	if keyDown {
 		velocity = velocityMax
 	}
-	midiEvent := MidiEvent{0, 0, keyNumber, velocity}
+	midiEvent := MidiEvent{0, keyNumber, velocity}
 
 	midiEvents = append(midiEvents, midiEvent)
 }

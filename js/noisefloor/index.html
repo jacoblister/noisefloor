@@ -1,32 +1,50 @@
 <head>
-    <script type="text/javascript" src="noisefloor.js"></script>
+    <head>
+        <style>
+            body { margin-top: 40px; }
+
+            rect { shape-rendering: crispEdges; }
+            .key-white { stroke: black; fill: white; }
+            .key-white.depressed { fill: lightcyan;}
+            .key-black { stroke: black; fill: black; }
+            .key-black.depressed { fill: darkslategray; }
+        </style>
+    </head>
 </head>
 <body>
     <div id="keyboard"></div>
+    <body>
+        <svg id="react" class="container" style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;">
+        </svg>
+        <script src="http://unpkg.com/react@15/dist/react.min.js"></script>
+        <script src="http://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+        <script src="noisefloor.js"></script>
+    </body>
     <script type="text/javascript">
         // noisefloorjs.renderFrontEnd();
 
-        // var frameLength  = 8192
-        // var sampleBuffer = [
-        //     new Float32Array(Array(frameLength).fill(0)),
-        //     new Float32Array(Array(frameLength).fill(0))
-        //     ];
-        //
-        // var audioContext = new AudioContext();
-        //
-        // noisefloorjs.start(audioContext.sampleRate);
-        //
-        // var node = audioContext.createScriptProcessor(frameLength, 2, 2);
-        // node.onaudioprocess = function (event) {
-        //     var output = event.outputBuffer.getChannelData(0);
-        //     var midiIn = noisefloorjs.getMIDIEvents();
-        //
-        //     noisefloorjs.process(sampleBuffer, sampleBuffer, midiIn, midiIn);
-        //     event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
-        //     event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
-        // }
-        // node.connect(audioContext.destination);
-        //
-        // console.log('Running process');
+        var frameLength  = 4096
+        var sampleBuffer = [
+            new Float32Array(Array(frameLength).fill(0)),
+            new Float32Array(Array(frameLength).fill(0))
+            ];
+
+        var audioContext = new AudioContext();
+
+        noisefloorjs.start(audioContext.sampleRate);
+
+        var node = audioContext.createScriptProcessor(frameLength, 2, 2);
+        node.onaudioprocess = function (event) {
+            var output = event.outputBuffer.getChannelData(0);
+            var midiIn = noisefloorjs.getMIDIEvents();
+            console.log(midiIn)
+
+            noisefloorjs.process(sampleBuffer, sampleBuffer, midiIn, midiIn);
+            event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
+            event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
+        }
+        node.connect(audioContext.destination);
+
+        console.log('Running process');
     </script>
 </body>

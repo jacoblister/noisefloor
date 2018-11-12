@@ -8,14 +8,10 @@ import (
 
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		// "makeMidiEvent": engine.MakeMidiEvent,
-		// "logMidiEvent":  engine.LogMidiEvent,
-		// "jsMidiEvent":   engine.JSMidiEvent,
-		"start":          engine.Start,
-		"stop":           engine.Stop,
-		"process":        engine.Process,
-		"getMIDIEvents":  frontend.GetMIDIEvents,
-		"renderFrontEnd": frontend.RenderFrontend,
+		"start":         engine.Start,
+		"stop":          engine.Stop,
+		"process":       engine.Process,
+		"getMIDIEvents": frontend.GetMIDIEvents,
 	})
 	println("main")
 }

@@ -1,20 +1,20 @@
-package main
+package frontend
 
 import (
 	"github.com/bep/gr"
-	"github.com/gopherjs/gopherjs/js"
+	. "github.com/jacoblister/noisefloor/common"
 	"github.com/jacoblister/noisefloor/js/frontend/component"
 )
 
-func main() {
-	// println("run main")
+// GetMIDIEvents returns the currently pending MIDI events
+func GetMIDIEvents() []MidiEvent {
+	return component.GetMIDIEvents()
+}
 
-	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"getMIDIEvents": component.GetMIDIEvents,
-	})
+func init() {
+	println("init frontend main")
+
 	keyboard := gr.New(new(component.Keyboard))
 
-	// gr.RenderLoop(func() {
 	keyboard.Render("react", gr.Props{})
-	// })
 }
