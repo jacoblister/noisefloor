@@ -51,6 +51,7 @@ To Build
 6. build the project
 
    `cd ~/go/src/github.com/jacoblister/noisefloor/js/noisefloor`
+
    `gopherjs build`
 
 7. Open in a web browser
