@@ -21,6 +21,7 @@ Module software Synthesizer for Javascript and native code targets
 4. `git` which `go get` command will use to install go packages
 
 5. Go `dep` for package management/version control   
+
    https://github.com/golang/dep
 
 6. A web browser to run the transpiled javascript in
