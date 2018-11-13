@@ -13,6 +13,7 @@ Module software Synthesizer for Javascript and native code targets
    Only Go 1.11 has been tested, other versions may work    
 
 3. Ensure go bin directory in path, for example
+
    `export PATH=$GOPATH/bin:$GOROOT/bin:$PATH`
 
    this is needed for `dep` and `gopherjs`
