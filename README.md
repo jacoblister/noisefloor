@@ -52,4 +52,5 @@ To Build
    `gopherjs build`
 
 7. Open in a web browser
+
    `/[yourgopath]/src/github.com/jacoblister/noisefloor/js/noisefloor/index.html`
