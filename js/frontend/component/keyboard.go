@@ -22,7 +22,7 @@ type Keyboard struct {
 var midiEvents []MidiEvent
 
 // GetMIDIEvents returns the currently pending MIDI events
-func GetMIDIEvents() []MidiEvent {
+func (k *Keyboard) GetMIDIEvents() []MidiEvent {
 	result := midiEvents
 	midiEvents = nil
 	return result
@@ -134,13 +134,13 @@ func (k *Keyboard) Render() gr.Component {
 	return elem
 }
 
-var keyMap = map[string]int{
-	"a": 60, "w": 61, "s": 62, "e": 63, "d": 64,
-	"f": 65, "t": 66, "g": 67, "y": 68, "h": 69, "u": 70, "j": 71, "k": 72,
-}
-
 // ComponentDidMount registers DOM event handler for physical keyboard actions
 func (k *Keyboard) ComponentDidMount() {
+	var keyMap = map[string]int{
+		"a": 60, "w": 61, "s": 62, "e": 63, "d": 64,
+		"f": 65, "t": 66, "g": 67, "y": 68, "h": 69, "u": 70, "j": 71, "k": 72,
+	}
+
 	doc := js.Global.Get("document")
 	doc.Call("addEventListener", "keydown", func(event *js.Object) {
 		midiKey := keyMap[event.Get("key").Call("toLowerCase").String()]

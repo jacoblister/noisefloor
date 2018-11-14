@@ -6,15 +6,16 @@ import (
 	"github.com/jacoblister/noisefloor/js/frontend/component"
 )
 
+var keyboard *component.Keyboard
+
 // GetMIDIEvents returns the currently pending MIDI events
 func GetMIDIEvents() []MidiEvent {
-	return component.GetMIDIEvents()
+	return keyboard.GetMIDIEvents()
 }
 
 func init() {
-	println("init frontend main")
+	keyboard = new(component.Keyboard)
+	react := gr.New(keyboard)
 
-	keyboard := gr.New(new(component.Keyboard))
-
-	keyboard.Render("react", gr.Props{})
+	react.Render("react", gr.Props{})
 }
