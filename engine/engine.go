@@ -38,3 +38,8 @@ func Process(samplesIn [][]AudioFloat, samplesOut [][]AudioFloat, midiIn []MidiE
 		samplesOut[1][i] = sample
 	}
 }
+
+func init() {
+	o := MakeOscillator()
+	println(o)
+}

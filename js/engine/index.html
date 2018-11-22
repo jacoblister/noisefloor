@@ -1,0 +1,16 @@
+<body>
+    <body>
+        <script src="engine.js"></script>
+        <script type="text/javascript">
+            o = MakeOscillator();
+            console.log(o)
+            o.Start(100);
+            o.Freq = 1;
+
+            for (i = 0; i < 100; i++) {
+                console.log(o.Process())
+            }
+            console.log(o);
+        </script>
+    </body>
+</body>
