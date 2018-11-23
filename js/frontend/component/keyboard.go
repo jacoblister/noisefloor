@@ -16,15 +16,14 @@ const velocityMax = 127
 // Keyboard is an onscreen MIDI keyboard
 type Keyboard struct {
 	*gr.This
-	keydown [keyMax]bool
+	keydown    [keyMax]bool
+	midiEvents []MidiEvent
 }
-
-var midiEvents []MidiEvent
 
 // GetMIDIEvents returns the currently pending MIDI events
 func (k *Keyboard) GetMIDIEvents() []MidiEvent {
-	result := midiEvents
-	midiEvents = nil
+	result := k.midiEvents
+	k.midiEvents = nil
 	return result
 }
 
@@ -43,7 +42,7 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 	}
 	midiEvent := MidiEvent{0, keyNumber, velocity}
 
-	midiEvents = append(midiEvents, midiEvent)
+	k.midiEvents = append(k.midiEvents, midiEvent)
 }
 
 // GetInitialState sets up the keyboard state.

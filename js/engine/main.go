@@ -18,9 +18,10 @@ import (
 
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"start":   engine.Start,
-		"stop":    engine.Stop,
-		"process": engine.Process,
+		"start":         engine.Start,
+		"stop":          engine.Stop,
+		"process":       engine.Process,
+		"makeProcessor": engine.MakeProcessor,
 	})
 
 	println("loaded engine.main")
