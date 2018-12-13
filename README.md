@@ -4,9 +4,9 @@ Module software Synthesizer for Javascript and native code targets
 
 ## Requirements
 
-1. Linux Build environemnt
+1. Linux Build environment
 
-   This is requred for the gopherjs transpiler - building under Windows is posible with `Bash on Ubuntu on Windows`
+   This is required for the gopherjs transpiler - building under Windows is possible with `Bash on Ubuntu on Windows`
 
 2. `go`
 
