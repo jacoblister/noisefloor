@@ -23,5 +23,5 @@ func getProcessorParameters(p *Processor) []ProcessorParameter {
 	return []ProcessorParameter{}
 }
 
-func setProcessorParameters(p *Processor, name string, value AudioFloat) {
+func setProcessorParameter(p *Processor, name string, value AudioFloat) {
 }
