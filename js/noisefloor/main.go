@@ -8,11 +8,11 @@ import (
 
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"start":          engine.Start,
-		"stop":           engine.Stop,
-		"process":        engine.Process,
-		"MakeOscillator": engine.MakeOscillator,
-		"getMIDIEvents":  frontend.GetMIDIEvents,
+		"start":         engine.Start,
+		"stop":          engine.Stop,
+		"process":       engine.Process,
+		"makeProcessor": engine.MakeProcessor,
+		"getMIDIEvents": frontend.GetMIDIEvents,
 	})
 	println("main")
 }

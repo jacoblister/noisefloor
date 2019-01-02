@@ -12,22 +12,24 @@
     </head>
 </head>
 <body>
-    <body>
+    <!-- <body>
         <script src="http://unpkg.com/react@15/dist/react.min.js"></script>
         <script src="http://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
         <script src="noisefloor.js"></script>
         <script type="text/javascript">
-            o = MakeOscillator();
+            o = MakeProcessor('Oscillator');
             console.log(o)
             o.Start(100);
+            o.Freq = 1;
+
             for (i = 0; i < 100; i++) {
                 console.log(o.Process())
             }
             console.log(o);
         </script>
-    </body>
+    </body> -->
 
-    <!-- <div id="keyboard"></div>
+    <div id="keyboard"></div>
     <body>
         <svg id="react" class="container" style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;">
         </svg>
@@ -36,7 +38,14 @@
         <script src="noisefloor.js"></script>
     </body>
     <script type="text/javascript">
-        // noisefloorjs.renderFrontEnd();
+        var audioContext = new AudioContext();
+
+        // One-liner to resume playback when user interacted with the page.
+        document.getElementById('react').addEventListener('click', function() {
+          audioContext.resume().then(() => {
+            console.log('Playback resumed successfully');
+          });
+        });
 
         var frameLength  = 4096
         var sampleBuffer = [
@@ -44,7 +53,7 @@
             new Float32Array(Array(frameLength).fill(0))
             ];
 
-        var audioContext = new AudioContext();
+        // var audioContext = new AudioContext();
 
         noisefloorjs.start(audioContext.sampleRate);
 
@@ -60,5 +69,5 @@
         node.connect(audioContext.destination);
 
         console.log('Running process');
-    </script> -->
+    </script>
 </body>
