@@ -48,7 +48,11 @@
         });
 
         var frameLength  = 4096
-        var sampleBuffer = [
+        var sampleBufferIn = [
+            new Float32Array(Array(frameLength).fill(0)),
+            new Float32Array(Array(frameLength).fill(0))
+            ];
+        var sampleBufferOut = [
             new Float32Array(Array(frameLength).fill(0)),
             new Float32Array(Array(frameLength).fill(0))
             ];
@@ -62,9 +66,9 @@
             var output = event.outputBuffer.getChannelData(0);
             var midiIn = noisefloorjs.getMIDIEvents();
 
-            noisefloorjs.process(sampleBuffer, sampleBuffer, midiIn, midiIn);
-            event.outputBuffer.copyToChannel(sampleBuffer[0], 0);
-            event.outputBuffer.copyToChannel(sampleBuffer[1], 1);
+            noisefloorjs.process(sampleBufferIn, sampleBufferOut, midiIn, midiIn);
+            event.outputBuffer.copyToChannel(sampleBufferOut[0], 0);
+            event.outputBuffer.copyToChannel(sampleBufferOut[1], 1);
         }
         node.connect(audioContext.destination);
 

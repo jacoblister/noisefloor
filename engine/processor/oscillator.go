@@ -42,6 +42,10 @@ func (o *Oscillator) Start(sampleRate int) {
 	for i := 0; i < sampleRate; i++ {
 		o.waveTable[Sin][i] = AudioFloat(math.Sin(float64(2*math.Pi*float64(i)) / float64(sampleRate)))
 		o.waveTable[Saw][i] = (AudioFloat(i) / (AudioFloat(sampleRate) / 2)) - 1
+		o.waveTable[Square][i] = -1
+		if i < sampleRate/2 {
+			o.waveTable[Square][i] = 1
+		}
 	}
 }
 

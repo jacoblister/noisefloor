@@ -6,7 +6,7 @@ import (
 	. "github.com/jacoblister/noisefloor/common"
 )
 
-const maxChannels = 16
+const maxChannels = 8
 const maxNote = 127
 
 // MIDIInput - MIDI to CV converter
@@ -42,7 +42,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []MidiEvent) {
 		if velocity > 0 {
 			// Calculate frequency and level for note
 			frequency := 220.0 * math.Pow(2.0, ((float64(note)-57)/12.0))
-			level := velocity / 127.0
+			level := AudioFloat(velocity) / 127.0
 
 			// Allocate next free channel
 			targetChannel := m.nextChannel
