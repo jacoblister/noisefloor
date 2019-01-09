@@ -84,14 +84,13 @@ result<bool> ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     // Set console log function
     this->compile("console.log = function (message) { console_log(message) };");
 
-    this->compile_source("../build/libs/kotlin.js");
-    this->compile_source("../build/libs/engine.js");
-    this->compile("function start(sampleRate) { engine.org.noisefloor.engine.start(sampleRate); }");
-    this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return engine.org.noisefloor.engine.process(samplesIn, samplesOut, midiIn, midiOut); }");
-    this->compile("function query(endpoint, request) { return engine.org.noisefloor.engine.query(endpoint, request); }");
+    this->compile_source("../engine/engine.js");
+    this->compile("function start(sampleRate) { noisefloorjs.start(sampleRate); }");
+    this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return noisefloorjs.process(samplesIn, samplesOut, midiIn, midiOut); }");
+    // this->compile("function query(endpoint, request) { return engine.org.noisefloor.engine.query(endpoint, request); }");
 
-//    this->compile_source("./gain.js");
-//    this->compile("function process(samples) { return samples; }");
+    // this->compile_source("./gain.js");
+    // this->compile("function process(samples) { return samples; }");
 
     v8::Local<v8::Value>    start_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "start"));
     v8::Local<v8::Function> start_function = v8::Local<v8::Function>::Cast(start_function_value);
@@ -102,9 +101,11 @@ result<bool> ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     v8::Local<v8::Function> process_function = v8::Local<v8::Function>::Cast(process_function_value);
     this->process_function = v8::Eternal<v8::Function>(this->isolate, process_function);
 
-    v8::Local<v8::Value>    query_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "query"));
-    v8::Local<v8::Function> query_function = v8::Local<v8::Function>::Cast(query_function_value);
-    this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
+    printf("v8 started\n");
+
+    // v8::Local<v8::Value>    query_function_value = local_context->Global()->Get(v8::String::NewFromUtf8(isolate, "query"));
+    // v8::Local<v8::Function> query_function = v8::Local<v8::Function>::Cast(query_function_value);
+    // this->query_function = v8::Eternal<v8::Function>(this->isolate, query_function);
 
     return true;
 }
@@ -135,10 +136,10 @@ result<bool> ProcessV8Engine::process(std::vector<float *> samplesIn, std::vecto
         v8::Local<v8::Object> jsMidiEvent = v8::Object::New(this->isolate);
         v8::Local<v8::ArrayBuffer> arrayBuffer = v8::ArrayBuffer::New(this->isolate, midiEvent.data, midiEvent.length * sizeof(char));
         v8::Local<v8::Uint8Array>  uint8Array  = v8::Uint8Array::New(arrayBuffer, 0, midiEvent.length);
-        jsMidiEvent->CreateDataProperty(local_context, v8::String::NewFromUtf8(this->isolate, "time"), v8::Number::New(this->isolate, (double)midiEvent.time));
-        jsMidiEvent->CreateDataProperty(local_context, v8::String::NewFromUtf8(this->isolate, "data"), uint8Array);
+        // jsMidiEvent->CreateDataProperty(local_context, v8::String::NewFromUtf8(this->isolate, "time"), v8::Number::New(this->isolate, (double)midiEvent.time));
+        // jsMidiEvent->CreateDataProperty(local_context, v8::String::NewFromUtf8(this->isolate, "data"), uint8Array);
 
-        jsMidiIn->Set(i, jsMidiEvent);
+        jsMidiIn->Set(i, uint8Array);
     }
 
     v8::Local<v8::Value> args[] = {jsSamplesIn, jsSamplesOut, jsMidiIn, jsMidiIn};

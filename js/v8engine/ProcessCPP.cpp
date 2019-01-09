@@ -31,7 +31,7 @@ result<bool> ProcessCPP::process(std::vector<float *> samplesIn, std::vector<flo
     for (int i = 0; i < this->samplesPerFrame; i++) {
         std::vector<std::array<float, 3>> freqs = this->midiInput.process();
 
-        printf("freqs = %f, %f, %f, %f\n", freqs[0][0], freqs[1][0], freqs[2][0], freqs[3][0]);
+        // printf("freqs = %f, %f, %f, %f\n", freqs[0][0], freqs[1][0], freqs[2][0], freqs[3][0]);
 
         float sample = this->oscillator.process();
         samplesOut[0][i] = sample;
