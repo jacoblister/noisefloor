@@ -19,18 +19,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e9f5272ce1164e0fb3cea8000eb99d8a9b49857e31128a69cde1c4866b690fef"
+  digest = "1:2efd16db0962d2490367bd86794a83259078e3971dc2d3e9340213c6f8ae46df"
   name = "github.com/bep/gr"
   packages = [
     ".",
-    "attr",
-    "el",
     "evt",
-    "examples",
     "support",
+    "svg",
+    "svga",
   ]
   pruneopts = "UT"
-  revision = "52c9d7f2f11a3b6fe1bd940d42e07c69a5691dd3"
+  revision = "9c1c263ce8284cb5327a419f4b144d7944869d7c"
   source = "https://github.com/jacoblister/gr"
 
 [[projects]]
@@ -169,25 +168,16 @@
   pruneopts = "UT"
   revision = "96e9e165b75e735822645eff82850b08c377be36"
 
-[[projects]]
-  branch = "master"
-  digest = "1:bca443931652bccc56b2a407e9c152442cd16bf9ee5d2fe316eddef6a701933b"
-  name = "honnef.co/go/js/dom"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "6da835bec70f84cd4f0c0b8a7239a9260b6bc37f"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/bep/gr",
-    "github.com/bep/gr/el",
     "github.com/bep/gr/evt",
-    "github.com/bep/gr/examples",
+    "github.com/bep/gr/svg",
+    "github.com/bep/gr/svga",
     "github.com/gopherjs/gopherjs",
     "github.com/gopherjs/gopherjs/js",
-    "honnef.co/go/js/dom",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

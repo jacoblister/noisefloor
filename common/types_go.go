@@ -1,4 +1,6 @@
+// +build !js
+
 package common
 
 // AudioFloat Type defines a audio sample
-type notAudioFloat float32
+type AudioFloat float32
