@@ -15,11 +15,18 @@ func BenchmarkMakeLinearMidiEvent(b *testing.B) {
 	}
 }
 
+func BenchmarkMakeMidiEventData(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for j := 0; j < midiArraySize; j++ {
+			midi.MakeMidiEventData(0, []byte{127, 0, 0})
+		}
+	}
+}
+
 func BenchmarkMakeMidiEvent(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < midiArraySize; j++ {
-			midiEvent := midi.MakeMidiEventData(0, []byte{127, 0, 0})
-			midiEvent.Time = 0
+			midi.MakeMidiEvent(0, []byte{127, 0, 0})
 		}
 	}
 }
