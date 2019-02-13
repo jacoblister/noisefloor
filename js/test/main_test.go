@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/jacoblister/noisefloor/common"
+	"github.com/jacoblister/noisefloor/common/midi"
 )
 
 func BenchmarkMakeLinearMidiEvent(b *testing.B) {
@@ -18,16 +18,16 @@ func BenchmarkMakeLinearMidiEvent(b *testing.B) {
 func BenchmarkMakeMidiEvent(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < midiArraySize; j++ {
-			midiEvent := common.MakeMidiEvent(0, []byte{127, 0, 0})
+			midiEvent := midi.MakeMidiEventData(0, []byte{127, 0, 0})
 			midiEvent.Time = 0
 		}
 	}
 }
 
 func BenchmarkMidiAppend(b *testing.B) {
-	midiEvents := make([]*common.NewMidiEvent, midiArraySize, midiArraySize)
+	midiEvents := make([]*midi.EventData, midiArraySize, midiArraySize)
 
-	midiEvent := common.MakeMidiEvent(0, []byte{127, 0, 0})
+	midiEvent := midi.MakeMidiEventData(0, []byte{127, 0, 0})
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < midiArraySize; j++ {
 			midiEvents = append(midiEvents, midiEvent)
@@ -36,9 +36,9 @@ func BenchmarkMidiAppend(b *testing.B) {
 }
 
 func BenchmarkMidiAppendArray(b *testing.B) {
-	midiEvents := [arraySize]*common.NewMidiEvent{}
+	midiEvents := [arraySize]*midi.EventData{}
 
-	midiEvent := common.MakeMidiEvent(0, []byte{127, 0, 0})
+	midiEvent := midi.MakeMidiEventData(0, []byte{127, 0, 0})
 	for i := 0; i < b.N; i++ {
 		for j := 0; j < arraySize; j++ {
 			midiEvents[j] = midiEvent

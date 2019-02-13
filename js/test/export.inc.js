@@ -1,3 +1,3 @@
 // Export raw gopherjs transpiled processsing units to javascript (without externalization)
-var common = $packages["github.com/jacoblister/noisefloor/common"];
-$global.MakeMidiEvent = common.MakeMidiEvent;
+var midi = $packages["github.com/jacoblister/noisefloor/common/midi"];
+$global.MakeMidiEvent = midi.MakeMidiEvent;

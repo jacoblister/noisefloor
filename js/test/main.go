@@ -6,7 +6,7 @@ package main
 // }
 
 import (
-	"github.com/jacoblister/noisefloor/common"
+	"github.com/jacoblister/noisefloor/common/midi"
 )
 
 // func MakeMidiEvent(Time int, Data []byte) (result *common.NewMidiEvent) {
@@ -92,7 +92,7 @@ func main() {
 	println("slice ptr len:", len(sliceValues))
 	println()
 
-	midiEvent := common.MakeMidiEvent(0, []byte{127, 0, 0})
+	midiEvent := midi.MakeMidiEventData(0, []byte{127, 0, 0})
 	println(midiEvent.Time)
 
 	midiEventLinearA := []int{0, 127, 0, 0}
