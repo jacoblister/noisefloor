@@ -38,10 +38,10 @@ func TestMakeMidiEvent_NoteOn(t *testing.T) {
 	assert.Equal(t, noteOnEvent.Note, note)
 	assert.Equal(t, noteOnEvent.Velocity, velocity)
 
-	assert.Equal(t, event.MidiEventData().Time, time)
-	assert.Equal(t, event.MidiEventData().Data, data)
-	assert.Equal(t, event.GenericEvent().Time, time)
-	assert.Equal(t, event.GenericEvent().Channel, channel)
+	assert.Equal(t, event.Data().Time, time)
+	assert.Equal(t, event.Data().Data, data)
+	assert.Equal(t, event.Generic().Time, time)
+	assert.Equal(t, event.Generic().Channel, channel)
 }
 
 // Benchmarks
