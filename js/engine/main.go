@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/engine"
 )
 
@@ -22,7 +23,11 @@ func main() {
 		"stop":          engine.Stop,
 		"process":       engine.Process,
 		"makeProcessor": engine.MakeProcessor,
+		"MakeMidiEvent": midi.MakeMidiEvent,
 	})
+
+	slice := []byte{1, 2, 3, 4}
+	slice[0] = 0
 
 	println("loaded engine.main")
 }

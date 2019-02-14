@@ -2,15 +2,21 @@
     <body>
         <script src="engine.js"></script>
         <script type="text/javascript">
-            o = MakeProcessor('Oscillator');
-            console.log(o)
-            o.Start(100);
-            o.Freq = 1;
+            osc = MakeProcessor('Oscillator');
+            console.log(osc);
+            osc.Start(100);
+            osc.Freq = 1;
 
             for (i = 0; i < 100; i++) {
-                console.log(o.Process())
+                console.log(osc.Process())
             }
-            console.log(o);
+            console.log(osc);
+
+            event = noisefloorjs.MakeMidiEvent(0, [0x90, 60, 127]);
+            console.log(event)
+
+            rawEvent = MakeMidiEvent(0, [0x90, 60, 127]);
+            console.log(rawEvent)
         </script>
     </body>
 </body>

@@ -15,7 +15,7 @@ type Component interface {
 	Request(endpoint string, request string) string
 
 	// Front end
-	ReactComponent() *ReactComponent
+	// ReactComponent() *ReactComponent
 }
 
 // Example stack
