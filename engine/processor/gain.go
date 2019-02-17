@@ -1,9 +1,5 @@
 package processor
 
-import (
-	. "github.com/jacoblister/noisefloor/common"
-)
-
 // Gain - linear of exponential gain
 type Gain struct {
 	Exponential bool
@@ -13,7 +9,7 @@ type Gain struct {
 func (g *Gain) Start(sampleRate int) {}
 
 // Process - produce next sample
-func (g *Gain) Process(input AudioFloat, gain AudioFloat) (output AudioFloat) {
+func (g *Gain) Process(input float32, gain float32) (output float32) {
 	output = input * gain
 	return
 }

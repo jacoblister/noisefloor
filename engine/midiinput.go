@@ -3,7 +3,6 @@ package engine
 import (
 	"math"
 
-	. "github.com/jacoblister/noisefloor/common"
     "github.com/jacoblister/noisefloor/common/midi"
 )
 
@@ -13,7 +12,7 @@ const maxNote = 127
 // MIDIInput - MIDI to CV converter
 type MIDIInput struct {
 	channelNotes [maxNote]int
-	channelData  [maxChannels][3]AudioFloat
+	channelData  [maxChannels][3]float32
 	noteChannels map[int]int
 	nextChannel  int
 	triggerClear int
@@ -43,7 +42,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 		if velocity > 0 {
 			// Calculate frequency and level for note
 			frequency := 220.0 * math.Pow(2.0, ((float64(note)-57)/12.0))
-			level := AudioFloat(velocity) / 127.0
+			level := float32(velocity) / 127.0
 
 			// Allocate next free channel
 			targetChannel := m.nextChannel
@@ -68,9 +67,9 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 
 			// set channel active
 			m.channelNotes[targetChannel] = note
-			m.channelData[targetChannel][0] = AudioFloat(frequency)
-			m.channelData[targetChannel][1] = AudioFloat(level)
-			m.channelData[targetChannel][2] = AudioFloat(level)
+			m.channelData[targetChannel][0] = float32(frequency)
+			m.channelData[targetChannel][1] = float32(level)
+			m.channelData[targetChannel][2] = float32(level)
 			m.noteChannels[note] = targetChannel
 		}
 	}
@@ -78,7 +77,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 }
 
 // Process returns to next sample CV data
-func (m *MIDIInput) Process() *[maxChannels][3]AudioFloat {
+func (m *MIDIInput) Process() *[maxChannels][3]float32 {
 	if m.triggerClear > 0 {
 		m.triggerClear--
 		if m.triggerClear == 0 {

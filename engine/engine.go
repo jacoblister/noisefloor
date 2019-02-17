@@ -1,9 +1,8 @@
 package engine
 
 import (
-	. "github.com/jacoblister/noisefloor/common"
     "github.com/jacoblister/noisefloor/common/midi"
-	. "github.com/jacoblister/noisefloor/engine/processor"
+	"github.com/jacoblister/noisefloor/engine/processor"
 )
 
 // Engine - DSP processing engine
@@ -12,7 +11,7 @@ type Engine struct {
 
 var midiinput MIDIInput
 var patch PatchMultiply
-var osc Oscillator
+var osc processor.Oscillator
 
 // Start initilized the engine, with a specified sampling rate
 func Start(sampleRate int) {
@@ -21,7 +20,7 @@ func Start(sampleRate int) {
 	patch.Start(sampleRate)
 
 	osc.Start(sampleRate)
-	osc.Waveform = Sin
+	osc.Waveform = processor.Sin
 	osc.Freq = 5
 }
 
@@ -31,7 +30,7 @@ func Stop() {
 }
 
 // Process processes a block of samples and midi events
-func Process(samplesIn [][]AudioFloat, samplesOut [][]AudioFloat, midiIn []midi.Event, midiOut *[]midi.Event) {
+func Process(samplesIn [][]float32, samplesOut [][]float32, midiIn []midi.Event, midiOut *[]midi.Event) {
 	midiinput.ProcessMIDI(midiIn)
 
 	var len = len(samplesOut[0])

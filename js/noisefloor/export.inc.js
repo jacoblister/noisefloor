@@ -13,21 +13,21 @@ var frontend = $packages["github.com/jacoblister/noisefloor/js/frontend"];
 $global.GetMIDIEvents = frontend.GetMIDIEvents;
 
 var common = $packages["github.com/jacoblister/noisefloor/common"];
-var sliceAudioFloat = $sliceType(common.AudioFloat);
-var sliceSliceAudioFloat = $sliceType(sliceAudioFloat);
-var sliceMidiEvent = $sliceType(midi.Event);
+var sliceFloat32      = $sliceType($Float32);
+var sliceSliceFloat32 = $sliceType(sliceFloat32);
+var sliceMidiEvent    = $sliceType(midi.Event);
 
 $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
-    var samplesInSlice     = $makeSlice(sliceSliceAudioFloat, samplesIn.length, samplesIn.length);
-    var samplesOutSlice    = $makeSlice(sliceSliceAudioFloat, samplesOut.length, samplesOut.length);
+    var samplesInSlice     = $makeSlice(sliceSliceFloat32, samplesIn.length, samplesIn.length);
+    var samplesOutSlice    = $makeSlice(sliceSliceFloat32, samplesOut.length, samplesOut.length);
     var i;
 
     for (i = 0; i < samplesIn.length; i++) {
-        samplesInSlice.$array[i] = new sliceAudioFloat(samplesIn[i]);
+        samplesInSlice.$array[i] = new sliceFloat32(samplesIn[i]);
     }
 
     for (i = 0; i < samplesOut.length; i++) {
-        samplesOutSlice.$array[i] = new sliceAudioFloat(samplesOut[i]);
+        samplesOutSlice.$array[i] = new sliceFloat32(samplesOut[i]);
     }
 
     engine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)

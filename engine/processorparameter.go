@@ -1,14 +1,10 @@
 package engine
 
-import (
-	. "github.com/jacoblister/noisefloor/common"
-)
-
 // ProcessorParameter defines a processor setting and its limits
 type ProcessorParameter struct {
 	name  string
-	value AudioFloat
-	min   AudioFloat
-	max   AudioFloat
+	value float32
+	min   float32
+	max   float32
 	enum  []string
 }

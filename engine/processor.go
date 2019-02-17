@@ -1,9 +1,5 @@
 package engine
 
-import (
-	. "github.com/jacoblister/noisefloor/common"
-)
-
 //Processor interface
 type Processor interface {
 	Start(sampleRate int)
@@ -23,5 +19,5 @@ func getProcessorParameters(p *Processor) []ProcessorParameter {
 	return []ProcessorParameter{}
 }
 
-func setProcessorParameter(p *Processor, name string, value AudioFloat) {
+func setProcessorParameter(p *Processor, name string, value float32) {
 }

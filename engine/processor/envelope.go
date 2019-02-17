@@ -1,9 +1,5 @@
 package processor
 
-import (
-	. "github.com/jacoblister/noisefloor/common"
-)
-
 // Phase enumerated type
 type Phase int
 
@@ -18,20 +14,20 @@ const (
 
 // Envelope - ADSR envelope generator
 type Envelope struct {
-	Attack  AudioFloat `default:"2" min:"0" max:"10000"`
-	Decay   AudioFloat `default:"100" min:"0" max:"10000"`
-	Sustain AudioFloat `default:"0.5" min:"0" max:"1"`
-	Release AudioFloat `default:"1000" min:"0" max:"10000"`
+	Attack  float32 `default:"2" min:"0" max:"10000"`
+	Decay   float32 `default:"100" min:"0" max:"10000"`
+	Sustain float32 `default:"0.5" min:"0" max:"1"`
+	Release float32 `default:"1000" min:"0" max:"10000"`
 
-	sampleRate AudioFloat
-	output     AudioFloat
+	sampleRate float32
+	output     float32
 	phase      Phase
-	delta      AudioFloat
+	delta      float32
 }
 
 // Start - init envelope generator
 func (e *Envelope) Start(sampleRate int) {
-	e.sampleRate = AudioFloat(sampleRate)
+	e.sampleRate = float32(sampleRate)
 	e.Attack = 2
 	e.Decay = 100
 	e.Sustain = 0.5
@@ -39,7 +35,7 @@ func (e *Envelope) Start(sampleRate int) {
 }
 
 // Process - produce next sample
-func (e *Envelope) Process(gate AudioFloat, trigger AudioFloat) (output AudioFloat) {
+func (e *Envelope) Process(gate float32, trigger float32) (output float32) {
 	if trigger > 0 {
 		e.output = 0
 		e.delta = (1000 / e.Attack) / e.sampleRate

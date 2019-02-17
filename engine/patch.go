@@ -1,6 +1,5 @@
 package engine
 
-import . "github.com/jacoblister/noisefloor/common"
 import "github.com/jacoblister/noisefloor/engine/processor"
 
 // Patch is a simple minimal example patch
@@ -20,7 +19,7 @@ func (p *Patch) Start(sampleRate int) {
 }
 
 // Process - produce next sample
-func (p *Patch) Process(freq AudioFloat, gate AudioFloat, trigger AudioFloat) (output AudioFloat) {
+func (p *Patch) Process(freq float32, gate float32, trigger float32) (output float32) {
 	p.oscillator.Freq = freq
 	sample := p.oscillator.Process()
 	env := p.envelope.Process(gate, trigger)
