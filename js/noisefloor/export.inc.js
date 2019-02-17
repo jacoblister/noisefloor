@@ -18,21 +18,17 @@ var sliceSliceAudioFloat = $sliceType(sliceAudioFloat);
 var sliceMidiEvent = $sliceType(common.MidiEvent);
 
 $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
-    var samplesInSlice     = sliceSliceAudioFloat.nil;
-    var samplesOutSlice    = sliceSliceAudioFloat.nil;
+    var samplesInSlice     = $makeSlice(sliceSliceAudioFloat, samplesIn.length, samplesIn.length);
+    var samplesOutSlice    = $makeSlice(sliceSliceAudioFloat, samplesOut.length, samplesOut.length);
     var i;
 
     for (i = 0; i < samplesIn.length; i++) {
         samplesInSlice.$array[i] = new sliceAudioFloat(samplesIn[i]);
     }
-    samplesInSlice.$length = i;
-    samplesInSlice.$capacity = i;
 
     for (i = 0; i < samplesOut.length; i++) {
         samplesOutSlice.$array[i] = new sliceAudioFloat(samplesOut[i]);
     }
-    samplesOutSlice.$length = i;
-    samplesOutSlice.$capacity = i;
 
     engine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)
 }
