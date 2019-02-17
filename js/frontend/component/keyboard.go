@@ -2,7 +2,7 @@ package component
 
 import (
 	"github.com/gopherjs/gopherjs/js"
-	. "github.com/jacoblister/noisefloor/common"
+	"github.com/jacoblister/noisefloor/common/midi"
 
 	"github.com/bep/gr"
 	"github.com/bep/gr/evt"
@@ -17,11 +17,11 @@ const velocityMax = 127
 type Keyboard struct {
 	*gr.This
 	keydown    [keyMax]bool
-	midiEvents []MidiEvent
+	midiEvents []midi.Event
 }
 
 // GetMIDIEvents returns the currently pending MIDI events
-func (k *Keyboard) GetMIDIEvents() []MidiEvent {
+func (k *Keyboard) GetMIDIEvents() []midi.Event {
 	result := k.midiEvents
 	k.midiEvents = nil
 	return result
@@ -40,7 +40,7 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 	if keyDown {
 		velocity = velocityMax
 	}
-	midiEvent := MidiEvent{0, keyNumber, velocity}
+    midiEvent := midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1}, Note: keyNumber, Velocity: velocity}
 
 	k.midiEvents = append(k.midiEvents, midiEvent)
 }

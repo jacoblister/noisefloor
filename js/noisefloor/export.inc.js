@@ -15,7 +15,7 @@ $global.GetMIDIEvents = frontend.GetMIDIEvents;
 var common = $packages["github.com/jacoblister/noisefloor/common"];
 var sliceAudioFloat = $sliceType(common.AudioFloat);
 var sliceSliceAudioFloat = $sliceType(sliceAudioFloat);
-var sliceMidiEvent = $sliceType(common.MidiEvent);
+var sliceMidiEvent = $sliceType(midi.Event);
 
 $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
     var samplesInSlice     = $makeSlice(sliceSliceAudioFloat, samplesIn.length, samplesIn.length);

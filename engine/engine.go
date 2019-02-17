@@ -2,6 +2,7 @@ package engine
 
 import (
 	. "github.com/jacoblister/noisefloor/common"
+    "github.com/jacoblister/noisefloor/common/midi"
 	. "github.com/jacoblister/noisefloor/engine/processor"
 )
 
@@ -30,7 +31,7 @@ func Stop() {
 }
 
 // Process processes a block of samples and midi events
-func Process(samplesIn [][]AudioFloat, samplesOut [][]AudioFloat, midiIn []MidiEvent, midiOut *[]MidiEvent) {
+func Process(samplesIn [][]AudioFloat, samplesOut [][]AudioFloat, midiIn []midi.Event, midiOut *[]midi.Event) {
 	midiinput.ProcessMIDI(midiIn)
 
 	var len = len(samplesOut[0])

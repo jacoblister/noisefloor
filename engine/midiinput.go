@@ -4,6 +4,7 @@ import (
 	"math"
 
 	. "github.com/jacoblister/noisefloor/common"
+    "github.com/jacoblister/noisefloor/common/midi"
 )
 
 const maxChannels = 8
@@ -24,11 +25,11 @@ func (m *MIDIInput) Start() {
 }
 
 // ProcessMIDI coverts MIDI events to CV signals
-func (m *MIDIInput) ProcessMIDI(midiIn []MidiEvent) {
+func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 	len := len(midiIn)
 	for i := 0; i < len; i++ {
-		note := midiIn[i][1]
-		velocity := midiIn[i][2]
+		note := midiIn[i].(midi.NoteOnEvent).Note
+		velocity := midiIn[i].(midi.NoteOnEvent).Velocity
 
 		// note release or new note - free allocated channel
 		noteChannel, ok := m.noteChannels[note]
