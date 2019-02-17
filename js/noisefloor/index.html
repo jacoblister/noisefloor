@@ -40,16 +40,14 @@
             new Float32Array(Array(frameLength).fill(0))
             ];
 
-        // var audioContext = new AudioContext();
-
         noisefloorjs.start(audioContext.sampleRate);
 
         var node = audioContext.createScriptProcessor(frameLength, 2, 2);
         node.onaudioprocess = function (event) {
             var output = event.outputBuffer.getChannelData(0);
-            var midiIn = noisefloorjs.getMIDIEvents();
+            var midiIn = GetMIDIEvents();
 
-            noisefloorjs.process(sampleBufferIn, sampleBufferOut, midiIn, midiIn);
+            Process(sampleBufferIn, sampleBufferOut, midiIn, midiIn);
             event.outputBuffer.copyToChannel(sampleBufferOut[0], 0);
             event.outputBuffer.copyToChannel(sampleBufferOut[1], 1);
         }
