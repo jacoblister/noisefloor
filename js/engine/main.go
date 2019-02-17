@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/jacoblister/noisefloor/common"
 	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/engine"
 )
@@ -17,13 +18,24 @@ import (
 // 	}
 // }
 
+// TestCallProcess is a dummy call to process to evaluate transpiled javascript
+func TestCallProcess() {
+	var samplesIn [][]common.AudioFloat
+	var samplesOut [][]common.AudioFloat
+	var midiIn []common.MidiEvent
+	var midiOut []common.MidiEvent
+
+	engine.Process(samplesIn, samplesOut, midiIn, &midiOut)
+}
+
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"start":         engine.Start,
-		"stop":          engine.Stop,
-		"process":       engine.Process,
-		"makeProcessor": engine.MakeProcessor,
-		"MakeMidiEvent": midi.MakeMidiEvent,
+		"start":           engine.Start,
+		"stop":            engine.Stop,
+		"process":         engine.Process,
+		"TestCallProcess": TestCallProcess,
+		"makeProcessor":   engine.MakeProcessor,
+		"MakeMidiEvent":   midi.MakeMidiEvent,
 	})
 
 	slice := []byte{1, 2, 3, 4}
