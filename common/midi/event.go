@@ -39,7 +39,7 @@ func statusByte(eventType EventType, channel int) byte {
 //Event interface specifies a generic MIDI event
 type Event interface {
 	Data() EventData
-	Generic() GenericEvent
+	Generic() *GenericEvent
 }
 
 // MakeMidiEventData constructs a new midi event from time and data bytes
@@ -71,7 +71,7 @@ type NoteOnEvent struct {
 }
 
 // Generic returns the genericEvent for the NoteOnEvent type
-func (e NoteOnEvent) Generic() GenericEvent { return e.GenericEvent }
+func (e NoteOnEvent) Generic() *GenericEvent { return &e.GenericEvent }
 
 // Data returns EventData (bytes) for the NoteOnEvent type
 func (e NoteOnEvent) Data() EventData {
