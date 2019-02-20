@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/jacoblister/noisefloor/common"
 	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/engine"
 )
 
@@ -20,21 +20,23 @@ import (
 
 // TestCallProcess is a dummy call to process to evaluate transpiled javascript
 func TestCallProcess() {
-	var samplesIn [][]common.AudioFloat
-	var samplesOut [][]common.AudioFloat
-	var midiIn []common.MidiEvent
-	var midiOut []common.MidiEvent
+	var Engine engine.Engine
 
-	engine.Process(samplesIn, samplesOut, midiIn, &midiOut)
+	var samplesIn [][]float32
+	var samplesOut [][]float32
+	var midiIn []midi.Event
+	var midiOut []midi.Event
+
+	Engine.Process(samplesIn, samplesOut, midiIn, &midiOut)
 }
 
+// main exports functions to javascript
+// (only for dead code elimination, exports are in export.inc.js)
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"start":           engine.Start,
-		"stop":            engine.Stop,
-		"process":         engine.Process,
 		"TestCallProcess": TestCallProcess,
-		"makeProcessor":   engine.MakeProcessor,
+		"MakeProcessor":   engine.MakeProcessor,
+		"MakeComponent":   component.MakeComponent,
 		"MakeMidiEvent":   midi.MakeMidiEvent,
 	})
 

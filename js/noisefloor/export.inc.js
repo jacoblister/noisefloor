@@ -2,6 +2,10 @@
 var engine = $packages["github.com/jacoblister/noisefloor/engine"];
 $global.MakeProcessor = engine.MakeProcessor;
 
+var component = $packages["github.com/jacoblister/noisefloor/component"];
+$global.MakeComponent = component.MakeComponent;
+var Engine = component.MakeComponent("engine");
+
 var midi = $packages["github.com/jacoblister/noisefloor/common/midi"];
 var sliceByte = $sliceType($Uint8);
 $global.MakeMidiEvent = function(time, data) {
@@ -30,5 +34,5 @@ $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
         samplesOutSlice.$array[i] = new sliceFloat32(samplesOut[i]);
     }
 
-    engine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)
+    Engine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)
 }
