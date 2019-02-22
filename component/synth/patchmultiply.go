@@ -1,4 +1,4 @@
-package engine
+package synth
 
 // PatchMultiply contains multiple copies of a patch
 type PatchMultiply struct {

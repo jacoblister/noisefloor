@@ -1,4 +1,4 @@
-package engine
+package synth
 
 //Processor interface
 type Processor interface {

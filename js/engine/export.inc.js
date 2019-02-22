@@ -1,13 +1,13 @@
 // Export raw gopherjs transpiled processsing units to javascript (without externalization)
-var engine = $packages["github.com/jacoblister/noisefloor/engine"];
-$global.MakeProcessor = engine.MakeProcessor;
+var synth = $packages["github.com/jacoblister/noisefloor/component/synth"];
+$global.MakeProcessor = synth.MakeProcessor;
 
 var component = $packages["github.com/jacoblister/noisefloor/component"];
 $global.MakeComponent = component.MakeComponent;
-var Engine = component.MakeComponent("engine");
-
-var jsEngine = $packages["github.com/jacoblister/noisefloor/js/engine"];
-$global.Engine = jsEngine.Engine;
+var SynthEngine = component.MakeComponent("SynthEngine");
+$global.Start = function(sampleRate) {
+    SynthEngine.Start(sampleRate)
+}
 
 var midi = $packages["github.com/jacoblister/noisefloor/common/midi"];
 var sliceByte = $sliceType($Uint8);
@@ -16,7 +16,6 @@ $global.MakeMidiEvent = function(time, data) {
     return midi.MakeMidiEvent(time, sliceData)
 }
 
-var common = $packages["github.com/jacoblister/noisefloor/common"];
 var sliceFloat32      = $sliceType($Float32);
 var sliceSliceFloat32 = $sliceType(sliceFloat32);
 var sliceMidiEvent    = $sliceType(midi.Event);
@@ -34,5 +33,9 @@ $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
         samplesOutSlice.$array[i] = new sliceFloat32(samplesOut[i]);
     }
 
-    Engine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)
+    SynthEngine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)
 }
+
+//Frontend
+// var frontend = $packages["github.com/jacoblister/noisefloor/js/frontend"];
+// $global.GetMIDIEvents = frontend.GetMIDIEvents;

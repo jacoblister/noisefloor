@@ -5,7 +5,7 @@ import (
 
 	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
-	"github.com/jacoblister/noisefloor/engine"
+	"github.com/jacoblister/noisefloor/component/synth"
 )
 
 type driverMidi interface {
@@ -29,7 +29,8 @@ type noiseFloor struct {
 }
 
 func main() {
-	nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}, audioProcessor: &engine.Engine{}}
+	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
+	nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
 
 	nf.driverAudio.setMidiDriver(nf.driverMidi)
 	nf.driverAudio.setAudioProcessor(nf.audioProcessor)

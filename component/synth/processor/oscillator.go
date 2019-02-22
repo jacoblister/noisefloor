@@ -20,8 +20,8 @@ const maxSamples = 48000
 
 // Oscillator - basic wave function generator
 type Oscillator struct {
-	Waveform Waveform   `default:"Sin"`
-	Freq     float32 `default:"440" min:"20" max:"20000"`
+	Waveform Waveform `default:"Sin"`
+	Freq     float32  `default:"440" min:"20" max:"20000"`
 
 	sampleRate    float32
 	currentSample float32

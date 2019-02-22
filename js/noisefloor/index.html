@@ -40,7 +40,7 @@
             new Float32Array(Array(frameLength).fill(0))
             ];
 
-        noisefloorjs.start(audioContext.sampleRate);
+        Start(audioContext.sampleRate);
 
         var node = audioContext.createScriptProcessor(frameLength, 2, 2);
         node.onaudioprocess = function (event) {

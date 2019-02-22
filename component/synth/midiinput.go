@@ -1,9 +1,9 @@
-package engine
+package synth
 
 import (
 	"math"
 
-    "github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/common/midi"
 )
 
 const maxChannels = 8

@@ -1,4 +1,4 @@
-package engine
+package synth
 
 //Connector specifies a connection between two Processors
 type Connector struct {
