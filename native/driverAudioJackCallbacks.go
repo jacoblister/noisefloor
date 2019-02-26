@@ -4,26 +4,37 @@ import "C"
 import (
 	"reflect"
 	"unsafe"
+
+	"github.com/jacoblister/noisefloor/common/midi"
 )
 
 //export goProcess
 func goProcess(arg unsafe.Pointer, blockSize int,
-	channelsInCount int, samplesIn unsafe.Pointer,
-	channelsOutCount int, samplesOut unsafe.Pointer,
+	channelInCount int, channelIn unsafe.Pointer,
+	channelOutCount int, channelOut unsafe.Pointer,
 	midiInCount int, MidiIn unsafe.Pointer,
 	midiOutCount int, MidiOut unsafe.Pointer) {
-	samplesInSlice := [][]float32{}
+	samplesInSlice := make([][]float32, channelInCount, channelInCount)
+	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
+	midiInSlice := make([]midi.Event, 0, 0)
+	midiOutSlice := make([]midi.Event, 0, 0)
 
-	for i := 0; i < channelsInCount; i++ {
-		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: 2, Cap: 2}
-		NewSlice := *(*[]float32)(unsafe.Pointer(h))
-		samplesInSlice[i] = NewSlice
-		println(NewSlice[0], NewSlice[1])
+	for i := 0; i < channelInCount; i++ {
+		samplesIn := indexPointer(channelIn, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockSize, Cap: blockSize}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesInSlice[i] = s
 	}
-	// println(NewSlice[0], NewSlice[1])
+
+	for i := 0; i < channelOutCount; i++ {
+		samplesOut := indexPointer(channelOut, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockSize, Cap: blockSize}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesOutSlice[i] = s
+	}
 
 	dp := *(*driverAudioJack)(arg)
-	dp.audioProcessor.Start(1000)
+	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
 
 	println(blockSize)
 }

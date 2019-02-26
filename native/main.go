@@ -2,30 +2,24 @@ package main
 
 import (
 	"time"
+	"unsafe"
 
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/component/synth"
 )
-
-type driverMidi interface {
-	start()
-	stop()
-	readEvents() []midi.Event
-	writeEvents([]midi.Event)
-}
-
-type driverAudio interface {
-	setMidiDriver(driverMidi driverMidi)
-	setAudioProcessor(audioProcessor component.AudioProcessor)
-	start()
-	stop()
-}
 
 type noiseFloor struct {
 	driverAudio    driverAudio
 	driverMidi     driverMidi
 	audioProcessor component.AudioProcessor
+}
+
+// indexPointer is a helper method to dereference a pointer array by index
+func indexPointer(ptr unsafe.Pointer, i int) unsafe.Pointer {
+	var p uintptr
+	var ptrSize = unsafe.Sizeof(&p)
+
+	return unsafe.Pointer(*(**uintptr)(unsafe.Pointer(uintptr(ptr) + uintptr(i)*ptrSize)))
 }
 
 func main() {
@@ -36,7 +30,7 @@ func main() {
 	nf.driverAudio.setAudioProcessor(nf.audioProcessor)
 	nf.driverAudio.start()
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	nf.driverAudio.stop()
 

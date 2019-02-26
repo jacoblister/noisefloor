@@ -34,8 +34,19 @@ extern int goProcess(void *arg, int blockSize,
 #include <stdio.h>
 int process_jack(jack_nframes_t nframes, void *arg) {
 	printf("jack process\n");
-	static float samples[] = {40,43,42};
-	client.channel_in[0] = samples;
+
+	// static float samples1[] = {40,41,42};
+	// static float samples2[] = {80,81,82};
+	// client.channel_in[0] = samples1;
+	// client.channel_in[1] = samples2;
+	// printf("samples1 %p\n", samples1);
+	// printf("samples2 %p\n", samples2);
+
+	client.channel_in[0] = jack_port_get_buffer(client.jack_audio_input_port[0],  nframes);
+	client.channel_in[1] = jack_port_get_buffer(client.jack_audio_input_port[1],  nframes);
+	client.channel_out[0] = jack_port_get_buffer(client.jack_audio_output_port[0],  nframes);
+	client.channel_out[1] = jack_port_get_buffer(client.jack_audio_output_port[1],  nframes);
+	printf("channelin %p\n", client.channel_in);
 
 	goProcess(arg, nframes,
 		client.channel_in_count, client.channel_in,
@@ -63,6 +74,7 @@ jack_c_client* gojack_client_open(uintptr_t arg) {
     client.jack_midi_input_port      = jack_port_register(client.jack_client, "midi-input",  JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     client.jack_midi_output_port     = jack_port_register(client.jack_client, "midi-output", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 	client.channel_in_count 		 = 2;
+	client.channel_out_count 		 = 2;
 
     jack_set_process_callback(client.jack_client, process_jack, (void *)arg);
     jack_activate(client.jack_client);
