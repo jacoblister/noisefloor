@@ -34,9 +34,9 @@ func (e *Engine) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn [
 
 	var len = len(samplesOut[0])
 	for i := 0; i < len; i++ {
-		// freqs := e.midiinput.Process()
-		// var sample = e.patch.Process(freqs)
-		//
+		freqs := e.midiinput.Process()
+		var sample = e.patch.Process(freqs)
+
 		// mic := samplesIn[0][i] * 500
 		// mod := e.osc.Process()
 		// if mod < 0 {
@@ -44,8 +44,7 @@ func (e *Engine) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn [
 		// }
 		// mic *= mod
 		// sample += mic
-		sample := e.osc.Process()
-		// sample = 42
+		// sample := e.osc.Process()
 
 		samplesOut[0][i] = sample
 		samplesOut[1][i] = sample

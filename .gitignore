@@ -4,3 +4,4 @@ main
 *.js.map
 !*.inc.js
 *.exe
+/native/native

@@ -53,6 +53,9 @@ func MakeMidiEvent(time int, data []byte) Event {
 	case Note:
 		return NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
 			Note: int(data[1]), Velocity: int(data[2])}
+	case NoteOff:
+		return NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Note: int(data[1]), Velocity: 0}
 	}
 	panic("Could not make midi event from data")
 }
@@ -76,4 +79,18 @@ func (e NoteOnEvent) Generic() *GenericEvent { return &e.GenericEvent }
 // Data returns EventData (bytes) for the NoteOnEvent type
 func (e NoteOnEvent) Data() EventData {
 	return EventData{Time: e.Time, Data: []byte{statusByte(Note, e.Channel), byte(e.Note), byte(e.Velocity)}}
+}
+
+// NoteOffEvent is a MIDI note off event
+type NoteOffEvent struct {
+	GenericEvent
+	Note int
+}
+
+// Generic returns the genericEvent for the NoteOnEvent type
+func (e NoteOffEvent) Generic() *GenericEvent { return &e.GenericEvent }
+
+// Data returns EventData (bytes) for the NoteOnEvent type
+func (e NoteOffEvent) Data() EventData {
+	return EventData{Time: e.Time, Data: []byte{statusByte(Note, e.Channel), byte(e.Note)}}
 }

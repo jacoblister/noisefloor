@@ -55,12 +55,12 @@ static inline int gojack_midi_client_read(uint8_t **buffer) {
 	midi_client.byte_buffer[byte_index] = 0;	// termination
 	byte_index++;
 
-	midi_client.byte_buffer[0] = 3;
-	midi_client.byte_buffer[5] = 0x90;
-	midi_client.byte_buffer[6] = 60;
-	midi_client.byte_buffer[7] = 100;
-	midi_client.byte_buffer[8] = 0;
-	byte_index = 9;
+	// midi_client.byte_buffer[0] = 3;
+	// midi_client.byte_buffer[5] = 0x90;
+	// midi_client.byte_buffer[6] = 60;
+	// midi_client.byte_buffer[7] = 100;
+	// midi_client.byte_buffer[8] = 0;
+	// byte_index = 9;
 
 	*buffer = midi_client.byte_buffer;
 	return byte_index;
@@ -91,8 +91,6 @@ func (d *driverMidiJack) readEvents() []midi.Event {
 	cBuf := (*[1 << 30]byte)(byteBuffer)
 
 	midiEvents := midi.DecodeByteBuffer(cBuf[:byteBufferLength])
-	ne := midiEvents[0].(midi.NoteOnEvent)
-	println(ne.Note)
 
 	return midiEvents
 }
