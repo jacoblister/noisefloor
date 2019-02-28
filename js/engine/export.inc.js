@@ -21,8 +21,8 @@ var sliceSliceFloat32 = $sliceType(sliceFloat32);
 var sliceMidiEvent    = $sliceType(midi.Event);
 
 $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
-    var samplesInSlice     = $makeSlice(sliceSliceFloat32, samplesIn.length, samplesIn.length);
-    var samplesOutSlice    = $makeSlice(sliceSliceFloat32, samplesOut.length, samplesOut.length);
+    var samplesInSlice  = $makeSlice(sliceSliceFloat32, samplesIn.length, samplesIn.length);
+    var samplesOutSlice = $makeSlice(sliceSliceFloat32, samplesOut.length, samplesOut.length);
     var i;
 
     for (i = 0; i < samplesIn.length; i++) {
@@ -33,7 +33,16 @@ $global.Process = function(samplesIn, samplesOut, midiInSlice, midiOutSlice) {
         samplesOutSlice.$array[i] = new sliceFloat32(samplesOut[i]);
     }
 
+    // var midiInSlice = $makeSlice(sliceMidiEvent, midiIn.length, midiOut.length);
+    // for (i = 0; i < midiIn.length; i++) {
+    //     midiInSlice.$array[i] = midi.MakeMidiEvent(midiIn[i][0], midiIn[i].slice(1));
+    // }
+
     SynthEngine.Process(samplesInSlice, samplesOutSlice, midiInSlice, midiOutSlice)
+
+    // for (i = 0; i < midiOutSlice.length; i++) {
+    //     midiOut[i] = [midiOutSlice[i].Data().Time(), ...midiOutSlice[i].Data()]
+    // }
 }
 
 //Frontend

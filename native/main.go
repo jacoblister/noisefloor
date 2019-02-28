@@ -1,8 +1,8 @@
 package main
 
 import (
+	"runtime/debug"
 	"time"
-	"unsafe"
 
 	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/component/synth"
@@ -14,23 +14,20 @@ type noiseFloor struct {
 	audioProcessor component.AudioProcessor
 }
 
-// indexPointer is a helper method to dereference a pointer array by index
-func indexPointer(ptr unsafe.Pointer, i int) unsafe.Pointer {
-	var p uintptr
-	var ptrSize = unsafe.Sizeof(&p)
-
-	return unsafe.Pointer(*(**uintptr)(unsafe.Pointer(uintptr(ptr) + uintptr(i)*ptrSize)))
-}
-
 func main() {
-	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
-	nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
+	debug.SetGCPercent(-1)
+
+	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
+	nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
+	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
 
 	nf.driverAudio.setMidiDriver(nf.driverMidi)
 	nf.driverAudio.setAudioProcessor(nf.audioProcessor)
+	nf.driverMidi.start()
 	nf.driverAudio.start()
+	nf.audioProcessor.Start(nf.driverAudio.samplingRate())
 
-	time.Sleep(30 * time.Second)
+	time.Sleep(1000 * time.Second)
 
 	nf.driverAudio.stop()
 

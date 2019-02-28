@@ -34,17 +34,24 @@ func (d *driverAudioMock) mockProcess() {
 func (d *driverAudioMock) setMidiDriver(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
 }
+
 func (d *driverAudioMock) setAudioProcessor(audioProcessor component.AudioProcessor) {
 	d.audioProcessor = audioProcessor
 }
+
 func (d *driverAudioMock) start() {
 	d.stopchan = make(chan bool)
 	d.stoppedchan = make(chan bool)
 
 	go d.mockProcess()
 }
+
 func (d *driverAudioMock) stop() {
 	println("stop")
 	close(d.stopchan)
 	<-d.stoppedchan
+}
+
+func (d *driverAudioMock) samplingRate() int {
+	return 44100
 }

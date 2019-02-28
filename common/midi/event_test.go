@@ -9,10 +9,14 @@ import (
 )
 
 func TestMakeMidiEventData(t *testing.T) {
+	// Given ... dummy time and data
 	time := 123
 	data := []byte{1, 2, 3}
 
+	// When ...
 	eventData := MakeMidiEventData(time, data)
+
+	// Then ... dummy time and data back
 	assert.Equal(t, eventData.Time, time)
 	assert.Equal(t, eventData.Data, data)
 }
@@ -22,6 +26,7 @@ func TestMakeMidiEvent_NoType(t *testing.T) {
 }
 
 func TestMakeMidiEvent_NoteOn(t *testing.T) {
+	// Given ... Note on event
 	const (
 		time      = 123
 		channel   = 2
@@ -30,9 +35,12 @@ func TestMakeMidiEvent_NoteOn(t *testing.T) {
 		eventType = Note
 	)
 	data := []byte{byte(eventType)<<4 | (channel - 1), note, velocity}
+
+	// When ...
 	event := MakeMidiEvent(time, data)
 
-	noteOnEvent := event.(*NoteOnEvent)
+	// Then ... note on event back, with matching parameters/generic parameters
+	noteOnEvent := event.(NoteOnEvent)
 	assert.Equal(t, noteOnEvent.Time, time)
 	assert.Equal(t, noteOnEvent.Channel, channel)
 	assert.Equal(t, noteOnEvent.Note, note)
@@ -81,7 +89,7 @@ func BenchmarkMidiAppendSlice(b *testing.B) {
 	midiEvent := MakeMidiEventData(0, []byte{127, 0, 0})
 
 	for i := 0; i < b.N; i++ {
-		midiEvents := make([]*EventData, 0, arraySize)
+		midiEvents := make([]EventData, arraySize, arraySize)
 		for j := 0; j < arraySize; j++ {
 			midiEvents = append(midiEvents, midiEvent)
 		}
@@ -92,7 +100,7 @@ func BenchmarkMidiAppendArray(b *testing.B) {
 	midiEvent := MakeMidiEventData(0, []byte{127, 0, 0})
 
 	for i := 0; i < b.N; i++ {
-		midiEvents := [arraySize]*EventData{}
+		midiEvents := [arraySize]EventData{}
 		for j := 0; j < arraySize; j++ {
 			midiEvents[j] = midiEvent
 		}
@@ -102,7 +110,7 @@ func BenchmarkMidiAppendArray(b *testing.B) {
 func TestMain(m *testing.M) {
 	for i := 0; i < arraySize; i++ {
 		time := rand.Intn(10000)
-		testEventArray[i] = *MakeMidiEventData(time, []byte{0, 0, 0})
+		testEventArray[i] = MakeMidiEventData(time, []byte{0, 0, 0})
 	}
 	testEventSlice = testEventArray[:]
 	os.Exit(m.Run())

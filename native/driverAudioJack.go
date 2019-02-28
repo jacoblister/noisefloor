@@ -14,8 +14,6 @@ typedef struct {
 	jack_client_t* jack_client;
 	jack_port_t* jack_audio_input_port[2];
 	jack_port_t* jack_audio_output_port[2];
-	jack_port_t* jack_midi_input_port;
-	jack_port_t* jack_midi_output_port;
 
 	int channel_in_count;
 	int channel_out_count;
@@ -25,40 +23,30 @@ typedef struct {
 
 jack_c_client client;
 
-extern int goProcess(void *arg, int blockSize,
+extern void goAudioJackCallback(void *arg, int blockSize,
 	int channelInCount, void *channelIn,
-	int channelOutCount, void *channelOut,
-	int midiInCount, void *midiIn,
-	int midiOutCount, void *midiOut);
+	int channelOutCount, void *channelOut);
 
 #include <stdio.h>
-int process_jack(jack_nframes_t nframes, void *arg) {
-	printf("jack process\n");
-
-	// static float samples1[] = {40,41,42};
-	// static float samples2[] = {80,81,82};
-	// client.channel_in[0] = samples1;
-	// client.channel_in[1] = samples2;
-	// printf("samples1 %p\n", samples1);
-	// printf("samples2 %p\n", samples2);
-
+static inline int process_jack(jack_nframes_t nframes, void *arg) {
 	client.channel_in[0] = jack_port_get_buffer(client.jack_audio_input_port[0],  nframes);
 	client.channel_in[1] = jack_port_get_buffer(client.jack_audio_input_port[1],  nframes);
 	client.channel_out[0] = jack_port_get_buffer(client.jack_audio_output_port[0],  nframes);
 	client.channel_out[1] = jack_port_get_buffer(client.jack_audio_output_port[1],  nframes);
-	printf("channelin %p\n", client.channel_in);
 
-	goProcess(arg, nframes,
+	goAudioJackCallback(arg, nframes,
 		client.channel_in_count, client.channel_in,
-		client.channel_out_count, client.channel_out,
-		0, NULL,
-		0, NULL
+		client.channel_out_count, client.channel_out
 	);
 
 	return 0;
 }
 
-jack_c_client* gojack_client_open(uintptr_t arg) {
+static inline int gojack_sample_rate() {
+	return jack_get_sample_rate(client.jack_client);
+}
+
+static inline jack_c_client* gojack_client_open(uintptr_t arg) {
     const char **ports;
     const char *client_name = "noisefloor";
     const char *server_name = NULL;
@@ -71,8 +59,6 @@ jack_c_client* gojack_client_open(uintptr_t arg) {
     client.jack_audio_input_port[1]  = jack_port_register(client.jack_client, "input_1",  JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
     client.jack_audio_output_port[0] = jack_port_register(client.jack_client, "output_0", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
     client.jack_audio_output_port[1] = jack_port_register(client.jack_client, "output_1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    client.jack_midi_input_port      = jack_port_register(client.jack_client, "midi-input",  JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
-    client.jack_midi_output_port     = jack_port_register(client.jack_client, "midi-output", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 	client.channel_in_count 		 = 2;
 	client.channel_out_count 		 = 2;
 
@@ -81,30 +67,72 @@ jack_c_client* gojack_client_open(uintptr_t arg) {
 
     return &client;
 }
+
+static inline int gojack_client_sampling_rate() {
+	return jack_get_sample_rate(client.jack_client);
+}
+
 */
 import "C"
 
 import (
+	"reflect"
 	"unsafe"
 
+	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
 )
 
 type driverAudioJack struct {
 	audioProcessor component.AudioProcessor
+	driverMidi     driverMidi
+}
+
+//export goAudioJackCallback
+func goAudioJackCallback(arg unsafe.Pointer, blockSize C.int,
+	channelInCount C.int, channelIn unsafe.Pointer,
+	channelOutCount C.int, channelOut unsafe.Pointer) {
+	samplesInSlice := make([][]float32, channelInCount, channelInCount)
+	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
+	blockSizeInt := int(blockSize)
+
+	for i := 0; i < int(channelInCount); i++ {
+		samplesIn := indexPointer(channelIn, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockSizeInt, Cap: blockSizeInt}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesInSlice[i] = s
+	}
+
+	for i := 0; i < int(channelOutCount); i++ {
+		samplesOut := indexPointer(channelOut, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockSizeInt, Cap: blockSizeInt}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesOutSlice[i] = s
+	}
+
+	dp := *(*driverAudioJack)(arg)
+	midiInSlice := dp.driverMidi.readEvents()
+	midiOutSlice := make([]midi.Event, 0, 0)
+
+	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
 }
 
 func (d *driverAudioJack) setMidiDriver(driverMidi driverMidi) {
+	d.driverMidi = driverMidi
 }
+
 func (d *driverAudioJack) setAudioProcessor(audioProcessor component.AudioProcessor) {
 	d.audioProcessor = audioProcessor
-
-	uintPtr := uintptr(unsafe.Pointer(d))
-	C.gojack_client_open((_Ctype_ulong)(uintPtr))
-	// println(client.in_channels)
 }
 func (d *driverAudioJack) start() {
+	uintPtr := uintptr(unsafe.Pointer(d))
+	C.gojack_client_open((C.ulong)(uintPtr))
 }
 
 func (d *driverAudioJack) stop() {
+}
+
+func (d *driverAudioJack) samplingRate() int {
+	println(C.gojack_client_sampling_rate())
+	return int(C.gojack_client_sampling_rate())
 }

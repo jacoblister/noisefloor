@@ -43,15 +43,15 @@ type Event interface {
 }
 
 // MakeMidiEventData constructs a new midi event from time and data bytes
-func MakeMidiEventData(time int, data []byte) *EventData {
-	return &EventData{time, data}
+func MakeMidiEventData(time int, data []byte) EventData {
+	return EventData{time, data}
 }
 
 // MakeMidiEvent returns an interface to a decoded MIDI event
 func MakeMidiEvent(time int, data []byte) Event {
 	switch getTypeFromData(data) {
 	case Note:
-		return &NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+		return NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
 			Note: int(data[1]), Velocity: int(data[2])}
 	}
 	panic("Could not make midi event from data")

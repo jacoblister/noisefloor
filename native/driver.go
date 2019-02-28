@@ -1,22 +1,11 @@
 package main
 
 import (
+	"unsafe"
+
 	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
 )
-
-/*
-static inline int c_call(void) {
-    return 1;
-}
-
-extern void goCallback(void);
-static inline int c_callback(void) {
-    goCallback();
-    return 1;
-}
-*/
-import "C"
 
 type driverMidi interface {
 	start()
@@ -28,21 +17,15 @@ type driverMidi interface {
 type driverAudio interface {
 	setMidiDriver(driverMidi driverMidi)
 	setAudioProcessor(audioProcessor component.AudioProcessor)
+	samplingRate() int
 	start()
 	stop()
 }
 
-func makeGoCall() {
-}
+// indexPointer is a helper method to dereference a pointer array by index
+func indexPointer(ptr unsafe.Pointer, i int) unsafe.Pointer {
+	var p uintptr
+	var ptrSize = unsafe.Sizeof(&p)
 
-func makeCCall() {
-	C.c_call()
-}
-
-//export goCallback
-func goCallback() {
-}
-
-func makeCCallBack() {
-	C.c_callback()
+	return unsafe.Pointer(*(**uintptr)(unsafe.Pointer(uintptr(ptr) + uintptr(i)*ptrSize)))
 }

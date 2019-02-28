@@ -20,7 +20,7 @@ func (e *Engine) Start(sampleRate int) {
 
 	e.osc.Start(sampleRate)
 	e.osc.Waveform = processor.Sin
-	e.osc.Freq = 5
+	e.osc.Freq = 440
 }
 
 // Stop suspends the engine
@@ -34,16 +34,18 @@ func (e *Engine) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn [
 
 	var len = len(samplesOut[0])
 	for i := 0; i < len; i++ {
-		freqs := e.midiinput.Process()
-		var sample = e.patch.Process(freqs)
-
-		mic := samplesIn[0][i] * 500
-		mod := e.osc.Process()
-		if mod < 0 {
-			mod = 0
-		}
-		mic *= mod
-		sample += mic
+		// freqs := e.midiinput.Process()
+		// var sample = e.patch.Process(freqs)
+		//
+		// mic := samplesIn[0][i] * 500
+		// mod := e.osc.Process()
+		// if mod < 0 {
+		// 	mod = 0
+		// }
+		// mic *= mod
+		// sample += mic
+		sample := e.osc.Process()
+		// sample = 42
 
 		samplesOut[0][i] = sample
 		samplesOut[1][i] = sample
