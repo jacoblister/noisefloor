@@ -17,7 +17,7 @@ const (
 	Control    EventType = 11
 	Program    EventType = 12
 	Pressure   EventType = 13
-	PitchWheel EventType = 14
+	PitchBend  EventType = 14
 	System     EventType = 15
 )
 
@@ -54,10 +54,15 @@ func MakeMidiEvent(time int, data []byte) Event {
 		return NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
 			Note: int(data[1]), Velocity: int(data[2])}
 	case NoteOff:
-		return NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+		return NoteOffEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
 			Note: int(data[1]), Velocity: 0}
+	case PitchBend:
+		return PitchBendEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Value: int(data[2])<<6 | int(data[1])&0x7F}
 	}
-	panic("Could not make midi event from data")
+
+	// TODO - define 'Unknown Event'
+	return nil
 }
 
 // GenericEvent is basic time and channel common to most MIDI events
@@ -66,15 +71,20 @@ type GenericEvent struct {
 	Channel int
 }
 
+//GenericEventGetter interface specifies a getter for generic event data
+type GenericEventGetter interface {
+	Generic() *GenericEvent
+}
+
+// Generic returns the GenericEvent data for any MIDI event type
+func (e GenericEvent) Generic() *GenericEvent { return &e }
+
 // NoteOnEvent is a MIDI note on event with velocity
 type NoteOnEvent struct {
 	GenericEvent
 	Note     int
 	Velocity int
 }
-
-// Generic returns the genericEvent for the NoteOnEvent type
-func (e NoteOnEvent) Generic() *GenericEvent { return &e.GenericEvent }
 
 // Data returns EventData (bytes) for the NoteOnEvent type
 func (e NoteOnEvent) Data() EventData {
@@ -84,13 +94,33 @@ func (e NoteOnEvent) Data() EventData {
 // NoteOffEvent is a MIDI note off event
 type NoteOffEvent struct {
 	GenericEvent
-	Note int
+	Note     int
+	Velocity int
 }
-
-// Generic returns the genericEvent for the NoteOnEvent type
-func (e NoteOffEvent) Generic() *GenericEvent { return &e.GenericEvent }
 
 // Data returns EventData (bytes) for the NoteOnEvent type
 func (e NoteOffEvent) Data() EventData {
-	return EventData{Time: e.Time, Data: []byte{statusByte(Note, e.Channel), byte(e.Note)}}
+	return EventData{Time: e.Time, Data: []byte{statusByte(NoteOff, e.Channel), byte(e.Note), byte(e.Velocity)}}
+}
+
+// PitchBendEvent is a MIDI pitch bend event
+type PitchBendEvent struct {
+	GenericEvent
+	Value int
+}
+
+// Normailzed gives a pitch bend value in the range of -1.0 to 1.0
+func (e PitchBendEvent) Normailzed() float64 {
+	value := e.Value
+	if value > 4096 {
+		value = value + 1
+	}
+	return float64(value-4096) / 4096
+}
+
+// Data returns EventData (bytes) for the NoteOnEvent type
+func (e PitchBendEvent) Data() EventData {
+	msb := e.Value >> 6
+	lsb := e.Value & 0x7F
+	return EventData{Time: e.Time, Data: []byte{statusByte(PitchBend, e.Channel), byte(lsb), byte(msb)}}
 }

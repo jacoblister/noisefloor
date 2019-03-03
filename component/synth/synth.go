@@ -44,7 +44,7 @@ func (e *Engine) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn [
 		// }
 		// mic *= mod
 		// sample += mic
-		// sample := e.osc.Process()
+		// sample = e.osc.Process()
 
 		samplesOut[0][i] = sample
 		samplesOut[1][i] = sample

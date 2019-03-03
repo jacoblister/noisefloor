@@ -36,11 +36,12 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 	k.keydown[keyNumber] = keyDown
 	k.SetState(gr.State{"keydown": k.keydown})
 
-	velocity := 0
+	var midiEvent midi.Event
 	if keyDown {
-		velocity = velocityMax
+		midiEvent = midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1}, Note: keyNumber, Velocity: velocityMax}
+	} else {
+		midiEvent = midi.NoteOffEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1}, Note: keyNumber, Velocity: 0}
 	}
-    midiEvent := midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1}, Note: keyNumber, Velocity: velocity}
 
 	k.midiEvents = append(k.midiEvents, midiEvent)
 }

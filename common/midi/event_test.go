@@ -1,8 +1,6 @@
 package midi
 
 import (
-	"math/rand"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,12 +15,14 @@ func TestMakeMidiEventData(t *testing.T) {
 	eventData := MakeMidiEventData(time, data)
 
 	// Then ... dummy time and data back
-	assert.Equal(t, eventData.Time, time)
-	assert.Equal(t, eventData.Data, data)
+	assert.Equal(t, time, eventData.Time)
+	assert.Equal(t, data, eventData.Data)
 }
 
 func TestMakeMidiEvent_NoType(t *testing.T) {
-	assert.Panics(t, func() { MakeMidiEvent(123, []byte{0, 60, 0}) })
+	event := MakeMidiEvent(123, []byte{0, 60, 0})
+	assert.Nil(t, event)
+	// assert.Panics(t, func() { MakeMidiEvent(123, []byte{0, 60, 0}) })
 }
 
 func TestMakeMidiEvent_NoteOn(t *testing.T) {
@@ -41,145 +41,87 @@ func TestMakeMidiEvent_NoteOn(t *testing.T) {
 
 	// Then ... note on event back, with matching parameters/generic parameters
 	noteOnEvent := event.(NoteOnEvent)
-	assert.Equal(t, noteOnEvent.Time, time)
-	assert.Equal(t, noteOnEvent.Channel, channel)
-	assert.Equal(t, noteOnEvent.Note, note)
-	assert.Equal(t, noteOnEvent.Velocity, velocity)
+	assert.Equal(t, time, noteOnEvent.Time)
+	assert.Equal(t, channel, noteOnEvent.Channel)
+	assert.Equal(t, note, noteOnEvent.Note)
+	assert.Equal(t, velocity, noteOnEvent.Velocity)
 
-	assert.Equal(t, event.Data().Time, time)
-	assert.Equal(t, event.Data().Data, data)
-	assert.Equal(t, event.Generic().Time, time)
-	assert.Equal(t, event.Generic().Channel, channel)
+	assert.Equal(t, time, event.Data().Time)
+	assert.Equal(t, data, event.Data().Data)
+	assert.Equal(t, time, event.Generic().Time)
+	assert.Equal(t, channel, event.Generic().Channel)
 }
 
-// Benchmarks
-func BenchmarkMakeArrayMidiEvent(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		midiEvent := [...]int{0, 127, 0, 0}
-		midiEvent[0] = 0
-	}
+func TestMakeMidiEvent_NoteOff(t *testing.T) {
+	// Given ... Note off event
+	const (
+		time      = 123
+		channel   = 2
+		note      = 60
+		velocity  = 0
+		eventType = NoteOff
+	)
+	data := []byte{byte(eventType)<<4 | (channel - 1), note, velocity}
+
+	// When ...
+	event := MakeMidiEvent(time, data)
+
+	// Then ... note off event back, with matching parameters/generic parameters
+	noteOffEvent := event.(NoteOffEvent)
+	assert.Equal(t, time, noteOffEvent.Time)
+	assert.Equal(t, channel, noteOffEvent.Channel)
+	assert.Equal(t, note, noteOffEvent.Note)
+	assert.Equal(t, velocity, noteOffEvent.Velocity)
+
+	assert.Equal(t, time, event.Data().Time)
+	assert.Equal(t, data, event.Data().Data)
+	assert.Equal(t, time, event.Generic().Time)
+	assert.Equal(t, channel, event.Generic().Channel)
 }
 
-func BenchmarkMakeSliceMidiEvent(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		midiEvent := []int{0, 127, 0, 0}
-		midiEvent[0] = 0
-	}
-}
+func TestMakeMidiEvent_PitchBend(t *testing.T) {
+	// Given ... Pitch Bend Event
+	const (
+		time      = 123
+		channel   = 2
+		eventType = PitchBend
+	)
+	data := []byte{byte(eventType)<<4 | (channel - 1), 0, 0}
 
-func BenchmarkMakeMidiEventData(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		MakeMidiEventData(0, []byte{127, 0, 0})
-	}
-}
+	// When ...
+	event := MakeMidiEvent(time, data)
 
-func BenchmarkMakeMidiEvent(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		MakeMidiEvent(0, []byte{9 << 4, 0, 0})
-	}
-}
+	// Then ... pitch bend event back, with matching parameters/generic parameters
+	pitchBendEvent := event.(PitchBendEvent)
+	assert.Equal(t, time, pitchBendEvent.Time)
+	assert.Equal(t, channel, pitchBendEvent.Channel)
+	assert.Equal(t, 0, pitchBendEvent.Value)
+	assert.Equal(t, -1.0, pitchBendEvent.Normailzed())
 
-// Array/Slice/Pointer benchmarks for MidiEvent vector
-const arraySize = 128
+	assert.Equal(t, time, event.Data().Time)
+	assert.Equal(t, data, event.Data().Data)
+	assert.Equal(t, time, event.Generic().Time)
+	assert.Equal(t, channel, event.Generic().Channel)
 
-var testEventArray [arraySize]EventData
-var testEventSlice []EventData
+	// Given ... Mid Pitch Bend Range
+	data = []byte{byte(eventType)<<4 | (channel - 1), 0x00, 0x40}
 
-func BenchmarkMidiAppendSlice(b *testing.B) {
-	midiEvent := MakeMidiEventData(0, []byte{127, 0, 0})
+	// When ...
+	event = MakeMidiEvent(time, data)
 
-	for i := 0; i < b.N; i++ {
-		midiEvents := make([]EventData, arraySize, arraySize)
-		for j := 0; j < arraySize; j++ {
-			midiEvents = append(midiEvents, midiEvent)
-		}
-	}
-}
+	// Then ...
+	pitchBendEvent = event.(PitchBendEvent)
+	assert.Equal(t, 4096, pitchBendEvent.Value)
+	assert.Equal(t, 0.0, pitchBendEvent.Normailzed())
 
-func BenchmarkMidiAppendArray(b *testing.B) {
-	midiEvent := MakeMidiEventData(0, []byte{127, 0, 0})
+	// Given ... Mid Pitch Bend Range
+	data = []byte{byte(eventType)<<4 | (channel - 1), 0x7F, 0x7F}
 
-	for i := 0; i < b.N; i++ {
-		midiEvents := [arraySize]EventData{}
-		for j := 0; j < arraySize; j++ {
-			midiEvents[j] = midiEvent
-		}
-	}
-}
+	// When ...
+	event = MakeMidiEvent(time, data)
 
-func TestMain(m *testing.M) {
-	for i := 0; i < arraySize; i++ {
-		time := rand.Intn(10000)
-		testEventArray[i] = MakeMidiEventData(time, []byte{0, 0, 0})
-	}
-	testEventSlice = testEventArray[:]
-	os.Exit(m.Run())
-}
-
-func MaxTimeArray(event [arraySize]EventData) int {
-	var maxTime int
-
-	for i := 0; i < len(event); i++ {
-		if event[i].Time > maxTime {
-			maxTime = event[i].Time
-		}
-	}
-	return maxTime
-}
-
-func BenchmarkMaxTimeArray(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		MaxTimeArray(testEventArray)
-	}
-}
-
-func MaxTimeArrayPtr(event *[arraySize]EventData) int {
-	var maxTime int
-
-	for i := 0; i < len(event); i++ {
-		if event[i].Time > maxTime {
-			maxTime = event[i].Time
-		}
-	}
-	return maxTime
-}
-
-func BenchmarkMaxTimeArrayPtr(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		MaxTimeArrayPtr(&testEventArray)
-	}
-}
-
-func MaxTimeSlice(event []EventData) int {
-	var maxTime int
-
-	for i := 0; i < len(event); i++ {
-		if event[i].Time > maxTime {
-			maxTime = event[i].Time
-		}
-	}
-	return maxTime
-}
-
-func BenchmarkMaxTimeSlice(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		MaxTimeSlice(testEventSlice)
-	}
-}
-
-func MaxTimeSlicePtr(event *[]EventData) int {
-	var maxTime int
-
-	for i := 0; i < len(*event); i++ {
-		if (*event)[i].Time > maxTime {
-			maxTime = (*event)[i].Time
-		}
-	}
-	return maxTime
-}
-
-func BenchmarkMaxTimeSlicePtr(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		MaxTimeSlicePtr(&testEventSlice)
-	}
+	// Then ...
+	pitchBendEvent = event.(PitchBendEvent)
+	assert.Equal(t, 8191, pitchBendEvent.Value)
+	assert.Equal(t, 1.0, pitchBendEvent.Normailzed())
 }

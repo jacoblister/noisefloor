@@ -8,11 +8,13 @@ import (
 
 const maxChannels = 8
 const maxNote = 127
+const pitchBendRange = 2
 
 // MIDIInput - MIDI to CV converter
 type MIDIInput struct {
-	channelNotes [maxNote]int
+	channelNotes [maxChannels]int
 	channelData  [maxChannels][3]float32
+	pitchBend    float64
 	noteChannels map[int]int
 	nextChannel  int
 	triggerClear int
@@ -32,7 +34,41 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 			note := event.Note
 			velocity := event.Velocity
 
-			// note release or new note - free allocated channel
+			// Allocate next free channel
+			targetChannel := m.nextChannel
+			for m.channelNotes[targetChannel] != 0 {
+				targetChannel++
+				if targetChannel >= maxChannels {
+					targetChannel = 0
+				}
+
+				// If all channels active use current target
+				if targetChannel == m.nextChannel {
+					m.channelNotes[targetChannel] = 0
+					delete(m.noteChannels, m.channelNotes[targetChannel])
+				}
+			}
+
+			// set next channel, round robin
+			m.nextChannel = targetChannel + 1
+			if m.nextChannel >= maxChannels {
+				m.nextChannel = 0
+			}
+
+			// Calculate frequency and level for note
+			frequency := 220.0 * math.Pow(2.0, ((float64(note)-57+m.pitchBend)/12.0))
+			level := float32(velocity) / 127.0
+
+			// set channel active
+			m.channelNotes[targetChannel] = note
+			m.channelData[targetChannel][0] = float32(frequency)
+			m.channelData[targetChannel][1] = float32(level)
+			m.channelData[targetChannel][2] = float32(level)
+			m.noteChannels[note] = targetChannel
+		case midi.NoteOffEvent:
+			note := event.Note
+
+			// note release - free allocated channel
 			noteChannel, ok := m.noteChannels[note]
 			if ok {
 				m.channelNotes[noteChannel] = 0
@@ -40,39 +76,12 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 				m.channelData[noteChannel][2] = -1
 				delete(m.noteChannels, note)
 			}
-
-			if velocity > 0 {
-				// Calculate frequency and level for note
-				frequency := 220.0 * math.Pow(2.0, ((float64(note)-57)/12.0))
-				level := float32(velocity) / 127.0
-
-				// Allocate next free channel
-				targetChannel := m.nextChannel
-				for m.channelNotes[targetChannel] != 0 {
-					targetChannel++
-					if targetChannel >= maxChannels {
-						targetChannel = 0
-					}
-
-					// If all channels active use current target
-					if targetChannel == m.nextChannel {
-						m.channelNotes[targetChannel] = 0
-						delete(m.noteChannels, m.channelNotes[targetChannel])
-					}
-				}
-
-				// set next channel, round robin
-				m.nextChannel = targetChannel + 1
-				if m.nextChannel >= maxChannels {
-					m.nextChannel = 0
-				}
-
-				// set channel active
-				m.channelNotes[targetChannel] = note
-				m.channelData[targetChannel][0] = float32(frequency)
-				m.channelData[targetChannel][1] = float32(level)
-				m.channelData[targetChannel][2] = float32(level)
-				m.noteChannels[note] = targetChannel
+		case midi.PitchBendEvent:
+			m.pitchBend = event.Normailzed() * pitchBendRange
+			for i := 0; i < maxChannels; i++ {
+				note := m.channelNotes[i]
+				frequency := 220.0 * math.Pow(2.0, ((float64(note)-57+m.pitchBend)/12.0))
+				m.channelData[i][0] = float32(frequency)
 			}
 		}
 	}
