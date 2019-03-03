@@ -118,7 +118,7 @@ func (e PitchBendEvent) Normailzed() float64 {
 	return float64(value-4096) / 4096
 }
 
-// Data returns EventData (bytes) for the NoteOnEvent type
+// Data returns EventData (bytes) for the PitchBendEvent type
 func (e PitchBendEvent) Data() EventData {
 	msb := e.Value >> 6
 	lsb := e.Value & 0x7F
