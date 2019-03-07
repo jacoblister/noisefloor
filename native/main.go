@@ -1,8 +1,10 @@
 package main
 
 import (
+	"os"
+	"os/signal"
 	"runtime/debug"
-	"time"
+	"syscall"
 
 	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/component/synth"
@@ -17,8 +19,9 @@ type noiseFloor struct {
 func main() {
 	debug.SetGCPercent(-1)
 
-	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
-	nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
+	nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
+	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
+	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
 	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
 
 	nf.driverAudio.setMidiDriver(nf.driverMidi)
@@ -27,7 +30,9 @@ func main() {
 	nf.driverAudio.start()
 	nf.audioProcessor.Start(nf.driverAudio.samplingRate())
 
-	time.Sleep(1000 * time.Second)
+	signalChannel := make(chan os.Signal, 2)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	<-signalChannel
 
 	nf.driverAudio.stop()
 
