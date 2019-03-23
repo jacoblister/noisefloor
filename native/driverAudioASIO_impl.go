@@ -3,7 +3,60 @@
 package main
 
 /*
+// ---- Noisefloor client
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
+
+#define MAX_CHANNELS 8
+
+#define SIGNED32_MAX 2147483647.0;
+
+typedef struct {
+    void *arg;
+	int channel_in_count;
+	int channel_out_count;
+    int buffer_length;
+	void* channel_in[MAX_CHANNELS][2];
+	void* channel_out[MAX_CHANNELS][2];
+    float* channel_in_float32[MAX_CHANNELS];
+    float* channel_out_float32[MAX_CHANNELS];
+} asio_c_client;
+
+asio_c_client asio_client;
+
+extern void goAudioASIOCallback(uintptr_t arg, int blockLength,
+	int channelInCount, void *channelIn,
+	int channelOutCount, void *channelOut);
+
+static inline int goasio_client_open(void *arg, int channel_in_count, int channel_out_count, int buffer_length) {
+    asio_client.arg = arg;
+    asio_client.channel_in_count = channel_in_count;
+    asio_client.channel_out_count = channel_out_count;
+    asio_client.buffer_length = buffer_length;
+    for (int i = 0; i < channel_in_count; i++) {
+        asio_client.channel_in_float32[i] = malloc(sizeof(float) * buffer_length);
+    }
+    for (int i = 0; i < channel_out_count; i++) {
+        asio_client.channel_out_float32[i] = malloc(sizeof(float) * buffer_length);
+    }
+}
+
+static inline int goasio_client_set_channel_buffers(int is_input, int index, void *buf0, void *buf1) {
+    printf("set buffer %d, %d, %d, %d\n", is_input, index, buf0, buf1);
+    if (is_input) {
+        asio_client.channel_in[index][0] = buf0;
+        asio_client.channel_in[index][1] = buf1;
+    }
+    else {
+        asio_client.channel_out[index][0] = buf0;
+        asio_client.channel_out[index][1] = buf1;
+    }
+}
+
+// ---- The rest
 
 typedef long ASIOBool;
 typedef double ASIOSampleRate;
@@ -171,14 +224,31 @@ long tramp_asioMessage(long selector, long value, void* message, double* opt)
     return ret;
 }
 
-#include <stdio.h>
 // Main audio processing callback.
 // NOTE: Called on a separate thread from main() thread.
 ASIOTime *tramp_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow)
 {
-    printf("ASIO buffer switch\n");
+    printf("ASIO buffer switch size=%d index=%d\n", asio_client.buffer_length, index);
+    memcpy(asio_client.channel_out[0][index], asio_client.channel_in[0][index], asio_client.buffer_length * 4);
+
+    for (int i = 0; i < asio_client.channel_in_count; i++) {
+        for (int j = 0; j < asio_client.buffer_length; j++) {
+            asio_client.channel_in_float32[i][j] = ((int32_t *)asio_client.channel_in[i])[j] / SIGNED32_MAX;
+        }
+    }
+
+    goAudioASIOCallback((uintptr_t)asio_client.arg, asio_client.buffer_length,
+        asio_client.channel_in_count, asio_client.channel_in_float32,
+        asio_client.channel_out_count, asio_client.channel_out_float32
+    );
+
+    for (int i = 0; i < asio_client.channel_out_count; i++) {
+        for (int j = 0; j < asio_client.buffer_length; j++) {
+            ((int32_t *)asio_client.channel_out[i])[j] = asio_client.channel_out_float32[i][j] * SIGNED32_MAX;
+        }
+    }
+
     return timeInfo;
-	//return go_BufferSwitchTimeInfo(timeInfo, index, processNow);
 }
 
 // Trampoline to jump to Go function:
@@ -191,7 +261,7 @@ void tramp_bufferSwitch(long index, ASIOBool processNow)
     // as this is a "back door" into the bufferSwitchTimeInfo a timeInfo needs to be created
     // though it will only set the timeInfo.samplePosition and timeInfo.systemTime fields and the according flags
     ASIOTime  timeInfo;
-    memset (&timeInfo, 0, sizeof (timeInfo));
+    memset (&timeInfo, 0, sizeof(timeInfo));
 
     // get the time stamp of the buffer, not necessary if no
     // synchronization to other media is required
@@ -199,35 +269,6 @@ void tramp_bufferSwitch(long index, ASIOBool processNow)
     //    timeInfo.timeInfo.flags = kSystemTimeValid | kSamplePositionValid;
 
     tramp_bufferSwitchTimeInfo(&timeInfo, index, processNow);
-}
-
-// --- Noisefloor client begins
-
-#define MAX_CHANNELS 8
-
-typedef struct {
-	int channel_in_count;
-	int channel_out_count;
-	float* channel_in[MAX_CHANNELS];
-	float* channel_out[MAX_CHANNELS];
-} asio_c_client;
-
-asio_c_client asio_client;
-
-extern void goAudioJackCallback(void *arg, int blockSize,
-	int channelInCount, void *channelIn,
-	int channelOutCount, void *channelOut);
-
-static inline int goasio_sample_rate() {
-    return 44100;
-}
-
-static inline asio_c_client* goasio_client_open(uintptr_t arg) {
-    return &asio_client;
-}
-
-static inline int gojack_client_sampling_rate() {
-    return 44100;
 }
 
 */
@@ -724,6 +765,14 @@ func (drv *IASIO) CreateBuffers(bufferDescriptors []BufferInfo, bufferSize int) 
 	}
 
 	return nil
+}
+
+func (drv *IASIO) SetBufferChannels(arg unsafe.Pointer, channelsIn int, channelsOut int, bufferSize int) {
+	C.goasio_client_open(arg, C.int(channelsIn), C.int(channelsOut), C.int(bufferSize))
+}
+
+func (drv *IASIO) SetBufferPtr(isInput int, index int, buf0 unsafe.Pointer, buf1 unsafe.Pointer) {
+	C.goasio_client_set_channel_buffers(C.int(isInput), C.int(index), buf0, buf1)
 }
 
 //virtual ASIOError disposeBuffers() = 0;

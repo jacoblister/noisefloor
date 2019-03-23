@@ -25,7 +25,7 @@ typedef struct {
 
 jack_c_client client;
 
-extern void goAudioJackCallback(void *arg, int blockSize,
+extern void goAudioJackCallback(void *arg, int blockLength,
 	int channelInCount, void *channelIn,
 	int channelOutCount, void *channelOut);
 
@@ -91,23 +91,23 @@ type driverAudioJack struct {
 }
 
 //export goAudioJackCallback
-func goAudioJackCallback(arg unsafe.Pointer, blockSize C.int,
+func goAudioJackCallback(arg unsafe.Pointer, blockLength C.int,
 	channelInCount C.int, channelIn unsafe.Pointer,
 	channelOutCount C.int, channelOut unsafe.Pointer) {
 	samplesInSlice := make([][]float32, channelInCount, channelInCount)
 	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
-	blockSizeInt := int(blockSize)
+	blockLengthInt := int(blockLength)
 
 	for i := 0; i < int(channelInCount); i++ {
 		samplesIn := indexPointer(channelIn, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockSizeInt, Cap: blockSizeInt}
+		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockLengthInt, Cap: blockLengthInt}
 		s := *(*[]float32)(unsafe.Pointer(h))
 		samplesInSlice[i] = s
 	}
 
 	for i := 0; i < int(channelOutCount); i++ {
 		samplesOut := indexPointer(channelOut, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockSizeInt, Cap: blockSizeInt}
+		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockLengthInt, Cap: blockLengthInt}
 		s := *(*[]float32)(unsafe.Pointer(h))
 		samplesOutSlice[i] = s
 	}

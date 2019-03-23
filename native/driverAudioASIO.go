@@ -1,8 +1,12 @@
 package main
 
 import (
+	"C"
 	"fmt"
+	"reflect"
+	"unsafe"
 
+	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
 )
 
@@ -12,34 +16,34 @@ type driverAudioASIO struct {
 	driverMidi     driverMidi
 }
 
-// //export goAudioJackCallback
-// func goAudioJackCallback(arg unsafe.Pointer, blockSize C.int,
-// 	channelInCount C.int, channelIn unsafe.Pointer,
-// 	channelOutCount C.int, channelOut unsafe.Pointer) {
-// 	samplesInSlice := make([][]float32, channelInCount, channelInCount)
-// 	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
-// 	blockSizeInt := int(blockSize)
-//
-// 	for i := 0; i < int(channelInCount); i++ {
-// 		samplesIn := indexPointer(channelIn, i)
-// 		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockSizeInt, Cap: blockSizeInt}
-// 		s := *(*[]float32)(unsafe.Pointer(h))
-// 		samplesInSlice[i] = s
-// 	}
-//
-// 	for i := 0; i < int(channelOutCount); i++ {
-// 		samplesOut := indexPointer(channelOut, i)
-// 		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockSizeInt, Cap: blockSizeInt}
-// 		s := *(*[]float32)(unsafe.Pointer(h))
-// 		samplesOutSlice[i] = s
-// 	}
-//
-// 	dp := *(*driverAudioASIO)(arg)
-// 	midiInSlice := dp.driverMidi.readEvents()
-// 	midiOutSlice := make([]midi.Event, 0, 0)
-//
-// 	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
-// }
+//export goAudioASIOCallback
+func goAudioASIOCallback(arg unsafe.Pointer, blockLength C.int,
+	channelInCount C.int, channelIn unsafe.Pointer,
+	channelOutCount C.int, channelOut unsafe.Pointer) {
+	samplesInSlice := make([][]float32, channelInCount, channelInCount)
+	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
+	blockLengthInt := int(blockLength)
+
+	for i := 0; i < int(channelInCount); i++ {
+		samplesIn := indexPointer(channelIn, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockLengthInt, Cap: blockLengthInt}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesInSlice[i] = s
+	}
+
+	for i := 0; i < int(channelOutCount); i++ {
+		samplesOut := indexPointer(channelOut, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockLengthInt, Cap: blockLengthInt}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesOutSlice[i] = s
+	}
+
+	dp := *(*driverAudioASIO)(arg)
+	midiInSlice := dp.driverMidi.readEvents()
+	midiOutSlice := make([]midi.Event, 0, 0)
+
+	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
+}
 
 func (d *driverAudioASIO) setMidiDriver(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
@@ -108,6 +112,14 @@ func (d *driverAudioASIO) start() {
 	err = drv.CreateBuffers(bufferDescriptors, preferredSize)
 	if err != nil {
 		panic("ASIO cannot create buffers")
+	}
+
+	drv.SetBufferChannels(unsafe.Pointer(d), in, out, preferredSize)
+	for i := 0; i < in; i++ {
+		drv.SetBufferPtr(1, i, unsafe.Pointer(bufferDescriptors[i].Buffers[0]), unsafe.Pointer(bufferDescriptors[i].Buffers[1]))
+	}
+	for i := 0; i < out; i++ {
+		drv.SetBufferPtr(0, i, unsafe.Pointer(bufferDescriptors[i+in].Buffers[0]), unsafe.Pointer(bufferDescriptors[i+in].Buffers[1]))
 	}
 
 	err = drv.Start()
