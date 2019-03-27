@@ -2,7 +2,8 @@ package onscreenkeyboard
 
 import (
 	"github.com/gopherjs/gopherjs/js"
-	. "github.com/jacoblister/noisefloor/common"
+	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/component/onscreenkeyboard"
 
 	"github.com/bep/gr"
 	"github.com/bep/gr/evt"
@@ -13,21 +14,14 @@ import (
 const keyMax = 127
 const velocityMax = 127
 
-// Keyboard is an onscreen MIDI keyboard
-type Keyboard struct {
+// KeyboardFrontend is an onscreen MIDI keyboard
+type KeyboardFrontend struct {
 	*gr.This
-	keydown    [keyMax]bool
-	midiEvents []MidiEvent
+	keydown [keyMax]bool
+	viewer  onscreenkeyboard.KeyboardViewer
 }
 
-// GetMIDIEvents returns the currently pending MIDI events
-func (k *Keyboard) GetMIDIEvents() []MidiEvent {
-	result := k.midiEvents
-	k.midiEvents = nil
-	return result
-}
-
-func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
+func (k *KeyboardFrontend) noteEvent(keyNumber int, keyDown bool) {
 	if k.keydown[keyNumber] == keyDown {
 		// return early if key already is same state
 		return
@@ -40,17 +34,18 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 	if keyDown {
 		velocity = velocityMax
 	}
-	midiEvent := MidiEvent{0, keyNumber, velocity}
+	midiEvent := midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1},
+		Note: keyNumber, Velocity: velocity}
 
-	k.midiEvents = append(k.midiEvents, midiEvent)
+	k.viewer.SendEvent(midiEvent.Data())
 }
 
 // GetInitialState sets up the keyboard state.
-func (k *Keyboard) GetInitialState() gr.State {
+func (k *KeyboardFrontend) GetInitialState() gr.State {
 	return gr.State{"keydown": k.keydown}
 }
 
-func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) *gr.Element {
+func (k *KeyboardFrontend) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) *gr.Element {
 	var depressedElem gr.Modifier
 	if depressed {
 		depressedElem = gr.CSS("depressed")
@@ -101,7 +96,7 @@ func isBlackKey(n int) bool {
 	return n == 1 || n == 3 || n == 6 || n == 8 || n == 10
 }
 
-func (k *Keyboard) renderOctave(elem *gr.Element, keyStart int, xStart int) *gr.Element {
+func (k *KeyboardFrontend) renderOctave(elem *gr.Element, keyStart int, xStart int) *gr.Element {
 	for noteType := 0; noteType < 2; noteType++ {
 		xPos := xStart
 		for keyNumber := 0; keyNumber < 12; keyNumber++ {
@@ -123,7 +118,7 @@ func (k *Keyboard) renderOctave(elem *gr.Element, keyStart int, xStart int) *gr.
 }
 
 // Render displays the keyboard.
-func (k *Keyboard) Render() gr.Component {
+func (k *KeyboardFrontend) Render() gr.Component {
 	elem := svg.G()
 	// k.renderOctave(elem, 60, 0)
 	for octave := 0; octave < 3; octave++ {
@@ -134,7 +129,7 @@ func (k *Keyboard) Render() gr.Component {
 }
 
 // ComponentDidMount registers DOM event handler for physical keyboard actions
-func (k *Keyboard) ComponentDidMount() {
+func (k *KeyboardFrontend) ComponentDidMount() {
 	var keyMap = map[string]int{
 		"a": 60, "w": 61, "s": 62, "e": 63, "d": 64,
 		"f": 65, "t": 66, "g": 67, "y": 68, "h": 69, "u": 70, "j": 71, "k": 72,
