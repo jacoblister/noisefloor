@@ -2,13 +2,11 @@
     <head>
         <!-- Load script into head (after body exists)
              so it doesn't interfer with DOM operations.
-             Alternative to
-             <script src="simple.js"></script>
         -->
         <script>
             window.onload = function() {
                 var script = document.createElement('script');
-                script.src = 'simple.js';
+                script.src = 'todo.js';
                 document.head.appendChild(script)
             }
         </script>

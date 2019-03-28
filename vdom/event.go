@@ -10,24 +10,31 @@ const (
 	MouseUp
 	KeyDown
 	KeyUp
+	Change
 )
 
-// Listener is the registered callback method
-type Listener func(*Element, *Event)
+// HandlerFunc is the registered callback method
+type HandlerFunc func(*Element, *Event)
 
 // EventHandler is the DOM registered event handler
 type EventHandler struct {
-	Type     EventType
-	Listener Listener
+	Type        EventType
+	Component   Component
+	HandlerFunc HandlerFunc
 }
 
-// NewEventHandler creates an EventHanlder with a listener function
-func NewEventHandler(eventType EventType, listener Listener) EventHandler {
-	return EventHandler{Type: eventType, Listener: listener}
+// MakeEventHandler creates a EventHanlder with a listener function
+func MakeEventHandler(eventType EventType, handlerFunc HandlerFunc) EventHandler {
+	return EventHandler{Type: eventType, HandlerFunc: handlerFunc}
+}
+
+// MakeComponentEventHandler creates a EventHanlder with a component receiver
+func MakeComponentEventHandler(eventType EventType, component Component, handlerFunc HandlerFunc) EventHandler {
+	return EventHandler{Type: eventType, Component: component, HandlerFunc: handlerFunc}
 }
 
 // Event is the event data
 type Event struct {
 	Type EventType
-	Rune rune
+	Data string
 }

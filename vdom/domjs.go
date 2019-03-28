@@ -5,10 +5,19 @@ package vdom
 import "github.com/gopherjs/gopherjs/js"
 
 func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler) {
-	domNode.Call("addEventListener", "click", func(jsEvent *js.Object) {
-		event := Event{Type: Click}
-		handler.Listener(element, &event)
-	})
+	switch handler.Type {
+	case Click:
+		domNode.Call("addEventListener", "click", func(jsEvent *js.Object) {
+			event := Event{Type: Click}
+			handler.HandlerFunc(element, &event)
+		})
+	case Change:
+		domNode.Call("addEventListener", "change", func(jsEvent *js.Object) {
+			value := jsEvent.Get("target").Get("value").String()
+			event := Event{Type: Change, Data: value}
+			handler.HandlerFunc(element, &event)
+		})
+	}
 }
 
 func createElementRecursive(element *Element, domNode *js.Object) {
@@ -23,7 +32,7 @@ func createElementRecursive(element *Element, domNode *js.Object) {
 		}
 
 		for _, handler := range element.eventHandlers {
-			addEventHandler(element, domNode, &handler)
+			addEventHandler(element, child, &handler)
 		}
 
 		for _, elem := range element.children {
@@ -37,6 +46,15 @@ func createElementRecursive(element *Element, domNode *js.Object) {
 }
 
 func applyPatchToDom(patch *Patch) {
-	root := js.Global.Get("document").Get("body")
-	createElementRecursive(&patch.element, root)
+	switch patch.Type {
+	case Replace:
+		root := js.Global.Get("document").Get("body")
+
+		child := root.Get("lastElementChild")
+		if child != nil {
+			root.Call("removeChild", child)
+		}
+
+		createElementRecursive(&patch.element, root)
+	}
 }

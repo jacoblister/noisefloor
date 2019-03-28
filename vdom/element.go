@@ -22,20 +22,21 @@ type Attr struct {
 
 // Element is an xml element
 type Element struct {
-	Type          ElementType
-	Name          string
-	Attrs         []Attr
+	Type  ElementType
+	Name  string
+	Attrs []Attr
+
 	children      []Element
 	eventHandlers []EventHandler
 }
 
-// NewRootElement creates a new VDOM root element
-func NewRootElement() *Element {
-	return &Element{Type: Root}
+// MakeRootElement creates a VDOM root element
+func MakeRootElement() Element {
+	return Element{Type: Root}
 }
 
-// NewElement creates a new element with optional children and attributes
-func NewElement(name string, args ...interface{}) Element {
+// MakeElement creates an element with optional children and attributes
+func MakeElement(name string, args ...interface{}) Element {
 	element := Element{Type: Normal, Name: name}
 
 	for i := 0; i < len(args); i++ {
@@ -43,6 +44,10 @@ func NewElement(name string, args ...interface{}) Element {
 		case string:
 			element.Attrs = append(element.Attrs, Attr{Name: arg, Value: args[i+1]})
 			i++
+		case Attr:
+			if len(arg.Name) > 0 {
+				element.Attrs = append(element.Attrs, arg)
+			}
 		case Element:
 			element.children = append(element.children, arg)
 		case EventHandler:
@@ -52,14 +57,14 @@ func NewElement(name string, args ...interface{}) Element {
 	return element
 }
 
-// NewTextElement creates a new text element with specified text
-func NewTextElement(text string) Element {
+// MakeTextElement creates a text element with specified text
+func MakeTextElement(text string) Element {
 	return Element{Type: Text, Attrs: []Attr{{Name: "Text", Value: text}}}
 }
 
-// AppendChildren appends child elements to the element
-func (e *Element) AppendChildren(children []Element) {
-	e.children = children
+// AppendChild appends a child elements to the element
+func (e *Element) AppendChild(child Element) {
+	e.children = append(e.children, child)
 }
 
 // AttrMap returns this element's attributes as a map
