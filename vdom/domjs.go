@@ -20,29 +20,29 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 	}
 }
 
-func createElementRecursive(element *Element, domNode *js.Object) {
+func createElementRecursive(element *Element) *js.Object {
 	document := js.Global.Get("document")
 
-	switch element.Type {
-	case Normal:
-		child := document.Call("createElement", element.Name)
-
-		for _, attr := range element.Attrs {
-			child.Call("setAttribute", attr.Name, attr.Value)
-		}
-
-		for _, handler := range element.EventHandlers {
-			addEventHandler(element, child, &handler)
-		}
-
-		for _, elem := range element.Children {
-			createElementRecursive(&elem, child)
-		}
-
-		domNode.Call("appendChild", child)
-	case Text:
-		domNode.Set("innerText", element.Attrs[0].Value)
+	node := document.Call("createElement", element.Name)
+	for _, attr := range element.Attrs {
+		node.Call("setAttribute", attr.Name, attr.Value)
 	}
+
+	for _, handler := range element.EventHandlers {
+		addEventHandler(element, node, &handler)
+	}
+
+	for _, child := range element.Children {
+		switch child.Type {
+		case Normal:
+			childNode := createElementRecursive(&child)
+			node.Call("appendChild", childNode)
+		case Text:
+			node.Set("innerText", child.Attrs[0].Value)
+		}
+	}
+
+	return node
 }
 
 func applyPatchToDom(patch *Patch) {
@@ -55,7 +55,8 @@ func applyPatchToDom(patch *Patch) {
 			root.Call("removeChild", child)
 		}
 
-		createElementRecursive(&patch.Element, root)
+		node := createElementRecursive(&patch.Element)
+		root.Call("appendChild", node)
 	}
 }
 
