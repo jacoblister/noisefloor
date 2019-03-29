@@ -3,6 +3,8 @@ package main
 // Obligatory Todo application
 
 import (
+	"strconv"
+
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
@@ -17,43 +19,81 @@ type TodoItem struct {
 	Completed bool
 }
 
-func (t *Todo) onChange(element *vdom.Element, event *vdom.Event) {
-	t.items = append(t.items, TodoItem{Name: event.Data, Completed: false})
+func (t *Todo) addItem(name string) {
+	t.items = append(t.items, TodoItem{Name: name, Completed: false})
 	vdom.UpdateComponent(t)
+}
+
+func (t *Todo) toggleItem(item *TodoItem) {
+	item.Completed = !item.Completed
+	vdom.UpdateComponent(t)
+}
+
+func (t *Todo) removeItem(item *TodoItem) {
+	for i := 0; i < len(t.items); i++ {
+		if &t.items[i] == item {
+			t.items = append(t.items[:i], t.items[i+1:]...)
+			vdom.UpdateComponent(t)
+			return
+		}
+	}
+}
+
+func (t *Todo) renderItem(item *TodoItem) vdom.Element {
+	var checked vdom.Attr
+	if item.Completed {
+		checked = vdom.Attr{Name: "checked", Value: "checked"}
+	}
+
+	element := vdom.MakeElement("div",
+		vdom.MakeElement("input",
+			"type", "checkbox",
+			checked,
+			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+				t.toggleItem(item)
+			},
+			),
+		),
+		vdom.MakeElement("span",
+			"style", "display: inline-block; width: 200",
+			vdom.MakeTextElement(item.Name),
+			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+				t.toggleItem(item)
+			},
+			),
+		),
+		vdom.MakeElement("button",
+			vdom.MakeTextElement("remove"),
+			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+				t.removeItem(item)
+			},
+			),
+		),
+	)
+	return element
 }
 
 //Render renders the Clicker component
 func (t *Todo) Render() vdom.Element {
-	onChange := func(element *vdom.Element, event *vdom.Event) {
-		t.onChange(element, event)
-	}
-
 	items := vdom.MakeElement("div")
 
-	for _, item := range t.items {
-		var checked vdom.Attr
-		if item.Completed {
-			checked = vdom.Attr{Name: "checked", Value: "checked"}
-		}
-
-		i := vdom.MakeElement("div",
-			vdom.MakeElement("input",
-				"type", "checkbox",
-				checked,
-			),
-			vdom.MakeElement("span",
-				vdom.MakeTextElement(item.Name),
-			),
-		)
-
-		items.AppendChild(i)
+	for i := 0; i < len(t.items); i++ {
+		element := t.renderItem(&t.items[i])
+		items.AppendChild(element)
 	}
 
 	result := vdom.MakeElement("div",
 		vdom.MakeElement("input",
-			vdom.MakeEventHandler(vdom.Change, onChange),
+			vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
+				t.addItem(event.Data)
+			},
+			),
 		),
 		items,
+		vdom.MakeElement("br"),
+		vdom.MakeElement("div",
+			vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))),
+		),
 	)
 	return result
 }
@@ -65,4 +105,5 @@ func main() {
 	todo.items = append(todo.items, TodoItem{Name: "Implement Components", Completed: false})
 
 	vdom.RenderComponentToDom(&todo)
+	vdom.ListenAndServe()
 }

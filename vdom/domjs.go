@@ -9,13 +9,13 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 	case Click:
 		domNode.Call("addEventListener", "click", func(jsEvent *js.Object) {
 			event := Event{Type: Click}
-			handler.HandlerFunc(element, &event)
+			handler.handlerFunc(element, &event)
 		})
 	case Change:
 		domNode.Call("addEventListener", "change", func(jsEvent *js.Object) {
 			value := jsEvent.Get("target").Get("value").String()
 			event := Event{Type: Change, Data: value}
-			handler.HandlerFunc(element, &event)
+			handler.handlerFunc(element, &event)
 		})
 	}
 }
@@ -31,11 +31,11 @@ func createElementRecursive(element *Element, domNode *js.Object) {
 			child.Call("setAttribute", attr.Name, attr.Value)
 		}
 
-		for _, handler := range element.eventHandlers {
+		for _, handler := range element.EventHandlers {
 			addEventHandler(element, child, &handler)
 		}
 
-		for _, elem := range element.children {
+		for _, elem := range element.Children {
 			createElementRecursive(&elem, child)
 		}
 
@@ -55,6 +55,9 @@ func applyPatchToDom(patch *Patch) {
 			root.Call("removeChild", child)
 		}
 
-		createElementRecursive(&patch.element, root)
+		createElementRecursive(&patch.Element, root)
 	}
 }
+
+//ListenAndServe is a no-op for the javascript target
+func ListenAndServe() {}

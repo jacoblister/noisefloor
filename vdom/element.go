@@ -26,8 +26,8 @@ type Element struct {
 	Name  string
 	Attrs []Attr
 
-	children      []Element
-	eventHandlers []EventHandler
+	Children      []Element
+	EventHandlers []EventHandler
 }
 
 // MakeRootElement creates a VDOM root element
@@ -37,7 +37,7 @@ func MakeRootElement() Element {
 
 // MakeElement creates an element with optional children and attributes
 func MakeElement(name string, args ...interface{}) Element {
-	element := Element{Type: Normal, Name: name}
+	element := Element{Type: Normal, Name: name, Attrs: []Attr{}, Children: []Element{}}
 
 	for i := 0; i < len(args); i++ {
 		switch arg := args[i].(type) {
@@ -49,9 +49,9 @@ func MakeElement(name string, args ...interface{}) Element {
 				element.Attrs = append(element.Attrs, arg)
 			}
 		case Element:
-			element.children = append(element.children, arg)
+			element.Children = append(element.Children, arg)
 		case EventHandler:
-			element.eventHandlers = append(element.eventHandlers, arg)
+			element.EventHandlers = append(element.EventHandlers, arg)
 		}
 	}
 	return element
@@ -64,7 +64,7 @@ func MakeTextElement(text string) Element {
 
 // AppendChild appends a child elements to the element
 func (e *Element) AppendChild(child Element) {
-	e.children = append(e.children, child)
+	e.Children = append(e.Children, child)
 }
 
 // AttrMap returns this element's attributes as a map

@@ -19,18 +19,12 @@ type HandlerFunc func(*Element, *Event)
 // EventHandler is the DOM registered event handler
 type EventHandler struct {
 	Type        EventType
-	Component   Component
-	HandlerFunc HandlerFunc
+	handlerFunc HandlerFunc
 }
 
 // MakeEventHandler creates a EventHanlder with a listener function
 func MakeEventHandler(eventType EventType, handlerFunc HandlerFunc) EventHandler {
-	return EventHandler{Type: eventType, HandlerFunc: handlerFunc}
-}
-
-// MakeComponentEventHandler creates a EventHanlder with a component receiver
-func MakeComponentEventHandler(eventType EventType, component Component, handlerFunc HandlerFunc) EventHandler {
-	return EventHandler{Type: eventType, Component: component, HandlerFunc: handlerFunc}
+	return EventHandler{Type: eventType, handlerFunc: handlerFunc}
 }
 
 // Event is the event data
