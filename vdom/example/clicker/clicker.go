@@ -25,8 +25,8 @@ func (c *Clicker) Render() vdom.Element {
 	}
 
 	e := vdom.MakeElement("div",
+		"id", "clicker",
 		"style", "background-color: orange; width: 100; line-height: 6; text-align: center; vertical-align: middle;",
-		vdom.MakeElement("span"),
 		vdom.MakeTextElement("Clicks: "+strconv.Itoa(c.clicks)),
 		vdom.MakeEventHandler(vdom.Click, onClick),
 	)

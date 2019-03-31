@@ -61,12 +61,6 @@ func clientProcess(conn *websocket.Conn) {
 
 //ListenAndServe begins and HTTP server for the application
 func ListenAndServe() {
-	// patch := fullDomPatch()
-	// r, _ := json.Marshal(patch)
-	// fmt.Println(string(r))
-
-	println("done")
-
 	http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/client", clientHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))

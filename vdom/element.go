@@ -37,7 +37,7 @@ func MakeRootElement() Element {
 
 // MakeElement creates an element with optional children and attributes
 func MakeElement(name string, args ...interface{}) Element {
-	element := Element{Type: Normal, Name: name, Attrs: []Attr{}, Children: []Element{}}
+	element := Element{Type: Normal, Name: name, Attrs: []Attr{}, Children: []Element{}, EventHandlers: []EventHandler{}}
 
 	for i := 0; i < len(args); i++ {
 		switch arg := args[i].(type) {

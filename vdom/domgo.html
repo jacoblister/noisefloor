@@ -1,6 +1,13 @@
 <html>
     <head>
         <script type="text/javascript">
+            // registered event handlers
+            let eventHandlers = {};
+
+            function registerEventHandler(node, type, id) {
+                node.addEventListener("click", function(evt) { console.log('got click:' + id); });
+            }
+
             function createElementRecursive(element) {
                 let node = document.createElement(element.Name);
 
@@ -16,6 +23,11 @@
                         child = createElementRecursive(element.Children[i]);
                         node.appendChild(child);
                     }
+                }
+
+                for (var i = 0; i < element.EventHandlers.length; i++) {
+                    registerEventHandler(node, element.EventHandlers[i].Type);
+                    console.log("register event handler");
                 }
 
                 return node;
@@ -35,7 +47,7 @@
                 };
                 socket.onmessage = function (e) {
                     patch = JSON.parse(e.data);
-                    // console.log(patch);
+                    console.log(patch);
                     applyPatch(patch);
                 }
                 socket.onclose = function () {
