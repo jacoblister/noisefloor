@@ -10,9 +10,16 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+func updateEventHandlersRecursive(element *Element) {
+	for _, child := range element.Children {
+		updateEventHandlersRecursive(&child)
+	}
+}
+
 //applyPatchToDom applies the patch for the GoLang native target
 func applyPatchToDom(patch *Patch) {
-	// fmt.Println("GoLang target apply patch", patch)
+	updateEventHandlersRecursive(&patch.Element)
+	fmt.Println("GoLang target apply patch", patch)
 }
 
 //rootHandler servers to main dom transfer container and script
@@ -34,8 +41,9 @@ func clientHandler(w http.ResponseWriter, r *http.Request) {
 	go clientProcess(conn)
 }
 
-type msg struct {
-	Num int
+type domEvent struct {
+ 	ElementID string
+	Data      string
 }
 
 func clientProcess(conn *websocket.Conn) {
@@ -43,19 +51,14 @@ func clientProcess(conn *websocket.Conn) {
 	conn.WriteJSON(patch)
 
 	for {
-		m := msg{}
+		msg := domEvent{}
 
-		err := conn.ReadJSON(&m)
+		err := conn.ReadJSON(&msg)
 		if err != nil {
 			fmt.Println("Error reading json.", err)
 		}
 
-		fmt.Printf("Got message: %#v\n", m)
-
-		if err = conn.WriteJSON(m); err != nil {
-			fmt.Println(err)
-			return
-		}
+		fmt.Printf("Got message: %#v\n", msg)
 	}
 }
 

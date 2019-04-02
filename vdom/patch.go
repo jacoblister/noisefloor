@@ -8,7 +8,8 @@ const (
 	Insert PatchType = iota
 	Remove
 	Replace
-	SetAttr
+	AttrSet
+	AttrRemove
 )
 
 // Patch a DOM patch

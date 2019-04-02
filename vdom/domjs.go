@@ -24,8 +24,8 @@ func createElementRecursive(element *Element) *js.Object {
 	document := js.Global.Get("document")
 
 	node := document.Call("createElement", element.Name)
-	for _, attr := range element.Attrs {
-		node.Call("setAttribute", attr.Name, attr.Value)
+	for name, value := range element.Attrs {
+		node.Call("setAttribute", name, value)
 	}
 
 	for _, handler := range element.EventHandlers {
@@ -38,7 +38,7 @@ func createElementRecursive(element *Element) *js.Object {
 			childNode := createElementRecursive(&child)
 			node.Call("appendChild", childNode)
 		case Text:
-			node.Set("innerText", child.Attrs[0].Value)
+			node.Set("innerText", child.Attrs["Text"])
 		}
 	}
 

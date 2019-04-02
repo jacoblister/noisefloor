@@ -1,61 +1,67 @@
 <html>
-    <head>
-        <script type="text/javascript">
-            // registered event handlers
-            let eventHandlers = {};
+  <head>
+    <script type="text/javascript">
+      var socket;
 
-            function registerEventHandler(node, type, id) {
-                node.addEventListener("click", function(evt) { console.log('got click:' + id); });
-            }
+      function registerEventHandler(node, type, id) {
+        node.addEventListener("click", function(evt) {
+          domEvent = { ElementId: id, Data: "clicked" };
+          console.log(JSON.stringify(domEvent));
+          socket.send(JSON.stringify(domEvent));
+        });
+      }
 
-            function createElementRecursive(element) {
-                let node = document.createElement(element.Name);
+      function createElementRecursive(element) {
+        let node = document.createElement(element.Name);
 
-                for (var i = 0; i < element.Attrs.length; i++) {
-                    node.setAttribute(element.Attrs[i].Name, element.Attrs[i].Value);
-                }
+        for (var name in element.Attrs) {
+          node.setAttribute(name, element.Attrs[name]);
+        }
 
-                for (var i = 0; i < element.Children.length; i++) {
-                    if (element.Children[i].Type == 2) {
-                        node.innerText = element.Children[i].Attrs[0].Value;
-                    }
-                    else {
-                        child = createElementRecursive(element.Children[i]);
-                        node.appendChild(child);
-                    }
-                }
+        for (var i = 0; i < element.Children.length; i++) {
+          if (element.Children[i].Type == 2) {
+            node.innerText = element.Children[i].Attrs["Text"];
+          } else {
+            child = createElementRecursive(element.Children[i]);
+            node.appendChild(child);
+          }
+        }
 
-                for (var i = 0; i < element.EventHandlers.length; i++) {
-                    registerEventHandler(node, element.EventHandlers[i].Type);
-                    console.log("register event handler");
-                }
+        for (var i = 0; i < element.EventHandlers.length; i++) {
+          registerEventHandler(
+            node,
+            element.EventHandlers[i].Type,
+            element.Attrs["id"]
+          );
+          console.log("register event handler");
+        }
 
-                return node;
-            }
+        return node;
+      }
 
-            function applyPatch(patch) {
-                node = createElementRecursive(patch.Element);
-                document.body.appendChild(node)
-            }
+      function applyPatch(patch) {
+        node = createElementRecursive(patch.Element);
+        document.body.appendChild(node);
+      }
 
-            ws = initWS();
+      ws = initWS();
 
-            function initWS() {
-                var socket = new WebSocket("ws://localhost:8080/client");
-                socket.onopen = function() {
-                    console.log('socket open');
-                };
-                socket.onmessage = function (e) {
-                    patch = JSON.parse(e.data);
-                    console.log(patch);
-                    applyPatch(patch);
-                }
-                socket.onclose = function () {
-                    console.log('socket close');
-                }
-                return socket;
-            }
-        </script>
-        </head>
-    <body></body>
+      function initWS() {
+        socket = new WebSocket("ws://localhost:8080/client");
+        socket.onopen = function() {
+          console.log("socket open");
+        };
+        socket.onmessage = function(e) {
+          patch = JSON.parse(e.data);
+          console.log(patch);
+          applyPatch(patch);
+        };
+        socket.onclose = function() {
+          console.log("socket close");
+        };
+        return socket;
+      }
+    </script>
+  </head>
+  <body></body>
 </html>

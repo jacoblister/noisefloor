@@ -24,7 +24,7 @@ type Attr struct {
 type Element struct {
 	Type  ElementType
 	Name  string
-	Attrs []Attr
+	Attrs map[string]interface{}
 
 	Children      []Element
 	EventHandlers []EventHandler
@@ -37,16 +37,16 @@ func MakeRootElement() Element {
 
 // MakeElement creates an element with optional children and attributes
 func MakeElement(name string, args ...interface{}) Element {
-	element := Element{Type: Normal, Name: name, Attrs: []Attr{}, Children: []Element{}, EventHandlers: []EventHandler{}}
+	element := Element{Type: Normal, Name: name, Attrs: map[string]interface{}{}, Children: []Element{}, EventHandlers: []EventHandler{}}
 
 	for i := 0; i < len(args); i++ {
 		switch arg := args[i].(type) {
 		case string:
-			element.Attrs = append(element.Attrs, Attr{Name: arg, Value: args[i+1]})
+			element.Attrs[arg] = args[i+1]
 			i++
 		case Attr:
 			if len(arg.Name) > 0 {
-				element.Attrs = append(element.Attrs, arg)
+				element.Attrs[arg.Name] = arg.Value
 			}
 		case Element:
 			element.Children = append(element.Children, arg)
@@ -59,22 +59,12 @@ func MakeElement(name string, args ...interface{}) Element {
 
 // MakeTextElement creates a text element with specified text
 func MakeTextElement(text string) Element {
-	return Element{Type: Text, Attrs: []Attr{{Name: "Text", Value: text}}}
+	return Element{Type: Text, Attrs: map[string]interface{}{"Text": text}}
 }
 
 // AppendChild appends a child elements to the element
 func (e *Element) AppendChild(child Element) {
 	e.Children = append(e.Children, child)
-}
-
-// AttrMap returns this element's attributes as a map
-// of attribute name to attribute value
-func (e *Element) AttrMap() map[string]string {
-	m := map[string]string{}
-	for _, attr := range e.Attrs {
-		m[attr.Name] = fmt.Sprintf("%v", attr.Value)
-	}
-	return m
 }
 
 // Compare non-recursively compares e to other. It does not check
@@ -92,11 +82,11 @@ func (e *Element) Compare(other *Element, compareAttrs bool) (bool, string) {
 	if len(attrs) != len(otherAttrs) {
 		return false, fmt.Sprintf("n has %d attrs but other has %d attrs.", len(attrs), len(otherAttrs))
 	}
-	for i, attr := range attrs {
-		otherAttr := otherAttrs[i]
-		if attr != otherAttr {
-			return false, fmt.Sprintf("e.Attrs[%d] was %s but other.Attrs[%d] was %s", i, attr, i, otherAttr)
-		}
-	}
+	// for i, attr := range attrs {
+	// 	otherAttr := otherAttrs[i]
+	// 	if attr != otherAttr {
+	// 		return false, fmt.Sprintf("e.Attrs[%d] was %s but other.Attrs[%d] was %s", i, attr, i, otherAttr)
+	// 	}
+	// }
 	return true, ""
 }
