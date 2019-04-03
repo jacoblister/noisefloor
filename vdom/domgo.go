@@ -3,7 +3,6 @@
 package vdom
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -35,7 +34,6 @@ func updateEventHandlersRecursive(element *Element) {
 		eventHandlerKey := eventHandlerKey{id: id, eventType: handler.Type}
 		eventHandlerValue := eventHandlerValue{element: element, eventHandler: &handler}
 		eventHandlerMap[eventHandlerKey] = eventHandlerValue
-		fmt.Println("Added event handler")
 	}
 
 	for _, child := range element.Children {
@@ -49,7 +47,6 @@ var activeConnections map[*websocket.Conn]int
 func applyPatchToDom(patch *Patch) {
 	eventHandlerMap = map[eventHandlerKey]eventHandlerValue{}
 	updateEventHandlersRecursive(&patch.Element)
-	fmt.Println("GoLang target apply patch", patch)
 }
 
 //rootHandler servers to main dom transfer container and script
@@ -105,7 +102,6 @@ func clientProcess(conn *websocket.Conn) {
 			break
 		}
 		handleDomEvent(msg)
-		fmt.Printf("Got message: %#v\n", msg)
 	}
 }
 

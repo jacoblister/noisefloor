@@ -1,9 +1,5 @@
 package vdom
 
-import (
-	"fmt"
-)
-
 // ElementType enumerated type
 type ElementType int
 
@@ -72,7 +68,7 @@ func (e *Element) AppendChild(child Element) {
 // If you want to compare the parent and children fields, use CompareNodes.
 func (e *Element) Compare(other *Element, compareAttrs bool) (bool, string) {
 	if e.Name != other.Name {
-		return false, fmt.Sprintf("e.Name was %s but other.Name was %s", e.Name, other.Name)
+		return false, "mismatch names"
 	}
 	if !compareAttrs {
 		return true, ""
@@ -80,7 +76,7 @@ func (e *Element) Compare(other *Element, compareAttrs bool) (bool, string) {
 	attrs := e.Attrs
 	otherAttrs := other.Attrs
 	if len(attrs) != len(otherAttrs) {
-		return false, fmt.Sprintf("n has %d attrs but other has %d attrs.", len(attrs), len(otherAttrs))
+		return false, "mismatch attrs"
 	}
 	// for i, attr := range attrs {
 	// 	otherAttr := otherAttrs[i]
