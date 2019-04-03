@@ -12,23 +12,19 @@ type Clicker struct {
 }
 
 func (c *Clicker) onClick(element *vdom.Element, event *vdom.Event) {
-	println("click was called from golang callback")
-
 	c.clicks = c.clicks + 1
 	vdom.UpdateComponent(c)
 }
 
 //Render renders the Clicker component
 func (c *Clicker) Render() vdom.Element {
-	onClick := func(element *vdom.Element, event *vdom.Event) {
-		c.onClick(element, event)
-	}
-
 	e := vdom.MakeElement("div",
 		"id", "clicker",
 		"style", "background-color: orange; width: 100; line-height: 6; text-align: center; vertical-align: middle;",
 		vdom.MakeTextElement("Clicks: "+strconv.Itoa(c.clicks)),
-		vdom.MakeEventHandler(vdom.Click, onClick),
+		vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+			c.onClick(element, event)
+		}),
 	)
 	return e
 }

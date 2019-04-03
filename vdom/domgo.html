@@ -1,14 +1,39 @@
 <html>
   <head>
     <script type="text/javascript">
+      const Click = 0,
+        MouseDown = 1,
+        MouseUp = 2,
+        KeyDown = 3,
+        KeyUp = 4,
+        Change = 5;
+
       var socket;
 
       function registerEventHandler(node, type, id) {
-        node.addEventListener("click", function(evt) {
-          domEvent = { ElementId: id, Data: "clicked" };
-          console.log(JSON.stringify(domEvent));
-          socket.send(JSON.stringify(domEvent));
-        });
+        switch (type) {
+          case Click:
+            node.addEventListener("click", function(evt) {
+              let domEvent = {
+                Type: type,
+                ElementId: id,
+                Data: "clicked"
+              };
+              socket.send(JSON.stringify(domEvent));
+            });
+            break;
+          case Change:
+            node.addEventListener("change", function(evt) {
+              let domEvent = {
+                Type: type,
+                ElementId: id,
+                Data: evt.target.value
+              };
+              console.log(domEvent);
+              socket.send(JSON.stringify(domEvent));
+            });
+            break;
+        }
       }
 
       function createElementRecursive(element) {
@@ -33,13 +58,17 @@
             element.EventHandlers[i].Type,
             element.Attrs["id"]
           );
-          console.log("register event handler");
         }
 
         return node;
       }
 
       function applyPatch(patch) {
+        child = document.body.firstElementChild;
+        if (child && !(child instanceof HTMLScriptElement)) {
+          document.body.removeChild(child);
+        }
+
         node = createElementRecursive(patch.Element);
         document.body.appendChild(node);
       }

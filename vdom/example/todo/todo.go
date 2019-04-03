@@ -39,14 +39,17 @@ func (t *Todo) removeItem(item *TodoItem) {
 	}
 }
 
-func (t *Todo) renderItem(item *TodoItem) vdom.Element {
+func (t *Todo) renderItem(item *TodoItem, index int) vdom.Element {
 	var checked vdom.Attr
 	if item.Completed {
 		checked = vdom.Attr{Name: "checked", Value: "checked"}
 	}
 
+	prefix := strconv.Itoa(index) + ":"
+
 	element := vdom.MakeElement("div",
 		vdom.MakeElement("input",
+			"id", prefix+"check",
 			"type", "checkbox",
 			checked,
 			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
@@ -55,6 +58,7 @@ func (t *Todo) renderItem(item *TodoItem) vdom.Element {
 			),
 		),
 		vdom.MakeElement("span",
+			"id", prefix+"name",
 			"style", "display: inline-block; width: 200",
 			vdom.MakeTextElement(item.Name),
 			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
@@ -63,6 +67,7 @@ func (t *Todo) renderItem(item *TodoItem) vdom.Element {
 			),
 		),
 		vdom.MakeElement("button",
+			"id", prefix+"remove",
 			vdom.MakeTextElement("remove"),
 			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
 				t.removeItem(item)
@@ -78,12 +83,14 @@ func (t *Todo) Render() vdom.Element {
 	items := vdom.MakeElement("div")
 
 	for i := 0; i < len(t.items); i++ {
-		element := t.renderItem(&t.items[i])
+		element := t.renderItem(&t.items[i], i)
 		items.AppendChild(element)
 	}
 
 	result := vdom.MakeElement("div",
 		vdom.MakeElement("input",
+			"id", "addItem",
+			"placeholder", "add TODO item",
 			vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
 				t.addItem(event.Data)
 			},
