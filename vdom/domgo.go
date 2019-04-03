@@ -63,7 +63,6 @@ func handleDomEvent(domEvent domEvent) {
 	handler.eventHandler.handlerFunc(handler.element, &event)
 
 	for conn := range activeConnections {
-		println("connection event:", conn)
 		patch := fullDomPatch()
 		conn.WriteJSON(patch)
 	}
