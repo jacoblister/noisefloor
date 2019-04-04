@@ -1,10 +1,10 @@
-package main
+package nf
 
 import (
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 type driverMidi interface {

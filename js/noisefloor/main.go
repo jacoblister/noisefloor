@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/component/synth"
 	"github.com/jacoblister/noisefloor/js/frontend"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 // main exports functions to javascript

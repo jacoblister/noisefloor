@@ -1,7 +1,7 @@
 package component
 
 import (
-	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 // MIDILevels contains global current MIDI CC Levels

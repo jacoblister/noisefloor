@@ -1,8 +1,8 @@
 package synth
 
 import (
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component/synth/processor"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 // Engine - DSP processing engine

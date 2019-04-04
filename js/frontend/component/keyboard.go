@@ -2,7 +2,7 @@ package component
 
 import (
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/midi"
 
 	"github.com/bep/gr"
 	"github.com/bep/gr/evt"

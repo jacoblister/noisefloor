@@ -1,4 +1,4 @@
-package main
+package nf
 
 /*
 static inline int c_call(void) {

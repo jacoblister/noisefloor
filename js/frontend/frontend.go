@@ -2,8 +2,8 @@ package frontend
 
 import (
 	"github.com/bep/gr"
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/js/frontend/component"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 var keyboard *component.Keyboard

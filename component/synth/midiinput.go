@@ -3,7 +3,7 @@ package synth
 import (
 	"math"
 
-	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 const maxChannels = 8

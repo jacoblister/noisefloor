@@ -1,4 +1,4 @@
-package engine
+package nf
 
 import (
 	"os"
@@ -16,7 +16,7 @@ type noiseFloor struct {
 	audioProcessor component.AudioProcessor
 }
 
-func main() {
+func Main() {
 	debug.SetGCPercent(-1)
 
 	// nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}

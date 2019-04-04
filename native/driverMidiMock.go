@@ -1,6 +1,6 @@
-package main
+package nf
 
-import "github.com/jacoblister/noisefloor/common/midi"
+import "github.com/jacoblister/noisefloor/midi"
 
 type driverMidiMock struct {
 }

@@ -1,6 +1,6 @@
 // +build linux
 
-package main
+package nf
 
 /*
 #cgo linux LDFLAGS: -ljack
@@ -73,7 +73,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 type driverMidiJack struct {

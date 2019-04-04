@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/component/synth"
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 // func ProcessJs(samplesIn *js.Object, samplesOut *js.Object, midiIn *js.Object, midiOut *js.Object) {
