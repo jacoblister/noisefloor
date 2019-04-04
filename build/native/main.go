@@ -16,6 +16,7 @@ type noiseFloor struct {
 	audioProcessor component.AudioProcessor
 }
 
+//Main is the native build mainline
 func Main() {
 	debug.SetGCPercent(-1)
 

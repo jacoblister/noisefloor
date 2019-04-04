@@ -1,6 +1,6 @@
 package main
 
-import "github.com/jacoblister/noisefloor/native"
+import "github.com/jacoblister/noisefloor/build/native"
 
 func main() {
 	nf.Main()

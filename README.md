@@ -10,7 +10,7 @@ Module software Synthesizer for Javascript and native code targets
 
 2. `go`
 
-   Only Go 1.11 has been tested, other versions may work    
+   Only Go 1.11 has been tested, other versions may work
 
 3. Ensure go bin directory in path, for example
 
@@ -20,7 +20,7 @@ Module software Synthesizer for Javascript and native code targets
 
 4. `git` which `go get` command will use to install go packages
 
-5. Go `dep` for package management/version control   
+5. Go `dep` for package management/version control
 
    https://github.com/golang/dep
 
@@ -50,10 +50,10 @@ To Build
 
 6. build the project
 
-   `cd ~/go/src/github.com/jacoblister/noisefloor/js/noisefloor`
+   `cd ~/go/src/github.com/jacoblister/noisefloor/build/js/noisefloor`
 
    `gopherjs build`
 
 7. Open in a web browser
 
-   `/[yourgopath]/src/github.com/jacoblister/noisefloor/js/noisefloor/index.html`
+   `/[yourgopath]/src/github.com/jacoblister/noisefloor/build/js/noisefloor/index.html`

@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/jacoblister/noisefloor/build/js/frontend"
 	"github.com/jacoblister/noisefloor/component"
 	"github.com/jacoblister/noisefloor/component/synth"
-	"github.com/jacoblister/noisefloor/js/frontend"
 	"github.com/jacoblister/noisefloor/midi"
 )
 

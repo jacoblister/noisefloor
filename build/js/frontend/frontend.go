@@ -2,7 +2,7 @@ package frontend
 
 import (
 	"github.com/bep/gr"
-	"github.com/jacoblister/noisefloor/js/frontend/component"
+	"github.com/jacoblister/noisefloor/build/js/frontend/component"
 	"github.com/jacoblister/noisefloor/midi"
 )
 
