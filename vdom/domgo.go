@@ -107,7 +107,13 @@ func clientProcess(conn *websocket.Conn) {
 //ListenAndServe begins and HTTP server for the application
 func ListenAndServe() {
 	activeConnections = map[*websocket.Conn]int{}
-	http.HandleFunc("/", rootHandler)
+
+	// fs := http.FileServer(http.Dir("../../assets"))
+	fs := http.FileServer(assets)
+
+	http.Handle("/", fs)
+
+	// http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/client", clientHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
