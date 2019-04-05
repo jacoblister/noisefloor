@@ -49,11 +49,6 @@ func applyPatchToDom(patch *Patch) {
 	updateEventHandlersRecursive(&patch.Element)
 }
 
-//rootHandler servers to main dom transfer container and script
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "../../domgo.html")
-}
-
 //handleDomEvent processes a DOM event received through a connection
 func handleDomEvent(domEvent domEvent) {
 	eventHandlerKey := eventHandlerKey{id: domEvent.ElementID, eventType: domEvent.Type}
@@ -113,7 +108,6 @@ func ListenAndServe() {
 
 	http.Handle("/", fs)
 
-	// http.HandleFunc("/", rootHandler)
 	http.HandleFunc("/client", clientHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
