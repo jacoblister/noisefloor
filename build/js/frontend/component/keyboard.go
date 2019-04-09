@@ -113,10 +113,10 @@ func (k *Keyboard) renderOctave(elem *gr.Element, keyStart int, xStart int) *gr.
 				key := k.renderKey(keyNumber+keyStart, false, xPos, k.keydown[keyNumber+keyStart])
 				key.Modify(elem)
 			}
-			if noteType == 1 && isBlackKey(keyNumber) {
-				key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
-				key.Modify(elem)
-			}
+			// if noteType == 1 && isBlackKey(keyNumber) {
+			// 	key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
+			// 	key.Modify(elem)
+			// }
 		}
 	}
 
@@ -142,13 +142,16 @@ func (k *Keyboard) ComponentDidMount() {
 	}
 
 	doc := js.Global.Get("document")
-	doc.Call("addEventListener", "keydown", func(event *js.Object) {
+	elem := doc.Call("getElementById", "react")
+	elem = elem.Get("firstElementChild")
+	print(elem)
+	elem.Call("addEventListener", "keydown", func(event *js.Object) {
 		midiKey := keyMap[event.Get("key").Call("toLowerCase").String()]
 		if midiKey != 0 {
 			k.noteEvent(midiKey, true)
 		}
 	})
-	doc.Call("addEventListener", "keyup", func(event *js.Object) {
+	elem.Call("addEventListener", "keyup", func(event *js.Object) {
 		midiKey := keyMap[event.Get("key").Call("toLowerCase").String()]
 		if midiKey != 0 {
 			k.noteEvent(midiKey, false)

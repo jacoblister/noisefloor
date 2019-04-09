@@ -69,7 +69,7 @@ $global.Process = function(samplesIn, samplesOut, midiIn, midiOut) {
 };
 
 //Frontend.
-var frontend = $packages["github.com/jacoblister/noisefloor/js/frontend"];
+var frontend = $packages["github.com/jacoblister/noisefloor/build/js/frontend"];
 $global.GetMIDIEvents = function() {
   var rawEvents = [];
   var events = frontend.GetMIDIEvents();

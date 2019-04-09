@@ -1,6 +1,6 @@
 package onscreenkeyboard
 
-import "github.com/jacoblister/noisefloor/common/midi"
+import "github.com/jacoblister/noisefloor/midi"
 
 const keyMax = 127
 const velocityMax = 127
@@ -20,7 +20,7 @@ func (k *Keyboard) Stop() {
 }
 
 // Process processes a block of samples and midi events
-func (k *Keyboard) Process(samplesIn [][][]float32, samplesOut [][][]float32, midiIn []midi.Event, midiOut *[]midi.Event) {
-	*midiOut = k.MidiEvents
+func (k *Keyboard) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn []midi.Event, midiOut *[]midi.Event) {
+	*midiOut = append(midiIn, k.MidiEvents...)
 	k.MidiEvents = nil
 }

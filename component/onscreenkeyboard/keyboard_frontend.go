@@ -1,7 +1,7 @@
 package onscreenkeyboard
 
 import (
-	"github.com/jacoblister/noisefloor/common/midi"
+	"github.com/jacoblister/noisefloor/midi"
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
@@ -86,10 +86,10 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 				key := k.renderKey(keyNumber+keyStart, false, xPos, k.keydown[keyNumber+keyStart])
 				parent.AppendChild(key)
 			}
-			if noteType == 1 && isBlackKey(keyNumber) {
-				key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
-				parent.AppendChild(key)
-			}
+			// if noteType == 1 && isBlackKey(keyNumber) {
+			// 	key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
+			// 	parent.AppendChild(key)
+			// }
 		}
 	}
 }
