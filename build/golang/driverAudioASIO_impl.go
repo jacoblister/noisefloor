@@ -31,8 +31,8 @@ extern void goAudioASIOCallback(uintptr_t arg, int blockLength,
 	int channelInCount, void *channelIn,
 	int channelOutCount, void *channelOut);
 
-static inline int goasio_client_open(void *arg, int channel_in_count, int channel_out_count, int buffer_length) {
-    asio_client.arg = arg;
+static inline int goasio_client_open(uintptr_t arg, int channel_in_count, int channel_out_count, int buffer_length) {
+	asio_client.arg = (void *)arg;
     asio_client.channel_in_count = channel_in_count;
     asio_client.channel_out_count = channel_out_count;
     asio_client.buffer_length = buffer_length;
@@ -229,11 +229,11 @@ long tramp_asioMessage(long selector, long value, void* message, double* opt)
 ASIOTime *tramp_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow)
 {
     printf("ASIO buffer switch size=%d index=%d\n", asio_client.buffer_length, index);
-    memcpy(asio_client.channel_out[0][index], asio_client.channel_in[0][index], asio_client.buffer_length * 4);
+    // memcpy(asio_client.channel_out[0][index], asio_client.channel_in[0][index], asio_client.buffer_length * 4);
 
     for (int i = 0; i < asio_client.channel_in_count; i++) {
         for (int j = 0; j < asio_client.buffer_length; j++) {
-            asio_client.channel_in_float32[i][j] = ((int32_t *)asio_client.channel_in[i])[j] / SIGNED32_MAX;
+            asio_client.channel_in_float32[i][j] = ((int32_t *)asio_client.channel_in[i][index])[j] / SIGNED32_MAX;
         }
     }
 
@@ -244,7 +244,7 @@ ASIOTime *tramp_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool pr
 
     for (int i = 0; i < asio_client.channel_out_count; i++) {
         for (int j = 0; j < asio_client.buffer_length; j++) {
-            ((int32_t *)asio_client.channel_out[i])[j] = asio_client.channel_out_float32[i][j] * SIGNED32_MAX;
+            ((int32_t *)asio_client.channel_out[i][index])[j] = asio_client.channel_out_float32[i][j] * SIGNED32_MAX;
         }
     }
 
@@ -768,7 +768,8 @@ func (drv *IASIO) CreateBuffers(bufferDescriptors []BufferInfo, bufferSize int) 
 }
 
 func (drv *IASIO) SetBufferChannels(arg unsafe.Pointer, channelsIn int, channelsOut int, bufferSize int) {
-	C.goasio_client_open(arg, C.int(channelsIn), C.int(channelsOut), C.int(bufferSize))
+	uintPtr := uintptr(arg)
+	C.goasio_client_open((C.ulonglong)(uintPtr), C.int(channelsIn), C.int(channelsOut), C.int(bufferSize))
 }
 
 func (drv *IASIO) SetBufferPtr(isInput int, index int, buf0 unsafe.Pointer, buf1 unsafe.Pointer) {

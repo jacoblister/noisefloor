@@ -5,11 +5,14 @@ package nf
 import (
 	"C"
 	"fmt"
-	"reflect"
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/common/midi"
 	"github.com/jacoblister/noisefloor/component"
+)
+import (
+	"reflect"
+
+	"github.com/jacoblister/noisefloor/midi"
 )
 
 type driverAudioASIO struct {
@@ -45,6 +48,7 @@ func goAudioASIOCallback(arg unsafe.Pointer, blockLength C.int,
 	midiOutSlice := make([]midi.Event, 0, 0)
 
 	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
+	// dp.asioDriver.ASIO.OutputReady()
 }
 
 func (d *driverAudioASIO) setMidiDriver(driverMidi driverMidi) {
@@ -124,10 +128,14 @@ func (d *driverAudioASIO) start() {
 		drv.SetBufferPtr(0, i, unsafe.Pointer(bufferDescriptors[i+in].Buffers[0]), unsafe.Pointer(bufferDescriptors[i+in].Buffers[1]))
 	}
 
+	fmt.Printf("Output Ready %t\n", drv.OutputReady())
+
 	err = drv.Start()
 	if err != nil {
 		panic("ASIO cannot start driver")
 	}
+
+	fmt.Printf("ASIO Started\n")
 }
 
 func (d *driverAudioASIO) stop() {
