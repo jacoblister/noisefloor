@@ -29,13 +29,15 @@ func (e *Engine) Stop() {
 }
 
 // Process processes a block of samples and midi events
-func (e *Engine) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn []midi.Event, midiOut *[]midi.Event) {
+func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
 	e.midiinput.ProcessMIDI(midiIn)
 
-	var len = len(samplesOut[0])
+	var len = len(samplesIn[0])
 	for i := 0; i < len; i++ {
+		// var sample = e.osc.Process()
 		freqs := e.midiinput.Process()
 		var sample = e.patch.Process(freqs)
+		sample += samplesIn[0][i]
 
 		// mic := samplesIn[0][i] * 500
 		// mod := e.osc.Process()
@@ -46,7 +48,9 @@ func (e *Engine) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn [
 		// sample += mic
 		// sample = e.osc.Process()
 
-		samplesOut[0][i] = sample
-		samplesOut[1][i] = sample
+		samplesIn[0][i] = sample
+		samplesIn[1][i] = sample
 	}
+
+	return samplesIn, midiIn
 }

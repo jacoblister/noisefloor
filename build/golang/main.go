@@ -20,9 +20,9 @@ type noiseFloor struct {
 func Main() {
 	debug.SetGCPercent(-1)
 
-	nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
+	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}, audioProcessor: &synth.Engine{}}
 	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiWDM{}, audioProcessor: &synth.Engine{}}
-	// nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiWDM{}, audioProcessor: &synth.Engine{}}
+	nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiWDM{}, audioProcessor: &synth.Engine{}}
 	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
 	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiJack{}, audioProcessor: &synth.Engine{}}
 

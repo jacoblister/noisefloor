@@ -11,14 +11,14 @@ type MIDILevels [16][128]byte
 type AudioProcessor interface {
 	Start(sampleRate int)
 	Stop()
-	Process(samplesIn [][]float32, samplesOut [][]float32, midiIn []midi.Event, midiOut *[]midi.Event)
+	Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event)
 }
 
 // AudioBusProcessor is a frame based audio/midi bus processor (multi channel mono/stereo)
 type AudioBusProcessor interface {
 	Start(sampleRate int, midiLevels *MIDILevels)
 	Stop()
-	Process(samplesIn [][][]float32, samplesOut [][][]float32, midiIn []midi.Event, midiOut *[]midi.Event)
+	Process(samplesIn [][][]float32, midiIn []midi.Event) (samplesOut [][][]float32, midiOut []midi.Event)
 }
 
 // AudioProcessorFrontend is the front end to an AudioProcessor (belongs elsewhere)

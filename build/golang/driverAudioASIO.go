@@ -3,17 +3,15 @@
 package nf
 
 import (
-	"C"
 	"fmt"
+	"reflect"
 	"unsafe"
 
 	"github.com/jacoblister/noisefloor/component"
 )
-import (
-	"reflect"
 
-	"github.com/jacoblister/noisefloor/midi"
-)
+//#include <string.h>
+import "C"
 
 type driverAudioASIO struct {
 	asioDriver     *ASIODriver
@@ -25,29 +23,30 @@ type driverAudioASIO struct {
 func goAudioASIOCallback(arg unsafe.Pointer, blockLength C.int,
 	channelInCount C.int, channelIn unsafe.Pointer,
 	channelOutCount C.int, channelOut unsafe.Pointer) {
-	samplesInSlice := make([][]float32, channelInCount, channelInCount)
-	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
+
+	samplesIn := make([][]float32, channelInCount, channelInCount)
 	blockLengthInt := int(blockLength)
+	blockSizeInt := blockLengthInt * int(unsafe.Sizeof(samplesIn[0][0]))
 
 	for i := 0; i < int(channelInCount); i++ {
-		samplesIn := indexPointer(channelIn, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockLengthInt, Cap: blockLengthInt}
+		samplesInData := indexPointer(channelIn, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesInData), Len: blockLengthInt, Cap: blockLengthInt}
 		s := *(*[]float32)(unsafe.Pointer(h))
-		samplesInSlice[i] = s
-	}
-
-	for i := 0; i < int(channelOutCount); i++ {
-		samplesOut := indexPointer(channelOut, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockLengthInt, Cap: blockLengthInt}
-		s := *(*[]float32)(unsafe.Pointer(h))
-		samplesOutSlice[i] = s
+		samplesIn[i] = s
 	}
 
 	dp := *(*driverAudioASIO)(arg)
-	midiInSlice := dp.driverMidi.readEvents()
-	midiOutSlice := make([]midi.Event, 0, 0)
+	midiIn := dp.driverMidi.readEvents()
 
-	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
+	samplesOutSlice, midiOut := dp.audioProcessor.Process(samplesIn, midiIn)
+
+	for i := 0; i < int(channelOutCount); i++ {
+		hdr := (*reflect.SliceHeader)(unsafe.Pointer(&samplesOutSlice[i]))
+		C.memcpy(indexPointer(channelOut, i), unsafe.Pointer(hdr.Data), C.ulonglong(blockSizeInt))
+	}
+
+	dp.driverMidi.writeEvents(midiOut)
+
 	// dp.asioDriver.ASIO.OutputReady()
 }
 
