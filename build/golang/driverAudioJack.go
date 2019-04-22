@@ -9,6 +9,7 @@ package nf
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
+#include <string.h>
 
 #define MAX_CHANNELS 8
 
@@ -82,7 +83,6 @@ import (
 	"unsafe"
 
 	"github.com/jacoblister/noisefloor/component"
-	"github.com/jacoblister/noisefloor/midi"
 )
 
 type driverAudioJack struct {
@@ -94,29 +94,30 @@ type driverAudioJack struct {
 func goAudioJackCallback(arg unsafe.Pointer, blockLength C.int,
 	channelInCount C.int, channelIn unsafe.Pointer,
 	channelOutCount C.int, channelOut unsafe.Pointer) {
-	samplesInSlice := make([][]float32, channelInCount, channelInCount)
-	samplesOutSlice := make([][]float32, channelOutCount, channelOutCount)
+
+	samplesIn := make([][]float32, channelInCount, channelInCount)
 	blockLengthInt := int(blockLength)
+	blockSizeInt := blockLengthInt * int(unsafe.Sizeof(samplesIn[0][0]))
 
 	for i := 0; i < int(channelInCount); i++ {
-		samplesIn := indexPointer(channelIn, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesIn), Len: blockLengthInt, Cap: blockLengthInt}
+		samplesInData := indexPointer(channelIn, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesInData), Len: blockLengthInt, Cap: blockLengthInt}
 		s := *(*[]float32)(unsafe.Pointer(h))
-		samplesInSlice[i] = s
-	}
-
-	for i := 0; i < int(channelOutCount); i++ {
-		samplesOut := indexPointer(channelOut, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesOut), Len: blockLengthInt, Cap: blockLengthInt}
-		s := *(*[]float32)(unsafe.Pointer(h))
-		samplesOutSlice[i] = s
+		samplesIn[i] = s
 	}
 
 	dp := *(*driverAudioJack)(arg)
-	midiInSlice := dp.driverMidi.readEvents()
-	midiOutSlice := make([]midi.Event, 0, 0)
+	midiIn := dp.driverMidi.readEvents()
 
-	dp.audioProcessor.Process(samplesInSlice, samplesOutSlice, midiInSlice, &midiOutSlice)
+	samplesOutSlice, midiOut := dp.audioProcessor.Process(samplesIn, midiIn)
+
+	for i := 0; i < int(channelOutCount); i++ {
+		hdr := (*reflect.SliceHeader)(unsafe.Pointer(&samplesOutSlice[i]))
+		C.memcpy(indexPointer(channelOut, i), unsafe.Pointer(hdr.Data), C.ulong(blockSizeInt))
+	}
+
+	dp.driverMidi.writeEvents(midiOut)
+
 }
 
 func (d *driverAudioJack) setMidiDriver(driverMidi driverMidi) {
