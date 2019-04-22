@@ -46,14 +46,13 @@ $global.Process = function(samplesIn, midiIn) {
 
   let [samplesOutSlice, midiOutSlice] = SynthEngine.Process(
     samplesInSlice,
-    midiInSlice,
+    midiInSlice
   );
 
   var samplesOut = [];
   for (i = 0; i < samplesOutSlice.$length; i++) {
     samplesOut[i] = samplesOutSlice.$array[i].$array;
   }
-  console.log(samplesOut);
 
   return [samplesOut, []];
 

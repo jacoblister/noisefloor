@@ -124,13 +124,6 @@ result<bool> ProcessV8Engine::process(std::vector<float *> samplesIn, std::vecto
         jsSamplesIn->Set(i, float32Array);
     }
 
-    v8::Local<v8::Array> jsSamplesOut = v8::Array::New(this->isolate, samplesOut.size());
-    for (int i = 0; i < samplesOut.size(); i++) {
-        v8::Local<v8::ArrayBuffer>  arrayBuffer  = v8::ArrayBuffer::New(this->isolate, samplesOut.at(i), this->samples_per_frame * sizeof(float));
-        v8::Local<v8::Float32Array> float32Array = v8::Float32Array::New(arrayBuffer, 0, this->samples_per_frame);
-        jsSamplesOut->Set(i, float32Array);
-    }
-
     v8::Local<v8::Array> jsMidiIn = v8::Array::New(this->isolate, 0);
     for (int i = 0; i < midiIn.size(); i++) {
         struct MIDIEvent& midiEvent = midiIn.at(i);
@@ -142,8 +135,8 @@ result<bool> ProcessV8Engine::process(std::vector<float *> samplesIn, std::vecto
         jsMidiIn->Set(i, jsMidiEvent);
     }
 
-    v8::Local<v8::Value> args[] = {jsSamplesIn, jsSamplesOut, jsMidiIn, jsMidiIn};
-    this->process_function.Get(this->isolate)->Call(local_context->Global(), 4, args);
+    v8::Local<v8::Value> args[] = {jsSamplesIn, jsMidiIn};
+    this->process_function.Get(this->isolate)->Call(local_context->Global(), 2, args);
 
     // Assume samples in now contains output, copy to output
     for (int i = 0; i < samplesOut.size(); i++) {

@@ -23,11 +23,9 @@ func TestCallProcess() {
 	var Engine synth.Engine
 
 	var samplesIn [][]float32
-	var samplesOut [][]float32
 	var midiIn []midi.Event
-	var midiOut []midi.Event
 
-	Engine.Process(samplesIn, samplesOut, midiIn, &midiOut)
+	Engine.Process(samplesIn, midiIn)
 }
 
 // main exports functions to javascript
