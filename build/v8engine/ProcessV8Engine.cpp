@@ -1,6 +1,7 @@
 #include "ProcessV8Engine.hpp"
 
 #include <iostream>
+#include <string.h>
 
 void ProcessV8Engine::compile(std::string source) {
     v8::Local<v8::String> source_func = v8::String::NewFromUtf8(isolate, source.c_str(), v8::NewStringType::kNormal).ToLocalChecked();
@@ -143,6 +144,11 @@ result<bool> ProcessV8Engine::process(std::vector<float *> samplesIn, std::vecto
 
     v8::Local<v8::Value> args[] = {jsSamplesIn, jsSamplesOut, jsMidiIn, jsMidiIn};
     this->process_function.Get(this->isolate)->Call(local_context->Global(), 4, args);
+
+    // Assume samples in now contains output, copy to output
+    for (int i = 0; i < samplesOut.size(); i++) {
+        memcpy(samplesOut.at(i), samplesIn.at(i), this->samples_per_frame * sizeof(float));
+    }
 
     // Handle pending API query
     if (this->query_flag) {
