@@ -45,23 +45,19 @@
       });
 
       var frameLength = 4096;
-      var sampleBufferIn = [
-        new Float32Array(Array(frameLength).fill(0)),
-        new Float32Array(Array(frameLength).fill(0))
-      ];
-      var sampleBufferOut = [
-        new Float32Array(Array(frameLength).fill(0)),
-        new Float32Array(Array(frameLength).fill(0))
-      ];
-
       Start(audioContext.sampleRate);
 
       var node = audioContext.createScriptProcessor(frameLength, 2, 2);
       node.onaudioprocess = function(event) {
+        var sampleBufferIn = [
+            new Float32Array(Array(frameLength).fill(0)),
+            new Float32Array(Array(frameLength).fill(0))
+        ];
+
         var output = event.outputBuffer.getChannelData(0);
         var midiIn = GetMIDIEvents();
 
-        Process(sampleBufferIn, sampleBufferOut, midiIn, midiIn);
+        let [sampleBufferOut, midiOut] = Process(sampleBufferIn, midiIn);
         event.outputBuffer.copyToChannel(sampleBufferOut[0], 0);
         event.outputBuffer.copyToChannel(sampleBufferOut[1], 1);
       };

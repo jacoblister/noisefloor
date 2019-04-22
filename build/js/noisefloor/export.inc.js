@@ -21,25 +21,16 @@ var sliceFloat32 = $sliceType($Float32);
 var sliceSliceFloat32 = $sliceType(sliceFloat32);
 var sliceMidiEvent = $sliceType(midi.Event);
 
-$global.Process = function(samplesIn, samplesOut, midiIn, midiOut) {
+$global.Process = function(samplesIn, midiIn) {
   var samplesInSlice = $makeSlice(
     sliceSliceFloat32,
     samplesIn.length,
     samplesIn.length
   );
-  var samplesOutSlice = $makeSlice(
-    sliceSliceFloat32,
-    samplesOut.length,
-    samplesOut.length
-  );
   var i;
 
   for (i = 0; i < samplesIn.length; i++) {
     samplesInSlice.$array[i] = new sliceFloat32(samplesIn[i]);
-  }
-
-  for (i = 0; i < samplesOut.length; i++) {
-    samplesOutSlice.$array[i] = new sliceFloat32(samplesOut[i]);
   }
 
   var midiInSlice = $makeSlice(sliceMidiEvent, midiIn.length, midiIn.length);
@@ -52,20 +43,25 @@ $global.Process = function(samplesIn, samplesOut, midiIn, midiOut) {
     dataSlice.$array = midiIn[i].data;
     midiInSlice.$array[i] = midi.MakeMidiEvent(midiIn[i].time, dataSlice);
   }
-  var midiOutSlice = $makeSlice(sliceMidiEvent, 0, 0);
 
-  SynthEngine.Process(
+  let [samplesOutSlice, midiOutSlice] = SynthEngine.Process(
     samplesInSlice,
-    samplesOutSlice,
     midiInSlice,
-    midiOutSlice
   );
 
-  // todo - test (never used)
-  for (i = 0; i < midiOutSlice.length; i++) {
-    var event = midiOut.$array[i].Data();
-    midiOut[i] = { time: event.Time, data: event.Data.$array };
+  var samplesOut = [];
+  for (i = 0; i < samplesOutSlice.$length; i++) {
+    samplesOut[i] = samplesOutSlice.$array[i].$array;
   }
+  console.log(samplesOut);
+
+  return [samplesOut, []];
+
+  // todo - test (never used)
+  // for (i = 0; i < midiOutSlice.length; i++) {
+  //   var event = midiOut.$array[i].Data();
+  //   midiOut[i] = { time: event.Time, data: event.Data.$array };
+  // }
 };
 
 //Frontend.
