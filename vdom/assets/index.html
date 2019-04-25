@@ -1,6 +1,9 @@
 <html>
   <head>
     <script type="text/javascript">
+      // SVG namespace element list (need a better solution)
+      svgElements = {"svg":1, "g":1, "rect":1, "circle":1, "ellipse":1, "line":1, "polyline":1, "polygon":1};
+
       const Click = 0,
         MouseDown = 1,
         MouseUp = 2,
@@ -37,7 +40,13 @@
       }
 
       function createElementRecursive(element) {
-        let node = document.createElement(element.Name);
+        let node = null;
+        if (element.Name in svgElements) {
+            node = document.createElementNS("http://www.w3.org/2000/svg", element.Name);
+        }
+        else {
+            node = document.createElement(element.Name);
+        }
 
         for (var name in element.Attrs) {
           node.setAttribute(name, element.Attrs[name]);

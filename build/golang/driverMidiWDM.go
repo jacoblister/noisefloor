@@ -48,7 +48,7 @@ static inline wdm_midi_client* gowdm_midi_client_open(char *device_name) {
             }
         }
     }
-    printf("WDM devid = %d\n", inputDeviceId);
+
     if (inputDeviceId < 0) {
         return NULL;
     }
@@ -100,6 +100,9 @@ type driverMidiWDM struct {
 
 func (d *driverMidiWDM) start() {
 	d.client = C.gowdm_midi_client_open(C.CString("MPKmini2"))
+	if d.client == nil {
+		panic("Could not open MIDI device")
+	}
 }
 
 func (d *driverMidiWDM) stop() {

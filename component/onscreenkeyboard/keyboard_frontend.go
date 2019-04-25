@@ -25,6 +25,9 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 }
 
 func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) vdom.Element {
+	stroke := "black"
+	fill := "white"
+
 	var depressedElem vdom.Attr
 	if depressed {
 		depressedElem = vdom.Attr{Name: "style", Value: "depressed"}
@@ -47,6 +50,8 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		"y", 10,
 		"width", width,
 		"height", height,
+		"stroke", stroke,
+		"fill", fill,
 		// evt.MouseDown(func(event *gr.Event) {
 		// 	k.noteEvent(keyNumber, true)
 		// }),
@@ -96,7 +101,9 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 
 // Render displays the keyboard.
 func (k *Keyboard) Render() vdom.Element {
-	elem := vdom.MakeElement("g")
+	elem := vdom.MakeElement("svg",
+		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
+	)
 	for octave := 0; octave < 3; octave++ {
 		k.renderOctave(&elem, 48+octave*12, (40*7*octave)+1)
 	}
