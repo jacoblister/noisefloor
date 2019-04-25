@@ -3,6 +3,20 @@ package vdom
 // dom is the current vdom as written to the dom
 var dom = Element{Type: Root}
 
+// rootComponent is the root of the component tree
+var rootComponent Component
+
+// RenderComponentToDom renders a VDOM component
+func RenderComponentToDom(component Component) {
+	rootComponent = component
+	RenderToDom(component.Render())
+}
+
+// UpdateComponent handles a state change in a component
+func UpdateComponent(component Component) {
+	RenderToDom(rootComponent.Render())
+}
+
 // RenderToDom recursively renders a VDOM tree into the real DOM
 func RenderToDom(element Element) {
 	patch := Patch{Type: Replace, Path: []int{}, Element: element}

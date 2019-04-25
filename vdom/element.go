@@ -24,6 +24,7 @@ type Element struct {
 
 	Children      []Element
 	EventHandlers []EventHandler
+	Component     Component
 }
 
 // MakeRootElement creates a VDOM root element
@@ -48,6 +49,12 @@ func MakeElement(name string, args ...interface{}) Element {
 			element.Children = append(element.Children, arg)
 		case EventHandler:
 			element.EventHandlers = append(element.EventHandlers, arg)
+		case Component:
+			element.Children = append(element.Children, arg.Render())
+		case []Component:
+			for j := 0; j < len(arg); j++ {
+				element.Children = append(element.Children, arg[j].Render())
+			}
 		}
 	}
 	return element
