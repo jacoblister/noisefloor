@@ -20,7 +20,9 @@ func (k *Keyboard) Stop() {
 }
 
 // Process processes a block of samples and midi events
-func (k *Keyboard) Process(samplesIn [][]float32, samplesOut [][]float32, midiIn []midi.Event, midiOut *[]midi.Event) {
-	*midiOut = append(midiIn, k.MidiEvents...)
+func (k *Keyboard) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
+	midiOut = append(midiIn, k.MidiEvents...)
 	k.MidiEvents = nil
+
+	return samplesOut, midiOut
 }
