@@ -1,9 +1,6 @@
 <html>
   <head>
     <script type="text/javascript">
-      // SVG namespace element list (need a better solution)
-      svgElements = {"svg":1, "g":1, "rect":1, "circle":1, "ellipse":1, "line":1, "polyline":1, "polygon":1};
-
       const Click = 0,
         MouseDown = 1,
         MouseUp = 2,
@@ -15,6 +12,28 @@
 
       function registerEventHandler(node, type, id) {
         switch (type) {
+          case MouseDown:
+            node.addEventListener("mousedown", function(evt) {
+              let domEvent = {
+                Type: type,
+                ElementId: id,
+                Data: "left"
+              };
+              console.log(domEvent);
+              socket.send(JSON.stringify(domEvent));
+            });
+            break;
+          case MouseUp:
+            node.addEventListener("mouseup", function(evt) {
+              let domEvent = {
+                Type: type,
+                ElementId: id,
+                Data: "left"
+              };
+              console.log(domEvent);
+              socket.send(JSON.stringify(domEvent));
+            });
+            break;
           case Click:
             node.addEventListener("click", function(evt) {
               let domEvent = {
@@ -39,13 +58,15 @@
         }
       }
 
-      function createElementRecursive(element) {
+      function createElementRecursive(svgNamespace, element) {
         let node = null;
-        if (element.Name in svgElements) {
-            node = document.createElementNS("http://www.w3.org/2000/svg", element.Name);
-        }
-        else {
-            node = document.createElement(element.Name);
+        if (svgNamespace) {
+          node = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            element.Name
+          );
+        } else {
+          node = document.createElement(element.Name);
         }
 
         for (var name in element.Attrs) {
@@ -56,7 +77,7 @@
           if (element.Children[i].Type == 2) {
             node.innerText = element.Children[i].Attrs["Text"];
           } else {
-            child = createElementRecursive(element.Children[i]);
+            child = createElementRecursive(svgNamespace, element.Children[i]);
             node.appendChild(child);
           }
         }
@@ -78,7 +99,7 @@
           document.body.removeChild(child);
         }
 
-        node = createElementRecursive(patch.Element);
+        node = createElementRecursive(patch.SVGNamespace, patch.Element);
         document.body.appendChild(node);
       }
 

@@ -13,8 +13,11 @@ import (
 
 func main() {
 	var cwd, _ = os.Getwd()
-	fs := http.Dir(filepath.Join(cwd, "assets"))
-	err := vfsgen.Generate(fs, vfsgen.Options{PackageName: "vdom"})
+	fs := http.Dir(filepath.Join(cwd, "files"))
+	err := vfsgen.Generate(fs, vfsgen.Options{
+		PackageName:  "assets",
+		VariableName: "Assets",
+	})
 	if err != nil {
 		log.Fatalln(err)
 	}
