@@ -3,9 +3,8 @@ var synth = $packages["github.com/jacoblister/noisefloor/component/synth"];
 $global.MakeProcessor = synth.MakeProcessor;
 
 var app = $packages["github.com/jacoblister/noisefloor/app"];
-console.log(app);
-var SynthEngine = app.GetAudioProcessor();
 $global.Start = function(sampleRate) {
+  var SynthEngine = app.GetAudioProcessor();
   SynthEngine.Start(sampleRate);
 };
 
@@ -22,6 +21,8 @@ var sliceSliceFloat32 = $sliceType(sliceFloat32);
 var sliceMidiEvent = $sliceType(midi.Event);
 
 $global.Process = function(samplesIn, midiIn) {
+  var SynthEngine = app.GetAudioProcessor();
+
   var samplesInSlice = $makeSlice(
     sliceSliceFloat32,
     samplesIn.length,

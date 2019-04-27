@@ -5,13 +5,48 @@
       so it doesn't interfer with DOM operations.
     -->
     <script>
-      window.onload = function() {
-        var script = document.createElement("script");
-        script.src = "noisefloor.js";
-        document.head.appendChild(script);
-      };
+      var script = document.createElement("script");
+      script.src = "noisefloor.js";
+      document.head.appendChild(script);
     </script>
 
+    <script>
+      // audio context setup - todo move to export.inc.js
+      window.onload = function() {
+        var audioContext = new AudioContext();
+
+        console.log(document.getElementById("root"));
+
+        // One-liner to resume playback when user interacted with the page.
+        document.getElementById("root").addEventListener("click", function() {
+          audioContext.resume().then(() => {
+            console.log("Playback resumed successfully");
+          });
+        });
+
+        var frameLength = 4096;
+        console.log("start audio");
+        Start(audioContext.sampleRate);
+
+        var node = audioContext.createScriptProcessor(frameLength, 2, 2);
+        node.onaudioprocess = function(event) {
+          var sampleBufferIn = [
+            new Float32Array(Array(frameLength).fill(0)),
+            new Float32Array(Array(frameLength).fill(0))
+          ];
+
+          var output = event.outputBuffer.getChannelData(0);
+          var midiIn = [];
+
+          let [sampleBufferOut, midiOut] = Process(sampleBufferIn, midiIn);
+          event.outputBuffer.copyToChannel(sampleBufferOut[0], 0);
+          event.outputBuffer.copyToChannel(sampleBufferOut[1], 1);
+        };
+        node.connect(audioContext.destination);
+
+        console.log("Running process");
+      };
+    </script>
     <!--
       <style>
         body {

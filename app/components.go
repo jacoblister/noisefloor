@@ -28,7 +28,7 @@ func (c *components) Stop() {
 func (c *components) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
 	samples, midi := samplesIn, midiIn
 
-	// samples, midi = c.keyboard.Process(samples, midi)
+	samples, midi = c.keyboard.Process(samples, midi)
 	samples, midi = c.synthEngine.Process(samples, midi)
 
 	return samples, midi

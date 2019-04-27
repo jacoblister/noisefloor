@@ -3,47 +3,51 @@ package onscreenkeyboard
 import (
 	"strconv"
 
+	"github.com/jacoblister/noisefloor/midi"
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
 func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 	println(keyNumber, keyDown)
 
-	// if k.keydown[keyNumber] == keyDown {
-	// 	// return early if key already is same state
-	// 	return
-	// }
-	//
-	// k.keydown[keyNumber] = keyDown
-	//
-	// velocity := 0
-	// if keyDown {
-	// 	velocity = velocityMax
-	// }
-	// midiEvent := midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1},
-	// 	Note: keyNumber, Velocity: velocity}
-	//
-	// k.MidiEvents = append(k.MidiEvents, midiEvent)
-	// vdom.UpdateComponent(k)
+	if k.keydown[keyNumber] == keyDown {
+		// return early if key already is same state
+		return
+	}
+
+	k.keydown[keyNumber] = keyDown
+
+	var midiEvent midi.Event
+	if keyDown {
+		midiEvent = midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1},
+			Note: keyNumber, Velocity: velocityMax}
+	} else {
+		midiEvent = midi.NoteOffEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1},
+			Note: keyNumber}
+	}
+	k.MidiEvents = append(k.MidiEvents, midiEvent)
+	vdom.UpdateComponent(k)
 }
 
 func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) vdom.Element {
 	stroke := "black"
 	fill := "white"
 
-	var depressedElem vdom.Attr
-	if depressed {
-		depressedElem = vdom.Attr{Name: "style", Value: "depressed"}
-	}
-
 	keyType := "key-white"
 	width := 40
 	height := 160
 	if isBlack {
+		fill = "black"
 		keyType = "key-black"
 		xPosition += 28
 		width = 26
 		height = 120
+	}
+
+	var depressedElem vdom.Attr
+	if depressed {
+		depressedElem = vdom.Attr{Name: "style", Value: "depressed"}
+		fill = "lightcyan"
 	}
 
 	key := vdom.MakeElement("rect",
@@ -101,10 +105,10 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 				key := k.renderKey(keyNumber+keyStart, false, xPos, k.keydown[keyNumber+keyStart])
 				parent.AppendChild(key)
 			}
-			// if noteType == 1 && isBlackKey(keyNumber) {
-			// 	key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
-			// 	parent.AppendChild(key)
-			// }
+			if noteType == 1 && isBlackKey(keyNumber) {
+				key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
+				parent.AppendChild(key)
+			}
 		}
 	}
 }
@@ -112,6 +116,7 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 // Render displays the keyboard.
 func (k *Keyboard) Render() vdom.Element {
 	elem := vdom.MakeElement("svg",
+		"id", "root",
 		"xmlns", "http://www.w3.org/2000/svg",
 		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
 	)
