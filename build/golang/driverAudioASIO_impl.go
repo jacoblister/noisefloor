@@ -244,7 +244,10 @@ ASIOTime *tramp_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool pr
 
     for (int i = 0; i < asio_client.channel_out_count; i++) {
         for (int j = 0; j < asio_client.buffer_length; j++) {
-            ((int32_t *)asio_client.channel_out[i][index])[j] = asio_client.channel_out_float32[i][j] * SIGNED32_MAX;
+			float value = asio_client.channel_out_float32[i][j];
+			if (value < -1.0) value = -1.0;
+			if (value > 1.0)  value = 1.0;
+            ((int32_t *)asio_client.channel_out[i][index])[j] = value * SIGNED32_MAX;
         }
     }
 
