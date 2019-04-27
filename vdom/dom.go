@@ -6,6 +6,13 @@ var dom = Element{Type: Root}
 // rootComponent is the root of the component tree
 var rootComponent Component
 
+var svgNamespace bool
+
+//SetSVGNamespace set the DOM namespace to SVG (default is HTML)
+func SetSVGNamespace() {
+	svgNamespace = true
+}
+
 // RenderComponentToDom renders a VDOM component
 func RenderComponentToDom(component Component) {
 	rootComponent = component
@@ -19,7 +26,7 @@ func UpdateComponent(component Component) {
 
 // RenderToDom recursively renders a VDOM tree into the real DOM
 func RenderToDom(element Element) {
-	patch := Patch{Type: Replace, Path: []int{}, Element: element}
+	patch := Patch{Type: Replace, SVGNamespace: svgNamespace, Path: []int{}, Element: element}
 
 	applyPatchToDom(&patch)
 	dom = element
@@ -27,6 +34,6 @@ func RenderToDom(element Element) {
 
 // fullDomPatch returns a patch to fully populate the DOM
 func fullDomPatch() *Patch {
-	patch := Patch{Type: Replace, Path: []int{}, Element: dom}
+	patch := Patch{Type: Replace, SVGNamespace: svgNamespace, Path: []int{}, Element: dom}
 	return &patch
 }

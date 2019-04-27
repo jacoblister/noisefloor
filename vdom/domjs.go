@@ -6,6 +6,16 @@ import "github.com/gopherjs/gopherjs/js"
 
 func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler) {
 	switch handler.Type {
+	case MouseDown:
+		domNode.Call("addEventListener", "mousedown", func(jsEvent *js.Object) {
+			event := Event{Type: MouseDown}
+			handler.handlerFunc(element, &event)
+		})
+	case MouseUp:
+		domNode.Call("addEventListener", "mouseup", func(jsEvent *js.Object) {
+			event := Event{Type: MouseUp}
+			handler.handlerFunc(element, &event)
+		})
 	case Click:
 		domNode.Call("addEventListener", "click", func(jsEvent *js.Object) {
 			event := Event{Type: Click}
@@ -20,10 +30,16 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 	}
 }
 
-func createElementRecursive(element *Element) *js.Object {
+func createElementRecursive(svgNamespace bool, element *Element) *js.Object {
 	document := js.Global.Get("document")
 
-	node := document.Call("createElement", element.Name)
+	var node *js.Object
+	if svgNamespace == true {
+		node = document.Call("createElementNS", "http://www.w3.org/2000/svg", element.Name)
+	} else {
+		node = document.Call("createElement", element.Name)
+	}
+
 	for name, value := range element.Attrs {
 		node.Call("setAttribute", name, value)
 	}
@@ -35,7 +51,7 @@ func createElementRecursive(element *Element) *js.Object {
 	for _, child := range element.Children {
 		switch child.Type {
 		case Normal:
-			childNode := createElementRecursive(&child)
+			childNode := createElementRecursive(svgNamespace, &child)
 			node.Call("appendChild", childNode)
 		case Text:
 			node.Set("innerText", child.Attrs["Text"])
@@ -55,7 +71,7 @@ func applyPatchToDom(patch *Patch) {
 			root.Call("removeChild", child)
 		}
 
-		node := createElementRecursive(&patch.Element)
+		node := createElementRecursive(patch.SVGNamespace, &patch.Element)
 		root.Call("appendChild", node)
 	}
 }

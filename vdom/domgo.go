@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/jacoblister/noisefloor/vdom/assets"
 )
 
 type eventHandlerKey struct {
@@ -17,6 +18,7 @@ type eventHandlerKey struct {
 type eventHandlerValue struct {
 	element      *Element
 	eventHandler *EventHandler
+	Type         EventType
 }
 
 type domEvent struct {
@@ -29,11 +31,13 @@ var eventHandlerMap map[eventHandlerKey]eventHandlerValue
 
 //updateEventHandlersRecursive set all event handlers in the element tree
 func updateEventHandlersRecursive(element *Element) {
-	for _, handler := range element.EventHandlers {
+	for i := 0; i < len(element.EventHandlers); i++ {
+		handler := &element.EventHandlers[i]
+		// for _, handler := range element.EventHandlers {
 		id := element.Attrs["id"].(string)
-		eventHandlerKey := eventHandlerKey{id: id, eventType: handler.Type}
-		eventHandlerValue := eventHandlerValue{element: element, eventHandler: &handler}
-		eventHandlerMap[eventHandlerKey] = eventHandlerValue
+		key := eventHandlerKey{id: id, eventType: handler.Type}
+		value := eventHandlerValue{element: element, eventHandler: handler, Type: handler.Type}
+		eventHandlerMap[key] = value
 	}
 
 	for _, child := range element.Children {
@@ -55,6 +59,10 @@ func handleDomEvent(domEvent domEvent) {
 
 	handler := eventHandlerMap[eventHandlerKey]
 	event := Event{Type: domEvent.Type, Data: domEvent.Data}
+
+	// fmt.Println(handler.eventHandler.handlerFunc)
+	// fmt.Println(eventHandlerMap)
+
 	handler.eventHandler.handlerFunc(handler.element, &event)
 
 	for conn := range activeConnections {
@@ -103,8 +111,8 @@ func clientProcess(conn *websocket.Conn) {
 func ListenAndServe() {
 	activeConnections = map[*websocket.Conn]int{}
 
-	// fs := http.FileServer(http.Dir("../../assets"))
-	fs := http.FileServer(assets)
+	// fs := http.FileServer(http.Dir("../../assets/files"))
+	fs := http.FileServer(assets.Assets)
 
 	http.Handle("/", fs)
 

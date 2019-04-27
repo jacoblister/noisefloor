@@ -14,10 +14,11 @@ const (
 
 // Patch a DOM patch
 type Patch struct {
-	Type    PatchType
-	Path    []int
-	Element Element
-	Attr    Attr
+	Type         PatchType
+	SVGNamespace bool
+	Path         []int
+	Element      Element
+	Attr         Attr
 }
 
 //JSON returns a JSON friendly encoding of the patch
