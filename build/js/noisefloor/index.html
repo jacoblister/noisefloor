@@ -47,6 +47,21 @@
         console.log("Running process");
       };
     </script>
+
+    <!--
+      <script>
+        // Make processor demo`
+        osc = MakeProcessor("Oscillator");
+        console.log(osc);
+        osc.Start(100);
+        osc.Freq = 1;
+
+        for (i = 0; i < 100; i++) {
+          console.log(osc.Process());
+        }
+        console.log(osc);
+      </script>
+    -->
     <!--
       <style>
         body {

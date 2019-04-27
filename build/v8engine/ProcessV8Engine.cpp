@@ -85,7 +85,7 @@ result<bool> ProcessV8Engine::start(int sampling_rate, int samples_per_frame) {
     // Set console log function
     this->compile("console.log = function (message) { console_log(message) };");
 
-    this->compile_source("../js/engine/engine.js");
+    this->compile_source("../js/noisefloor/noisefloor.js");
     // this->compile("function start(sampleRate) { noisefloorjs.start(sampleRate); }");
     // this->compile("function process(samplesIn, samplesOut, midiIn, midiOut) { return noisefloorjs.process(samplesIn, samplesOut, midiIn, midiOut); }");
     // this->compile("function query(endpoint, request) { return engine.org.noisefloor.engine.query(endpoint, request); }");
