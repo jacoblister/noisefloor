@@ -1,27 +1,30 @@
 package onscreenkeyboard
 
 import (
-	"github.com/jacoblister/noisefloor/midi"
+	"strconv"
+
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
 func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
-	if k.keydown[keyNumber] == keyDown {
-		// return early if key already is same state
-		return
-	}
+	println(keyNumber, keyDown)
 
-	k.keydown[keyNumber] = keyDown
-
-	velocity := 0
-	if keyDown {
-		velocity = velocityMax
-	}
-	midiEvent := midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1},
-		Note: keyNumber, Velocity: velocity}
-
-	k.MidiEvents = append(k.MidiEvents, midiEvent)
-	vdom.UpdateComponent(k)
+	// if k.keydown[keyNumber] == keyDown {
+	// 	// return early if key already is same state
+	// 	return
+	// }
+	//
+	// k.keydown[keyNumber] = keyDown
+	//
+	// velocity := 0
+	// if keyDown {
+	// 	velocity = velocityMax
+	// }
+	// midiEvent := midi.NoteOnEvent{GenericEvent: midi.GenericEvent{Time: 0, Channel: 1},
+	// 	Note: keyNumber, Velocity: velocity}
+	//
+	// k.MidiEvents = append(k.MidiEvents, midiEvent)
+	// vdom.UpdateComponent(k)
 }
 
 func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) vdom.Element {
@@ -44,6 +47,7 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 	}
 
 	key := vdom.MakeElement("rect",
+		"id", "key-"+strconv.Itoa(keyNumber),
 		"class", keyType,
 		depressedElem,
 		"x", xPosition,
@@ -52,6 +56,12 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		"height", height,
 		"stroke", stroke,
 		"fill", fill,
+		vdom.MakeEventHandler(vdom.MouseDown, func(element *vdom.Element, event *vdom.Event) {
+			k.noteEvent(keyNumber, true)
+		}),
+		vdom.MakeEventHandler(vdom.MouseUp, func(element *vdom.Element, event *vdom.Event) {
+			k.noteEvent(keyNumber, false)
+		}),
 		// evt.MouseDown(func(event *gr.Event) {
 		// 	k.noteEvent(keyNumber, true)
 		// }),
@@ -102,6 +112,7 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 // Render displays the keyboard.
 func (k *Keyboard) Render() vdom.Element {
 	elem := vdom.MakeElement("svg",
+		"xmlns", "http://www.w3.org/2000/svg",
 		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
 	)
 	for octave := 0; octave < 3; octave++ {

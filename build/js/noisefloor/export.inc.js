@@ -2,9 +2,9 @@
 var synth = $packages["github.com/jacoblister/noisefloor/component/synth"];
 $global.MakeProcessor = synth.MakeProcessor;
 
-var component = $packages["github.com/jacoblister/noisefloor/component"];
-$global.MakeComponent = component.MakeComponent;
-var SynthEngine = component.MakeComponent("SynthEngine");
+var app = $packages["github.com/jacoblister/noisefloor/app"];
+console.log(app);
+var SynthEngine = app.GetAudioProcessor();
 $global.Start = function(sampleRate) {
   SynthEngine.Start(sampleRate);
 };
@@ -61,16 +61,4 @@ $global.Process = function(samplesIn, midiIn) {
   //   var event = midiOut.$array[i].Data();
   //   midiOut[i] = { time: event.Time, data: event.Data.$array };
   // }
-};
-
-//Frontend.
-var frontend = $packages["github.com/jacoblister/noisefloor/build/js/frontend"];
-$global.GetMIDIEvents = function() {
-  var rawEvents = [];
-  var events = frontend.GetMIDIEvents();
-  for (var i = 0; i < events.$length; i++) {
-    var event = events.$array[i].Data();
-    rawEvents[i] = { time: event.Time, data: event.Data.$array };
-  }
-  return rawEvents;
 };
