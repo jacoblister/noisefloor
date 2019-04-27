@@ -88,48 +88,5 @@
       </style>
     -->
   </head>
-  <body>
-    <!--
-      <svg
-        id="react"
-        class="container"
-        style="width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;"
-      ></svg>
-      <script src="http://unpkg.com/react@15/dist/react.min.js"></script>
-      <script src="http://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
-      <script src="noisefloor.js"></script>
-
-      <script type="text/javascript">
-        var audioContext = new AudioContext();
-
-        // One-liner to resume playback when user interacted with the page.
-        document.getElementById("react").addEventListener("click", function() {
-          audioContext.resume().then(() => {
-            console.log("Playback resumed successfully");
-          });
-        });
-
-        var frameLength = 4096;
-        Start(audioContext.sampleRate);
-
-        var node = audioContext.createScriptProcessor(frameLength, 2, 2);
-        node.onaudioprocess = function(event) {
-          var sampleBufferIn = [
-              new Float32Array(Array(frameLength).fill(0)),
-              new Float32Array(Array(frameLength).fill(0))
-          ];
-
-          var output = event.outputBuffer.getChannelData(0);
-          var midiIn = GetMIDIEvents();
-
-          let [sampleBufferOut, midiOut] = Process(sampleBufferIn, midiIn);
-          event.outputBuffer.copyToChannel(sampleBufferOut[0], 0);
-          event.outputBuffer.copyToChannel(sampleBufferOut[1], 1);
-        };
-        node.connect(audioContext.destination);
-
-        console.log("Running process");
-      </script>
-    -->
-  </body>
+  <body></body>
 </html>
