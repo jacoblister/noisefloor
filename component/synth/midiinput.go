@@ -8,12 +8,12 @@ import (
 
 const maxChannels = 8
 const maxNote = 127
-const pitchBendRange = 2
+const pitchBendRange = 12
 
 // MIDIInput - MIDI to CV converter
 type MIDIInput struct {
-	channelNotes [maxChannels]int
-	channelData  [maxChannels][3]float32
+	channelNotes [maxChannels][2]int     // note number, active
+	channelData  [maxChannels][3]float32 // freq, level, trigger
 	pitchBend    float64
 	noteChannels map[int]int
 	nextChannel  int
@@ -36,7 +36,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 
 			// Allocate next free channel
 			targetChannel := m.nextChannel
-			for m.channelNotes[targetChannel] != 0 {
+			for m.channelNotes[targetChannel][1] != 0 {
 				targetChannel++
 				if targetChannel >= maxChannels {
 					targetChannel = 0
@@ -44,8 +44,8 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 
 				// If all channels active use current target
 				if targetChannel == m.nextChannel {
-					m.channelNotes[targetChannel] = 0
-					delete(m.noteChannels, m.channelNotes[targetChannel])
+					m.channelNotes[targetChannel][1] = 0
+					delete(m.noteChannels, m.channelNotes[targetChannel][0])
 				}
 			}
 
@@ -60,7 +60,8 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 			level := float32(velocity) / 127.0
 
 			// set channel active
-			m.channelNotes[targetChannel] = note
+			m.channelNotes[targetChannel][0] = note
+			m.channelNotes[targetChannel][1] = 1
 			m.channelData[targetChannel][0] = float32(frequency)
 			m.channelData[targetChannel][1] = float32(level)
 			m.channelData[targetChannel][2] = float32(level)
@@ -68,10 +69,10 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 		case midi.NoteOffEvent:
 			note := event.Note
 
-			// note release - free allocated channel
+			// note release - update allocated channel
 			noteChannel, ok := m.noteChannels[note]
 			if ok {
-				m.channelNotes[noteChannel] = 0
+				m.channelNotes[noteChannel][1] = 0
 				m.channelData[noteChannel][1] = 0
 				m.channelData[noteChannel][2] = -1
 				delete(m.noteChannels, note)
@@ -79,7 +80,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 		case midi.PitchBendEvent:
 			m.pitchBend = event.Normailzed() * pitchBendRange
 			for i := 0; i < maxChannels; i++ {
-				note := m.channelNotes[i]
+				note := m.channelNotes[i][0]
 				frequency := 220.0 * math.Pow(2.0, ((float64(note)-57+m.pitchBend)/12.0))
 				m.channelData[i][0] = float32(frequency)
 			}

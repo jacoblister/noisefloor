@@ -7,7 +7,7 @@ import (
 
 // Engine - DSP processing engine
 type Engine struct {
-	midiinput MIDIInput
+	midiinput MIDIInputMPE
 	patch     PatchMultiply
 	osc       processor.Oscillator
 }

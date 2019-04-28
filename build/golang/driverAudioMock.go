@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/jacoblister/noisefloor/component"
-	"github.com/jacoblister/noisefloor/midi"
 )
 
 type driverAudioMock struct {
@@ -27,9 +26,9 @@ func (d *driverAudioMock) mockProcess() {
 			d.driverMidi.readEvents()
 			println("Mock Audio Process...")
 			samples := [][]float32{{}}
-			midiEvents := []midi.Event{}
-			d.audioProcessor.Process(samples, midiEvents)
-			d.driverMidi.writeEvents(nil)
+			midiIn := d.driverMidi.readEvents()
+			_, midiOut := d.audioProcessor.Process(samples, midiIn)
+			d.driverMidi.writeEvents(midiOut)
 			println()
 		}
 	}
