@@ -1,61 +1,25 @@
 <html>
   <head>
     <script type="text/javascript">
-      const Click = 0,
-        MouseDown = 1,
-        MouseUp = 2,
-        KeyDown = 3,
-        KeyUp = 4,
-        Change = 5;
-
       var socket;
 
       function registerEventHandler(node, type, id) {
-        switch (type) {
-          case MouseDown:
-            node.addEventListener("mousedown", function(evt) {
-              let domEvent = {
-                Type: type,
-                ElementId: id,
-                Data: "left"
-              };
-              console.log(domEvent);
-              socket.send(JSON.stringify(domEvent));
-            });
-            break;
-          case MouseUp:
-            node.addEventListener("mouseup", function(evt) {
-              let domEvent = {
-                Type: type,
-                ElementId: id,
-                Data: "left"
-              };
-              console.log(domEvent);
-              socket.send(JSON.stringify(domEvent));
-            });
-            break;
-          case Click:
-            node.addEventListener("click", function(evt) {
-              let domEvent = {
-                Type: type,
-                ElementId: id,
-                Data: "clicked"
-              };
-              socket.send(JSON.stringify(domEvent));
-            });
-            break;
-          case Change:
-            node.addEventListener("change", function(evt) {
-              let domEvent = {
-                Type: type,
-                ElementId: id,
-                Data: evt.target.value
-              };
-              console.log(domEvent);
-              socket.send(JSON.stringify(domEvent));
-            });
-            break;
-        }
+        node.addEventListener(type, function(evt) {
+          let eventData = "";
+          switch (type) {
+            case "change":
+              eventData = evt.target.value;
+              break;
+          }
+
+          let domEvent = {
+            Type: type,
+            ElementId: id,
+            Data: eventData
+          };
+          console.log(domEvent);
+          socket.send(JSON.stringify(domEvent));
+        });
       }
 
       function createElementRecursive(svgNamespace, element) {

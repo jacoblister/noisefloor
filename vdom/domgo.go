@@ -12,17 +12,17 @@ import (
 
 type eventHandlerKey struct {
 	id        string
-	eventType EventType
+	eventType string
 }
 
 type eventHandlerValue struct {
 	element      *Element
 	eventHandler *EventHandler
-	Type         EventType
+	Type         string
 }
 
 type domEvent struct {
-	Type      EventType
+	Type      string
 	ElementID string
 	Data      string
 }

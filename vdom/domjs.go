@@ -5,29 +5,16 @@ package vdom
 import "github.com/gopherjs/gopherjs/js"
 
 func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler) {
-	switch handler.Type {
-	case MouseDown:
-		domNode.Call("addEventListener", "mousedown", func(jsEvent *js.Object) {
-			event := Event{Type: MouseDown}
-			handler.handlerFunc(element, &event)
-		})
-	case MouseUp:
-		domNode.Call("addEventListener", "mouseup", func(jsEvent *js.Object) {
-			event := Event{Type: MouseUp}
-			handler.handlerFunc(element, &event)
-		})
-	case Click:
-		domNode.Call("addEventListener", "click", func(jsEvent *js.Object) {
-			event := Event{Type: Click}
-			handler.handlerFunc(element, &event)
-		})
-	case Change:
-		domNode.Call("addEventListener", "change", func(jsEvent *js.Object) {
-			value := jsEvent.Get("target").Get("value").String()
-			event := Event{Type: Change, Data: value}
-			handler.handlerFunc(element, &event)
-		})
-	}
+	domNode.Call("addEventListener", handler.Type, func(jsEvent *js.Object) {
+		var eventData string
+		switch handler.Type {
+		case "change":
+			eventData = jsEvent.Get("target").Get("value").String()
+		}
+
+		event := Event{Type: handler.Type, Data: eventData}
+		handler.handlerFunc(element, &event)
+	})
 }
 
 func createElementRecursive(svgNamespace bool, element *Element) *js.Object {
