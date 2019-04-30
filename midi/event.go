@@ -11,14 +11,14 @@ type EventType int
 
 // Basic MIDI event types
 const (
-	NoteOff    EventType = 8
-	Note       EventType = 9
-	AfterTouch EventType = 10
-	Control    EventType = 11
-	Program    EventType = 12
-	Pressure   EventType = 13
-	PitchBend  EventType = 14
-	System     EventType = 15
+	NoteOff         EventType = 8
+	Note            EventType = 9
+	AfterTouch      EventType = 10
+	Control         EventType = 11
+	Program         EventType = 12
+	ChannelPressure EventType = 13
+	PitchBend       EventType = 14
+	System          EventType = 15
 )
 
 //getTypeFromData gets the basic MIDI event Type for an event
@@ -50,19 +50,31 @@ func MakeMidiEventData(time int, data []byte) EventData {
 // MakeMidiEvent returns an interface to a decoded MIDI event
 func MakeMidiEvent(time int, data []byte) Event {
 	switch getTypeFromData(data) {
+	case NoteOff:
+		return NoteOffEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Note: int(data[1]), Velocity: int(data[2])}
 	case Note:
 		return NoteOnEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
 			Note: int(data[1]), Velocity: int(data[2])}
-	case NoteOff:
-		return NoteOffEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
-			Note: int(data[1]), Velocity: 0}
+	case AfterTouch:
+		return AfterTouchEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Note: int(data[1]), Pressure: int(data[2])}
+	case Control:
+		return ControlEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Number: int(data[1]), Value: int(data[2])}
+	case Program:
+		return ProgramEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Number: int(data[1])}
+	case ChannelPressure:
+		return ChannelPressureEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
+			Pressure: int(data[1])}
 	case PitchBend:
 		return PitchBendEvent{GenericEvent: GenericEvent{Time: time, Channel: getChannelFromData(data)},
 			Value: int(data[2])<<6 | int(data[1])&0x7F}
 	}
 
+	panic("unknown event type")
 	// TODO - define 'Unknown Event'
-	return nil
 }
 
 // GenericEvent is basic time and channel common to most MIDI events
@@ -79,6 +91,18 @@ type GenericEventGetter interface {
 // Generic returns the GenericEvent data for any MIDI event type
 func (e GenericEvent) Generic() *GenericEvent { return &e }
 
+// NoteOffEvent is a MIDI note off event
+type NoteOffEvent struct {
+	GenericEvent
+	Note     int
+	Velocity int
+}
+
+// Data returns EventData (bytes) for the NoteOnEvent type
+func (e NoteOffEvent) Data() EventData {
+	return EventData{Time: e.Time, Data: []byte{statusByte(NoteOff, e.Channel), byte(e.Note), byte(e.Velocity)}}
+}
+
 // NoteOnEvent is a MIDI note on event with velocity
 type NoteOnEvent struct {
 	GenericEvent
@@ -91,16 +115,50 @@ func (e NoteOnEvent) Data() EventData {
 	return EventData{Time: e.Time, Data: []byte{statusByte(Note, e.Channel), byte(e.Note), byte(e.Velocity)}}
 }
 
-// NoteOffEvent is a MIDI note off event
-type NoteOffEvent struct {
+// AfterTouchEvent is a MIDI aftertouch event
+type AfterTouchEvent struct {
 	GenericEvent
 	Note     int
-	Velocity int
+	Pressure int
 }
 
-// Data returns EventData (bytes) for the NoteOnEvent type
-func (e NoteOffEvent) Data() EventData {
-	return EventData{Time: e.Time, Data: []byte{statusByte(NoteOff, e.Channel), byte(e.Note), byte(e.Velocity)}}
+// Data returns EventData (bytes) for the AfterTouchEvent type
+func (e AfterTouchEvent) Data() EventData {
+	return EventData{Time: e.Time, Data: []byte{statusByte(AfterTouch, e.Channel), byte(e.Note), byte(e.Pressure)}}
+}
+
+// ControlEvent is a MIDI control change event
+type ControlEvent struct {
+	GenericEvent
+	Number int
+	Value  int
+}
+
+// Data returns EventData (bytes) for the AfterTouchEvent type
+func (e ControlEvent) Data() EventData {
+	return EventData{Time: e.Time, Data: []byte{statusByte(Control, e.Channel), byte(e.Number), byte(e.Value)}}
+}
+
+// ProgramEvent is a MIDI program change event
+type ProgramEvent struct {
+	GenericEvent
+	Number int
+}
+
+// Data returns EventData (bytes) for the ProgramEvent type
+func (e ProgramEvent) Data() EventData {
+	return EventData{Time: e.Time, Data: []byte{statusByte(Program, e.Channel), byte(e.Number)}}
+}
+
+// ChannelPressureEvent is a MIDI channel pressure (aftertouch) event
+type ChannelPressureEvent struct {
+	GenericEvent
+	Pressure int
+}
+
+// Data returns EventData (bytes) for the ChannelPressureEvent type
+func (e ChannelPressureEvent) Data() EventData {
+	return EventData{Time: e.Time, Data: []byte{statusByte(ChannelPressure, e.Channel), byte(e.Pressure)}}
 }
 
 // PitchBendEvent is a MIDI pitch bend event
