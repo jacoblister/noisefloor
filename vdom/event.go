@@ -8,6 +8,10 @@ const (
 	Click EventType = iota
 	MouseDown
 	MouseUp
+	MouseEnter
+	MouseLeave
+	TouchStart
+	TouchEnd
 	KeyDown
 	KeyUp
 	Change
@@ -18,6 +22,10 @@ func (e EventType) String() string {
 		"click",
 		"mousedown",
 		"mouseup",
+		"mouseenter",
+		"mouseleave",
+		"touchstart",
+		"touchend",
 		"keydown",
 		"keyup",
 		"change",

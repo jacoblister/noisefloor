@@ -66,24 +66,19 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		vdom.MakeEventHandler(vdom.MouseUp, func(element *vdom.Element, event *vdom.Event) {
 			k.noteEvent(keyNumber, false)
 		}),
-		// evt.MouseDown(func(event *gr.Event) {
-		// 	k.noteEvent(keyNumber, true)
-		// }),
-		// evt.MouseUp(func(event *gr.Event) {
-		// 	k.noteEvent(keyNumber, false)
-		// }),
-		// evt.MouseOut(func(event *gr.Event) {
-		// 	k.noteEvent(keyNumber, false)
-		// }),
-		// evt.MouseEnter(func(event *gr.Event) {
-		// 	if event.Get("buttons").Int() != 0 {
+		// vdom.MakeEventHandler(vdom.MouseEnter, func(element *vdom.Element, event *vdom.Event) {
+		// 	buttons, _ := strconv.Atoi(event.Data)
+		// 	if buttons > 0 {
 		// 		k.noteEvent(keyNumber, true)
 		// 	}
 		// }),
-		// evt.TouchStart(func(event *gr.Event) {
+		// vdom.MakeEventHandler(vdom.MouseLeave, func(element *vdom.Element, event *vdom.Event) {
+		// 	k.noteEvent(keyNumber, false)
+		// }),
+		// vdom.MakeEventHandler(vdom.TouchStart, func(element *vdom.Element, event *vdom.Event) {
 		// 	k.noteEvent(keyNumber, true)
 		// }),
-		// evt.TouchEnd(func(event *gr.Event) {
+		// vdom.MakeEventHandler(vdom.TouchEnd, func(element *vdom.Element, event *vdom.Event) {
 		// 	k.noteEvent(keyNumber, false)
 		// }),
 	)

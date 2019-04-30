@@ -2,7 +2,9 @@
 
 package vdom
 
-import "github.com/gopherjs/gopherjs/js"
+import (
+	"github.com/gopherjs/gopherjs/js"
+)
 
 func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler) {
 	domNode.Call("addEventListener", handler.Type, func(jsEvent *js.Object) {
@@ -10,6 +12,12 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 		switch handler.Type {
 		case "change":
 			eventData = jsEvent.Get("target").Get("value").String()
+		case "click",
+			"mousedown",
+			"mouseup",
+			"mouseenter",
+			"mouseleave":
+			eventData = jsEvent.Get("buttons").String()
 		}
 
 		event := Event{Type: handler.Type, Data: eventData}
