@@ -1,12 +1,9 @@
 package vdom
 
-// dom is the current vdom as written to the dom
-var dom = Element{Type: Root}
-
-// rootComponent is the root of the component tree
-var rootComponent Component
-
-var svgNamespace bool
+var dom = Element{Type: Root}         // dom is the current vdom as written to the dom
+var svgNamespace bool                 // svgNamespace indicates an SVG vs HTML document
+var rootComponent Component           // rootComponent is the root of the component tree
+var elementMap map[Component]*Element // elementMap links active components to elements
 
 //SetSVGNamespace set the DOM namespace to SVG (default is HTML)
 func SetSVGNamespace() {
@@ -16,6 +13,8 @@ func SetSVGNamespace() {
 // RenderComponentToDom renders a VDOM component
 func RenderComponentToDom(component Component) {
 	rootComponent = component
+	elementMap = make(map[Component]*Element)
+
 	RenderToDom(component.Render())
 }
 
@@ -30,6 +29,11 @@ func RenderToDom(element Element) {
 
 	applyPatchToDom(&patch)
 	dom = element
+}
+
+// addComponentMap adds to new component to the current element map during build up
+func addComponentMap(component Component, element *Element) {
+	elementMap[component] = element
 }
 
 // fullDomPatch returns a patch to fully populate the DOM

@@ -18,13 +18,14 @@ type Attr struct {
 
 // Element is an xml element
 type Element struct {
-	Type  ElementType
-	Name  string
-	Attrs map[string]interface{}
-
+	Type          ElementType
+	Name          string
+	Attrs         map[string]interface{}
 	Children      []Element
 	EventHandlers []EventHandler
-	Component     Component
+
+	// Element path from root of DOM tree
+	path []int
 }
 
 // MakeRootElement creates a VDOM root element
@@ -50,10 +51,14 @@ func MakeElement(name string, args ...interface{}) Element {
 		case EventHandler:
 			element.EventHandlers = append(element.EventHandlers, arg)
 		case Component:
-			element.Children = append(element.Children, arg.Render())
+			childElement := arg.Render()
+			element.Children = append(element.Children, childElement)
+			addComponentMap(arg, &childElement)
 		case []Component:
 			for j := 0; j < len(arg); j++ {
-				element.Children = append(element.Children, arg[j].Render())
+				childElement := arg[j].Render()
+				element.Children = append(element.Children, childElement)
+				addComponentMap(arg[j], &childElement)
 			}
 		}
 	}
