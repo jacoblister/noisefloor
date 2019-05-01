@@ -33,15 +33,14 @@ var eventHandlerMap map[eventHandlerKey]eventHandlerValue
 func updateEventHandlersRecursive(element *Element) {
 	for i := 0; i < len(element.EventHandlers); i++ {
 		handler := &element.EventHandlers[i]
-		// for _, handler := range element.EventHandlers {
 		id := element.Attrs["id"].(string)
 		key := eventHandlerKey{id: id, eventType: handler.Type}
 		value := eventHandlerValue{element: element, eventHandler: handler, Type: handler.Type}
 		eventHandlerMap[key] = value
 	}
 
-	for _, child := range element.Children {
-		updateEventHandlersRecursive(&child)
+	for i := 0; i < len(element.Children); i++ {
+		updateEventHandlersRecursive(&element.Children[i])
 	}
 }
 
@@ -59,9 +58,6 @@ func handleDomEvent(domEvent domEvent) {
 
 	handler := eventHandlerMap[eventHandlerKey]
 	event := Event{Type: domEvent.Type, Data: domEvent.Data}
-
-	// fmt.Println(handler.eventHandler.handlerFunc)
-	// fmt.Println(eventHandlerMap)
 
 	handler.eventHandler.handlerFunc(handler.element, &event)
 

@@ -22,6 +22,7 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 
 		event := Event{Type: handler.Type, Data: eventData}
 		handler.handlerFunc(element, &event)
+		// applyPatchToDom(fullDomPatch())
 	})
 }
 

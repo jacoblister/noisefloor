@@ -24,8 +24,8 @@ type Element struct {
 	Children      []Element
 	EventHandlers []EventHandler
 
-	// Element path from root of DOM tree
-	path []int
+	Component Component // Component if element derives from a component
+	Path      []int     // Element path from root of DOM tree
 }
 
 // MakeRootElement creates a VDOM root element
@@ -52,13 +52,13 @@ func MakeElement(name string, args ...interface{}) Element {
 			element.EventHandlers = append(element.EventHandlers, arg)
 		case Component:
 			childElement := arg.Render()
+			childElement.Component = arg
 			element.Children = append(element.Children, childElement)
-			addComponentMap(arg, &childElement)
 		case []Component:
 			for j := 0; j < len(arg); j++ {
 				childElement := arg[j].Render()
+				childElement.Component = arg[j]
 				element.Children = append(element.Children, childElement)
-				addComponentMap(arg[j], &childElement)
 			}
 		}
 	}

@@ -20,10 +20,3 @@ type Patch struct {
 	Element      Element
 	Attr         Attr
 }
-
-//JSON returns a JSON friendly encoding of the patch
-func (p *Patch) JSON() interface{} {
-	result := map[string]interface{}{}
-	result["type"] = "Replace"
-	return result
-}
