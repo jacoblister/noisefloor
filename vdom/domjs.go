@@ -21,8 +21,11 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 		}
 
 		event := Event{Type: handler.Type, Data: eventData}
+
+		updateDomBegin()
 		handler.handlerFunc(element, &event)
-		// applyPatchToDom(fullDomPatch())
+		patch := updateDomEnd()
+		applyPatchToDom(patch)
 	})
 }
 
@@ -72,5 +75,22 @@ func applyPatchToDom(patch *Patch) {
 	}
 }
 
-//ListenAndServe is a no-op for the javascript target
-func ListenAndServe() {}
+//componentUpdateListen reads and applies background component state changes
+func componentUpdateListen(c chan Component) {
+	for {
+		component := <-c
+
+		updateDomBegin()
+		UpdateComponent(component)
+		patch := updateDomEnd()
+		applyPatchToDom(patch)
+	}
+}
+
+//ListenAndServe starts the javascript target
+func ListenAndServe() {
+	componentUpdate = make(chan Component, 10)
+	go componentUpdateListen(componentUpdate)
+
+	applyPatchToDom(fullDomPatch())
+}

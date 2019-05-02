@@ -59,10 +59,12 @@ func handleDomEvent(domEvent domEvent) {
 	handler := eventHandlerMap[eventHandlerKey]
 	event := Event{Type: domEvent.Type, Data: domEvent.Data}
 
+	updateDomBegin()
 	handler.eventHandler.handlerFunc(handler.element, &event)
+	patch := updateDomEnd()
+	applyPatchToDom(patch)
 
 	for conn := range activeConnections {
-		patch := fullDomPatch()
 		conn.WriteJSON(patch)
 	}
 }
@@ -103,15 +105,35 @@ func clientProcess(conn *websocket.Conn) {
 	}
 }
 
+//componentUpdateListen reads and applies background component state changes
+func componentUpdateListen(c chan Component) {
+	for {
+		component := <-c
+
+		updateDomBegin()
+		UpdateComponent(component)
+		patch := updateDomEnd()
+		applyPatchToDom(patch)
+
+		for conn := range activeConnections {
+			conn.WriteJSON(patch)
+		}
+	}
+}
+
 //ListenAndServe begins and HTTP server for the application
 func ListenAndServe() {
+	applyPatchToDom(fullDomPatch())
+
 	activeConnections = map[*websocket.Conn]int{}
+	componentUpdate = make(chan Component, 10)
+
+	go componentUpdateListen(componentUpdate)
 
 	// fs := http.FileServer(http.Dir("../../assets/files"))
 	fs := http.FileServer(assets.Assets)
 
 	http.Handle("/", fs)
-
 	http.HandleFunc("/client", clientHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

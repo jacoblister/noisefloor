@@ -15,5 +15,6 @@ func main() {
 		vdom.MakeEventHandler(vdom.Click, onClick),
 	)
 
-	vdom.RenderToDom(e)
+	vdom.SetDomRootElement(&e)
+	vdom.ListenAndServe()
 }
