@@ -6,7 +6,7 @@ import (
 	"github.com/jacoblister/noisefloor/midi"
 )
 
-const mpePitchBendRange = 12
+const mpePitchBendRange = 6
 
 // MIDIInputMPE - MIDI to CV converter for MPR instruments
 type MIDIInputMPE struct {

@@ -7,9 +7,7 @@ import (
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
-func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
-	println(keyNumber, keyDown)
-
+func (k *Keyboard) noteEventFromUI(keyNumber int, keyDown bool) {
 	if k.keydown[keyNumber] == keyDown {
 		// return early if key already is same state
 		return
@@ -26,7 +24,14 @@ func (k *Keyboard) noteEvent(keyNumber int, keyDown bool) {
 			Note: keyNumber}
 	}
 	k.MidiEvents = append(k.MidiEvents, midiEvent)
+
 	vdom.UpdateComponent(k)
+}
+
+func (k *Keyboard) noteEventFromProcess(keyNumber int, keyDown bool) {
+	k.keydown[keyNumber] = keyDown
+
+	vdom.UpdateComponentBackground(k)
 }
 
 func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) vdom.Element {
@@ -61,10 +66,10 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		"stroke", stroke,
 		"fill", fill,
 		vdom.MakeEventHandler(vdom.MouseDown, func(element *vdom.Element, event *vdom.Event) {
-			k.noteEvent(keyNumber, true)
+			k.noteEventFromUI(keyNumber, true)
 		}),
 		vdom.MakeEventHandler(vdom.MouseUp, func(element *vdom.Element, event *vdom.Event) {
-			k.noteEvent(keyNumber, false)
+			k.noteEventFromUI(keyNumber, false)
 		}),
 		// vdom.MakeEventHandler(vdom.MouseEnter, func(element *vdom.Element, event *vdom.Event) {
 		// 	buttons, _ := strconv.Atoi(event.Data)

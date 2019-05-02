@@ -89,7 +89,6 @@ static inline int gowdm_midi_client_read(wdm_midi_client* client, uint8_t **buff
 */
 import "C"
 import (
-	"fmt"
 	"unsafe"
 
 	"github.com/jacoblister/noisefloor/midi"
@@ -100,8 +99,8 @@ type driverMidiWDM struct {
 }
 
 func (d *driverMidiWDM) start() {
-	// deviceName := "MPKmini2"
-	deviceName := "Seaboard Block"
+	deviceName := "MPKmini2"
+	// deviceName := "Seaboard Block"
 
 	d.client = C.gowdm_midi_client_open(C.CString(deviceName))
 	if d.client == nil {
@@ -120,8 +119,6 @@ func (d *driverMidiWDM) readEvents() []midi.Event {
 	cBuf := (*[1 << 30]byte)(byteBuffer)
 
 	midiEvents := midi.DecodeByteBuffer(cBuf[:byteBufferLength])
-
-	fmt.Println(midiEvents)
 
 	return midiEvents
 }
