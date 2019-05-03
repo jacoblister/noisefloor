@@ -126,13 +126,14 @@ func ListenAndServe() {
 	applyPatchToDom(fullDomPatch())
 
 	activeConnections = map[*websocket.Conn]int{}
-	componentUpdate = make(chan Component, 10)
 
+	componentUpdate = make(chan Component, 10)
 	go componentUpdateListen(componentUpdate)
 
 	// fs := http.FileServer(http.Dir("../../assets/files"))
 	fs := http.FileServer(assets.Assets)
 
+	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	http.Handle("/", fs)
 	http.HandleFunc("/client", clientHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))

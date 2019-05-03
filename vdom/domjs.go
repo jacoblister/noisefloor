@@ -1,13 +1,14 @@
-//+build js
+// +build js
 
 package vdom
 
 import (
-	"github.com/gopherjs/gopherjs/js"
+	"syscall/js"
 )
 
-func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler) {
-	domNode.Call("addEventListener", handler.Type, func(jsEvent *js.Object) {
+func addEventHandler(element *Element, domNode js.Value, handler *EventHandler) {
+	domNode.Call("addEventListener", handler.Type, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		jsEvent := args[0]
 		var eventData string
 		switch handler.Type {
 		case "change":
@@ -26,13 +27,15 @@ func addEventHandler(element *Element, domNode *js.Object, handler *EventHandler
 		handler.handlerFunc(element, &event)
 		patch := updateDomEnd()
 		applyPatchToDom(patch)
-	})
+
+		return nil
+	}))
 }
 
-func createElementRecursive(svgNamespace bool, element *Element) *js.Object {
-	document := js.Global.Get("document")
+func createElementRecursive(svgNamespace bool, element *Element) js.Value {
+	document := js.Global().Get("document")
 
-	var node *js.Object
+	var node js.Value
 	if svgNamespace == true {
 		node = document.Call("createElementNS", "http://www.w3.org/2000/svg", element.Name)
 	} else {
@@ -63,10 +66,10 @@ func createElementRecursive(svgNamespace bool, element *Element) *js.Object {
 func applyPatchToDom(patch *Patch) {
 	switch patch.Type {
 	case Replace:
-		root := js.Global.Get("document").Get("body")
+		root := js.Global().Get("document").Get("body")
 
 		child := root.Get("lastElementChild")
-		if child != nil {
+		if child != js.Null() {
 			root.Call("removeChild", child)
 		}
 

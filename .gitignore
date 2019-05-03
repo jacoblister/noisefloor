@@ -1,5 +1,5 @@
 /vendor
-main
+/noisefloor
 *.js
 *.js.map
 !*.inc.js

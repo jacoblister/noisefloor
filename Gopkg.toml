@@ -31,11 +31,6 @@ required = ["github.com/gopherjs/gopherjs"]
   name = "github.com/gopherjs/gopherjs"
   source = "https://github.com/jacoblister/gopherjs"
 
-[[constraint]]
-  branch = "master"
-  name = "github.com/bep/gr"
-  source = "https://github.com/jacoblister/gr"
-
 [prune]
   go-tests = true
   unused-packages = true
