@@ -64,14 +64,50 @@
         return node;
       }
 
-      function applyPatch(patch) {
-        child = document.body.firstElementChild;
-        if (child && !(child instanceof HTMLScriptElement)) {
-          document.body.removeChild(child);
-        }
+      function getElementByPath(path) {
+        element = document.body.firstElementChild;
 
-        node = createElementRecursive(patch.SVGNamespace, patch.Element);
-        document.body.appendChild(node);
+        for (var i = 0; i < path.length; i++) {
+          element = element.childNodes[path[i]];
+        }
+        return element;
+      }
+
+      function applyPatchList(patchList) {
+        const Insert = 0,
+          Remove = 1,
+          Replace = 2,
+          AttrSet = 3,
+          AttrRemove = 4;
+
+        for (var i = 0; i < patchList.Patch.length; i++) {
+          patch = patchList.Patch[i];
+          element = getElementByPath(patch.Path);
+          switch (patch.Type) {
+            case Replace:
+              child = document.body.firstElementChild;
+              if (child && !(child instanceof HTMLScriptElement)) {
+                document.body.removeChild(child);
+              }
+              // parent = element.parent;
+              // console.log(parent);
+              // document.body.removeChild(element);
+
+              node = createElementRecursive(
+                patchList.SVGNamespace,
+                patch.Element
+              );
+              document.body.appendChild(node);
+              break;
+            case AttrSet:
+              console.log("setAttr:", patch.Attr.Name, patch.Attr.Value);
+              element.setAttribute(patch.Attr.Name, patch.Attr.Value);
+              break;
+            case AttrRemove:
+              element.removeAttribute(patch.Attr.Name);
+              break;
+          }
+        }
       }
 
       ws = initWS();
@@ -82,9 +118,9 @@
           console.log("socket open");
         };
         socket.onmessage = function(e) {
-          patch = JSON.parse(e.data);
-          console.log(patch);
-          applyPatch(patch);
+          patchList = JSON.parse(e.data);
+          console.log(patchList);
+          applyPatchList(patchList);
         };
         socket.onclose = function() {
           console.log("socket close");

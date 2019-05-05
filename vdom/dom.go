@@ -28,8 +28,6 @@ func RenderComponentToDom(component Component) {
 
 // UpdateComponent is called when a state change in a component occurs
 func UpdateComponent(component Component) {
-	// rootElement := component.Render()
-	// RenderToDom(&rootElement)
 }
 
 // UpdateComponentBackground allows a background process to
@@ -57,14 +55,18 @@ func updateDomBegin() {
 
 // updateDomEnd notifies a DOM update cycle has ended,
 // and returns a patch of DOM changes for the update cycle
-func updateDomEnd() *Patch {
-	dom = rootComponent.Render()
-	patch := Patch{Type: Replace, SVGNamespace: svgNamespace, Path: []int{}, Element: dom}
-	return &patch
+func updateDomEnd() PatchList {
+	newDom := rootComponent.Render()
+	updateDomTreeRecursive(&newDom, []int{})
+
+	// patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{Patch{Type: Replace, Path: []int{}, Element: dom}}}
+	patchList := diffElementTrees(&dom, &newDom)
+	dom = newDom
+	return patchList
 }
 
 // fullDomPatch returns a patch to fully populate the DOM
-func fullDomPatch() *Patch {
-	patch := Patch{Type: Replace, SVGNamespace: svgNamespace, Path: []int{}, Element: dom}
-	return &patch
+func fullDomPatch() PatchList {
+	patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{Patch{Type: Replace, Path: []int{}, Element: dom}}}
+	return patchList
 }

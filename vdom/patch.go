@@ -12,11 +12,16 @@ const (
 	AttrRemove
 )
 
-// Patch a DOM patch
+// Patch is a DOM patch
 type Patch struct {
-	Type         PatchType
+	Type    PatchType
+	Path    []int
+	Element Element
+	Attr    Attr
+}
+
+// PatchList is a series of DOM patches
+type PatchList struct {
 	SVGNamespace bool
-	Path         []int
-	Element      Element
-	Attr         Attr
+	Patch        []Patch
 }

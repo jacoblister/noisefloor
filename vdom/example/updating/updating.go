@@ -43,5 +43,7 @@ func main() {
 	}()
 
 	vdom.RenderComponentToDom(&clicker)
+	println("start")
 	vdom.ListenAndServe()
+	println("served")
 }

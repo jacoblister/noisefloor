@@ -63,18 +63,21 @@ func createElementRecursive(svgNamespace bool, element *Element) js.Value {
 	return node
 }
 
-func applyPatchToDom(patch *Patch) {
-	switch patch.Type {
-	case Replace:
-		root := js.Global().Get("document").Get("body")
+func applyPatchToDom(patchList PatchList) {
+	for i := 0; i < len(patchList.Patch); i++ {
+		patch := patchList.Patch[i]
+		switch patch.Type {
+		case Replace:
+			root := js.Global().Get("document").Get("body")
 
-		child := root.Get("lastElementChild")
-		if child != js.Null() {
-			root.Call("removeChild", child)
+			child := root.Get("lastElementChild")
+			if child != js.Null() {
+				root.Call("removeChild", child)
+			}
+
+			node := createElementRecursive(patchList.SVGNamespace, &patch.Element)
+			root.Call("appendChild", node)
 		}
-
-		node := createElementRecursive(patch.SVGNamespace, &patch.Element)
-		root.Call("appendChild", node)
 	}
 }
 

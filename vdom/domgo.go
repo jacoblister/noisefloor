@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/jacoblister/noisefloor/vdom/assets"
 )
 
 type eventHandlerKey struct {
@@ -47,9 +46,11 @@ func updateEventHandlersRecursive(element *Element) {
 var activeConnections map[*websocket.Conn]int
 
 //applyPatchToDom applies the patch for the GoLang native target
-func applyPatchToDom(patch *Patch) {
-	eventHandlerMap = map[eventHandlerKey]eventHandlerValue{}
-	updateEventHandlersRecursive(&patch.Element)
+func applyPatchToDom(patchList PatchList) {
+	for i := 0; i < len(patchList.Patch); i++ {
+		eventHandlerMap = map[eventHandlerKey]eventHandlerValue{}
+		updateEventHandlersRecursive(&patchList.Patch[i].Element)
+	}
 }
 
 //handleDomEvent processes a DOM event received through a connection
@@ -62,7 +63,7 @@ func handleDomEvent(domEvent domEvent) {
 	updateDomBegin()
 	handler.eventHandler.handlerFunc(handler.element, &event)
 	patch := updateDomEnd()
-	applyPatchToDom(patch)
+	applyPatchToDom(fullDomPatch()) // TODO - improve this, not efficient, should apply new patch, not full patch
 
 	for conn := range activeConnections {
 		conn.WriteJSON(patch)
@@ -130,8 +131,8 @@ func ListenAndServe() {
 	componentUpdate = make(chan Component, 10)
 	go componentUpdateListen(componentUpdate)
 
-	// fs := http.FileServer(http.Dir("../../assets/files"))
-	fs := http.FileServer(assets.Assets)
+	fs := http.FileServer(http.Dir("../../assets/files"))
+	// fs := http.FileServer(assets.Assets)
 
 	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	http.Handle("/", fs)
