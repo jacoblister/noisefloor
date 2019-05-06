@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/audiomodule"
 )
 
 //#include <string.h>
@@ -15,7 +15,7 @@ import "C"
 
 type driverAudioASIO struct {
 	asioDriver     *ASIODriver
-	audioProcessor component.AudioProcessor
+	audioProcessor audiomodule.AudioProcessor
 	driverMidi     driverMidi
 }
 
@@ -54,7 +54,7 @@ func (d *driverAudioASIO) setMidiDriver(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
 }
 
-func (d *driverAudioASIO) setAudioProcessor(audioProcessor component.AudioProcessor) {
+func (d *driverAudioASIO) setAudioProcessor(audioProcessor audiomodule.AudioProcessor) {
 	d.audioProcessor = audioProcessor
 }
 func (d *driverAudioASIO) start() {

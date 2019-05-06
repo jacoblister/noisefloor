@@ -49,16 +49,13 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		height = 120
 	}
 
-	var depressedElem vdom.Attr
 	if depressed {
-		depressedElem = vdom.Attr{Name: "style", Value: "depressed"}
 		fill = "lightcyan"
 	}
 
 	key := vdom.MakeElement("rect",
 		"id", "key-"+strconv.Itoa(keyNumber),
 		"class", keyType,
-		depressedElem,
 		"x", xPosition,
 		"y", 10,
 		"width", width,
@@ -71,21 +68,21 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		vdom.MakeEventHandler(vdom.MouseUp, func(element *vdom.Element, event *vdom.Event) {
 			k.noteEventFromUI(keyNumber, false)
 		}),
-		// vdom.MakeEventHandler(vdom.MouseEnter, func(element *vdom.Element, event *vdom.Event) {
-		// 	buttons, _ := strconv.Atoi(event.Data)
-		// 	if buttons > 0 {
-		// 		k.noteEvent(keyNumber, true)
-		// 	}
-		// }),
-		// vdom.MakeEventHandler(vdom.MouseLeave, func(element *vdom.Element, event *vdom.Event) {
-		// 	k.noteEvent(keyNumber, false)
-		// }),
-		// vdom.MakeEventHandler(vdom.TouchStart, func(element *vdom.Element, event *vdom.Event) {
-		// 	k.noteEvent(keyNumber, true)
-		// }),
-		// vdom.MakeEventHandler(vdom.TouchEnd, func(element *vdom.Element, event *vdom.Event) {
-		// 	k.noteEvent(keyNumber, false)
-		// }),
+		vdom.MakeEventHandler(vdom.MouseEnter, func(element *vdom.Element, event *vdom.Event) {
+			buttons, _ := strconv.Atoi(event.Data)
+			if buttons > 0 {
+				k.noteEventFromUI(keyNumber, true)
+			}
+		}),
+		vdom.MakeEventHandler(vdom.MouseLeave, func(element *vdom.Element, event *vdom.Event) {
+			k.noteEventFromUI(keyNumber, false)
+		}),
+		vdom.MakeEventHandler(vdom.TouchStart, func(element *vdom.Element, event *vdom.Event) {
+			k.noteEventFromUI(keyNumber, true)
+		}),
+		vdom.MakeEventHandler(vdom.TouchEnd, func(element *vdom.Element, event *vdom.Event) {
+			k.noteEventFromUI(keyNumber, false)
+		}),
 	)
 	return key
 }
@@ -115,7 +112,6 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 
 // Render displays the keyboard.
 func (k *Keyboard) Render() vdom.Element {
-	println("render keyboard")
 	elem := vdom.MakeElement("g")
 	for octave := 0; octave < 3; octave++ {
 		k.renderOctave(&elem, 48+octave*12, (40*7*octave)+1)

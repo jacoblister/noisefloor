@@ -115,7 +115,7 @@ func componentUpdateListen(c chan Component) {
 		updateDomBegin()
 		UpdateComponent(component)
 		patch := updateDomEnd()
-		applyPatchToDom(patch)
+		applyPatchToDom(fullDomPatch()) // TODO - improve this, not efficient, should apply new patch, not full patch
 
 		for conn := range activeConnections {
 			conn.WriteJSON(patch)
