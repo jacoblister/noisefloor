@@ -2,6 +2,11 @@ package synth
 
 import "github.com/jacoblister/noisefloor/component/synth/processor"
 
+// ListProcessors returns a list of available processors
+func ListProcessors() []string {
+	return []string{"Envelope", "Gain", "Oscillator"}
+}
+
 //MakeProcessor generates a new processor by the given processor name
 func MakeProcessor(name string) Processor {
 	switch name {
@@ -14,4 +19,19 @@ func MakeProcessor(name string) Processor {
 	}
 
 	return nil
+}
+
+func getProcessorInputs(p *Processor) []string {
+	return []string{}
+}
+
+func getProcessorOutputs(p *Processor) []string {
+	return []string{}
+}
+
+func getProcessorParameters(p *Processor) []ProcessorParameter {
+	return []ProcessorParameter{}
+}
+
+func setProcessorParameter(p *Processor, name string, value float32) {
 }

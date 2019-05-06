@@ -7,17 +7,9 @@ type Processor interface {
 	// Process(vars ...[]*AudioFloat)
 }
 
-func getProcessorInputs(p *Processor) []string {
-	return []string{}
-}
-
-func getProcessorOutputs(p *Processor) []string {
-	return []string{}
-}
-
-func getProcessorParameters(p *Processor) []ProcessorParameter {
-	return []ProcessorParameter{}
-}
-
-func setProcessorParameter(p *Processor, name string, value float32) {
+// ProcessorDefinition is a configured processor with coordinates
+type ProcessorDefinition struct {
+	x         int
+	y         int
+	processor Processor
 }
