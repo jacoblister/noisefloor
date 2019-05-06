@@ -1,5 +1,5 @@
 // Export raw gopherjs transpiled processsing units to javascript (without externalization)
-var synth = $packages["github.com/jacoblister/noisefloor/component/synth"];
+var synth = $packages["github.com/jacoblister/noisefloor/audiomodule/synth"];
 $global.MakeProcessor = synth.MakeProcessor;
 
 var app = $packages["github.com/jacoblister/noisefloor/app"];
