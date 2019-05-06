@@ -63,20 +63,41 @@ func createElementRecursive(svgNamespace bool, element *Element) js.Value {
 	return node
 }
 
+func getElementByPath(path []int) js.Value {
+	element := js.Global().Get("document").Get("body").Get("firstElementChild")
+	if element != js.Null() {
+		for i := 0; i < len(path); i++ {
+			element = element.Get("children").Index(path[i])
+		}
+	}
+	return element
+}
+
 func applyPatchToDom(patchList PatchList) {
 	for i := 0; i < len(patchList.Patch); i++ {
 		patch := patchList.Patch[i]
+
+		parent := js.Global().Get("document").Get("body")
+		target := getElementByPath(patch.Path)
+		if target != js.Null() {
+			parent = target.Get("parentElement")
+		}
+
 		switch patch.Type {
 		case Replace:
-			root := js.Global().Get("document").Get("body")
+			element := createElementRecursive(patchList.SVGNamespace, &patch.Element)
 
-			child := root.Get("lastElementChild")
-			if child != js.Null() {
-				root.Call("removeChild", child)
+			if target != js.Null() {
+				parent.Call("replaceChild", element, target)
+			} else {
+				parent.Call("appendChild", element)
 			}
-
-			node := createElementRecursive(patchList.SVGNamespace, &patch.Element)
-			root.Call("appendChild", node)
+		case AttrSet:
+			target.Call("setAttribute", patch.Attr.Name, patch.Attr.Value)
+		case AttrRemove:
+			target.Call("removeAttribute", patch.Attr.Name)
+		case TextSet:
+			target.Set("innerText", patch.Attr.Value)
 		}
 	}
 }

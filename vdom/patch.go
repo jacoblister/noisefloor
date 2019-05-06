@@ -10,6 +10,7 @@ const (
 	Replace
 	AttrSet
 	AttrRemove
+	TextSet
 )
 
 // Patch is a DOM patch

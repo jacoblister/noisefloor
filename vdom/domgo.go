@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/jacoblister/noisefloor/vdom/assets"
 )
 
 type eventHandlerKey struct {
@@ -131,8 +132,8 @@ func ListenAndServe() {
 	componentUpdate = make(chan Component, 10)
 	go componentUpdateListen(componentUpdate)
 
-	fs := http.FileServer(http.Dir("../../assets/files"))
-	// fs := http.FileServer(assets.Assets)
+	// fs := http.FileServer(http.Dir("../../assets/files"))
+	fs := http.FileServer(assets.Assets)
 
 	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	http.Handle("/", fs)

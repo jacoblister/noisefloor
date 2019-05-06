@@ -65,10 +65,18 @@
       }
 
       function getElementByPath(path) {
-        element = document.body.firstElementChild;
+        let element = null;
+
+        // get root element if it exists, excluding any injected script elements
+        for (var i = 0; i < document.body.children.length; i++) {
+          if (!(document.body.children[i] instanceof HTMLScriptElement)) {
+            element = document.body.children[i];
+            break;
+          }
+        }
 
         for (var i = 0; i < path.length; i++) {
-          element = element.childNodes[path[i]];
+          element = element.children[path[i]];
         }
         return element;
       }
@@ -78,33 +86,38 @@
           Remove = 1,
           Replace = 2,
           AttrSet = 3,
-          AttrRemove = 4;
+          AttrRemove = 4,
+          TextSet = 5;
 
         for (var i = 0; i < patchList.Patch.length; i++) {
-          patch = patchList.Patch[i];
-          element = getElementByPath(patch.Path);
+          let patch = patchList.Patch[i];
+
+          let parent = document.body;
+          let target = getElementByPath(patch.Path);
+          if (target != null) {
+            parent = target.parentElement;
+          }
           switch (patch.Type) {
             case Replace:
-              child = document.body.firstElementChild;
-              if (child && !(child instanceof HTMLScriptElement)) {
-                document.body.removeChild(child);
-              }
-              // parent = element.parent;
-              // console.log(parent);
-              // document.body.removeChild(element);
-
-              node = createElementRecursive(
+              let element = createElementRecursive(
                 patchList.SVGNamespace,
                 patch.Element
               );
-              document.body.appendChild(node);
+
+              if (target) {
+                parent.replaceChild(element, target);
+              } else {
+                parent.appendChild(element);
+              }
               break;
             case AttrSet:
-              console.log("setAttr:", patch.Attr.Name, patch.Attr.Value);
-              element.setAttribute(patch.Attr.Name, patch.Attr.Value);
+              target.setAttribute(patch.Attr.Name, patch.Attr.Value);
               break;
             case AttrRemove:
-              element.removeAttribute(patch.Attr.Name);
+              target.removeAttribute(patch.Attr.Name);
+              break;
+            case TextSet:
+              target.innerText = patch.Attr.Value;
               break;
           }
         }
@@ -119,7 +132,7 @@
         };
         socket.onmessage = function(e) {
           patchList = JSON.parse(e.data);
-          console.log(patchList);
+          console.log("patchList:", patchList);
           applyPatchList(patchList);
         };
         socket.onclose = function() {
