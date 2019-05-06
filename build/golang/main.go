@@ -4,7 +4,7 @@ import (
 	"runtime/debug"
 
 	"github.com/jacoblister/noisefloor/app"
-	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/audiomodule"
 )
 
 type noiseFloor struct {
@@ -12,7 +12,7 @@ type noiseFloor struct {
 	driverMidi  driverMidi
 }
 
-func (nf *noiseFloor) Start(hardwareDevices app.HardwareDevices, audioProcessor component.AudioProcessor) {
+func (nf *noiseFloor) Start(hardwareDevices app.HardwareDevices, audioProcessor audiomodule.AudioProcessor) {
 	nf.driverAudio.setMidiDriver(nf.driverMidi)
 	nf.driverAudio.setAudioProcessor(audioProcessor)
 	nf.driverMidi.start()

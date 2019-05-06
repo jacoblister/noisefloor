@@ -3,12 +3,12 @@ package nf
 import (
 	"time"
 
-	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/audiomodule"
 )
 
 type driverAudioMock struct {
 	driverMidi     driverMidi
-	audioProcessor component.AudioProcessor
+	audioProcessor audiomodule.AudioProcessor
 	stopchan       chan bool
 	stoppedchan    chan bool
 }
@@ -37,7 +37,7 @@ func (d *driverAudioMock) setMidiDriver(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
 }
 
-func (d *driverAudioMock) setAudioProcessor(audioProcessor component.AudioProcessor) {
+func (d *driverAudioMock) setAudioProcessor(audioProcessor audiomodule.AudioProcessor) {
 	d.audioProcessor = audioProcessor
 }
 

@@ -3,7 +3,7 @@ package nf
 import (
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/audiomodule"
 	"github.com/jacoblister/noisefloor/midi"
 )
 
@@ -16,7 +16,7 @@ type driverMidi interface {
 
 type driverAudio interface {
 	setMidiDriver(driverMidi driverMidi)
-	setAudioProcessor(audioProcessor component.AudioProcessor)
+	setAudioProcessor(audioProcessor audiomodule.AudioProcessor)
 	samplingRate() int
 	start()
 	stop()

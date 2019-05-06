@@ -1,6 +1,6 @@
-package component
+package audiomodule
 
-import "github.com/jacoblister/noisefloor/component/synth"
+import "github.com/jacoblister/noisefloor/audiomodule/synth"
 
 //MakeComponent generates a new compoent by the given name
 func MakeComponent(name string) AudioProcessor {

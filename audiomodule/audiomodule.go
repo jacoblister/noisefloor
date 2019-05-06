@@ -1,4 +1,4 @@
-package component
+package audiomodule
 
 import (
 	"github.com/jacoblister/noisefloor/midi"

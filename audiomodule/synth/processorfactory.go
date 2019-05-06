@@ -1,6 +1,6 @@
 package synth
 
-import "github.com/jacoblister/noisefloor/component/synth/processor"
+import "github.com/jacoblister/noisefloor/audiomodule/synth/processor"
 
 // ListProcessors returns a list of available processors
 func ListProcessors() []string {

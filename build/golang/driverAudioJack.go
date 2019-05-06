@@ -82,11 +82,11 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/audiomodule"
 )
 
 type driverAudioJack struct {
-	audioProcessor component.AudioProcessor
+	audioProcessor audiomodule.AudioProcessor
 	driverMidi     driverMidi
 }
 
@@ -124,7 +124,7 @@ func (d *driverAudioJack) setMidiDriver(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
 }
 
-func (d *driverAudioJack) setAudioProcessor(audioProcessor component.AudioProcessor) {
+func (d *driverAudioJack) setAudioProcessor(audioProcessor audiomodule.AudioProcessor) {
 	d.audioProcessor = audioProcessor
 }
 func (d *driverAudioJack) start() {

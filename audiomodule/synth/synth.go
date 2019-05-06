@@ -1,7 +1,7 @@
 package synth
 
 import (
-	"github.com/jacoblister/noisefloor/component/synth/processor"
+	"github.com/jacoblister/noisefloor/audiomodule/synth/processor"
 	"github.com/jacoblister/noisefloor/midi"
 )
 

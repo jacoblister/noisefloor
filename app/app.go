@@ -5,25 +5,25 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/jacoblister/noisefloor/component"
+	"github.com/jacoblister/noisefloor/audiomodule"
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
-var c components
+var mods modules
 
 //GetAudioProcessor returns the audioProcessor to external javascript
-func GetAudioProcessor() component.AudioProcessor {
-	return &c
+func GetAudioProcessor() audiomodule.AudioProcessor {
+	return &mods
 }
 
 // App is the main entry point for the application
 func App(driver Driver) {
 	hardwareDevices := HardwareDevices{}
-	driver.Start(hardwareDevices, &c)
+	driver.Start(hardwareDevices, &mods)
 
 	go func() {
 		vdom.SetSVGNamespace()
-		vdom.RenderComponentToDom(&c)
+		vdom.RenderComponentToDom(&mods)
 		vdom.ListenAndServe()
 	}()
 
