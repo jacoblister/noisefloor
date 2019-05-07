@@ -15,7 +15,12 @@
             case "mouseup":
             case "mouseenter":
             case "mouseleave":
-              eventData = { Buttons: evt.buttons };
+            case "mousemove":
+              eventData = {
+                Buttons: evt.buttons,
+                ClientX: evt.clientX,
+                ClientY: evt.clientY
+              };
               break;
           }
 

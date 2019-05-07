@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/jacoblister/noisefloor/vdom/assets"
 )
 
 type eventHandlerKey struct {
@@ -32,7 +33,10 @@ var eventHandlerMap map[eventHandlerKey]eventHandlerValue
 func updateEventHandlersRecursive(element *Element) {
 	for i := 0; i < len(element.EventHandlers); i++ {
 		handler := &element.EventHandlers[i]
-		id := element.Attrs["id"].(string)
+		id, ok := element.Attrs["id"].(string)
+		if !ok {
+			panic("Must define id for element with event handler")
+		}
 		key := eventHandlerKey{id: id, eventType: handler.Type}
 		value := eventHandlerValue{element: element, eventHandler: handler, Type: handler.Type}
 		eventHandlerMap[key] = value
@@ -147,8 +151,8 @@ func ListenAndServe() {
 	componentUpdate = make(chan Component, 10)
 	go componentUpdateListen(componentUpdate)
 
-	fs := http.FileServer(http.Dir("../../assets/files"))
-	// fs := http.FileServer(assets.Assets)
+	// fs := http.FileServer(http.Dir("../../assets/files"))
+	fs := http.FileServer(assets.Assets)
 
 	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	http.Handle("/", fs)

@@ -69,7 +69,7 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 			k.noteEventFromUI(keyNumber, false)
 		}),
 		vdom.MakeEventHandler(vdom.MouseEnter, func(element *vdom.Element, event *vdom.Event) {
-			buttons, _ := strconv.Atoi(event.Data)
+			buttons := event.Data["Buttons"].(int)
 			if buttons > 0 {
 				k.noteEventFromUI(keyNumber, true)
 			}

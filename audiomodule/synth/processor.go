@@ -8,7 +8,7 @@ type Processor interface {
 }
 
 // ProcessorDefinition is a configured processor with coordinates
-type ProcessorDefinition struct {
+type processorDefinition struct {
 	x         int
 	y         int
 	processor Processor

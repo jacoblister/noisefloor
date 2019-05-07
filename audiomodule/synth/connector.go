@@ -1,7 +1,7 @@
 package synth
 
 //Connector specifies a connection between two Processors
-type Connector struct {
+type connector struct {
 	fromProcessor Processor
 	toProcessor   Processor
 	fromPort      int

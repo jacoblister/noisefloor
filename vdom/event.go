@@ -10,6 +10,7 @@ const (
 	MouseUp
 	MouseEnter
 	MouseLeave
+	MouseMove
 	TouchStart
 	TouchEnd
 	KeyDown
@@ -24,6 +25,7 @@ func (e EventType) String() string {
 		"mouseup",
 		"mouseenter",
 		"mouseleave",
+		"mousemove",
 		"touchstart",
 		"touchend",
 		"keydown",

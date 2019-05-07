@@ -48,6 +48,10 @@ func MakeElement(name string, args ...interface{}) Element {
 			}
 		case Element:
 			element.Children = append(element.Children, arg)
+		case []Element:
+			for j := 0; j < len(arg); j++ {
+				element.Children = append(element.Children, arg[j])
+			}
 		case EventHandler:
 			element.EventHandlers = append(element.EventHandlers, arg)
 		case Component:
