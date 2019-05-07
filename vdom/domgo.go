@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/jacoblister/noisefloor/vdom/assets"
 )
 
 type eventHandlerKey struct {
@@ -24,7 +23,7 @@ type eventHandlerValue struct {
 type domEvent struct {
 	Type      string
 	ElementID string
-	Data      string
+	Data      map[string]interface{}
 }
 
 var eventHandlerMap map[eventHandlerKey]eventHandlerValue
@@ -54,12 +53,28 @@ func applyPatchToDom(patchList PatchList) {
 	}
 }
 
+// domEventDataTranslate converts event data types (only use integers at the moment)
+func domEventDataTranslate(eventData map[string]interface{}) map[string]interface{} {
+	translatedData := map[string]interface{}{}
+	for key, value := range eventData {
+		switch value.(type) {
+		case float32:
+			translatedData[key] = int(value.(float32))
+		case float64:
+			translatedData[key] = int(value.(float64))
+		default:
+			translatedData[key] = value
+		}
+	}
+	return translatedData
+}
+
 //handleDomEvent processes a DOM event received through a connection
 func handleDomEvent(domEvent domEvent) {
 	eventHandlerKey := eventHandlerKey{id: domEvent.ElementID, eventType: domEvent.Type}
 
 	handler := eventHandlerMap[eventHandlerKey]
-	event := Event{Type: domEvent.Type, Data: domEvent.Data}
+	event := Event{Type: domEvent.Type, Data: domEventDataTranslate(domEvent.Data)}
 
 	updateDomBegin()
 	handler.eventHandler.handlerFunc(handler.element, &event)
@@ -132,8 +147,8 @@ func ListenAndServe() {
 	componentUpdate = make(chan Component, 10)
 	go componentUpdateListen(componentUpdate)
 
-	// fs := http.FileServer(http.Dir("../../assets/files"))
-	fs := http.FileServer(assets.Assets)
+	fs := http.FileServer(http.Dir("../../assets/files"))
+	// fs := http.FileServer(assets.Assets)
 
 	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	http.Handle("/", fs)

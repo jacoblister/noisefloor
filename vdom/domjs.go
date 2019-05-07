@@ -9,16 +9,16 @@ import (
 func addEventHandler(element *Element, domNode js.Value, handler *EventHandler) {
 	domNode.Call("addEventListener", handler.Type, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		jsEvent := args[0]
-		var eventData string
+		eventData := map[string]interface{}{}
 		switch handler.Type {
 		case "change":
-			eventData = jsEvent.Get("target").Get("value").String()
+			eventData["Value"] = jsEvent.Get("target").Get("value").String()
 		case "click",
 			"mousedown",
 			"mouseup",
 			"mouseenter",
 			"mouseleave":
-			eventData = jsEvent.Get("buttons").String()
+			eventData["Buttons"] = jsEvent.Get("buttons").Int()
 		}
 
 		event := Event{Type: handler.Type, Data: eventData}

@@ -8,14 +8,14 @@
           let eventData = "";
           switch (type) {
             case "change":
-              eventData = evt.target.value;
+              eventData = { Value: evt.target.value };
               break;
             case "click":
             case "mousedown":
             case "mouseup":
             case "mouseenter":
             case "mouseleave":
-              eventData = evt.buttons.toString();
+              eventData = { Buttons: evt.buttons };
               break;
           }
 

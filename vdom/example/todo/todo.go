@@ -3,6 +3,7 @@ package main
 // Obligatory Todo application
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/jacoblister/noisefloor/vdom"
@@ -62,6 +63,7 @@ func (t *Todo) renderItem(item *TodoItem, index int) vdom.Element {
 			"style", "display: inline-block; width: 200",
 			vdom.MakeTextElement(item.Name),
 			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+				fmt.Println("Button:", event.Data["Buttons"].(int))
 				t.toggleItem(item)
 			},
 			),
@@ -92,7 +94,7 @@ func (t *Todo) Render() vdom.Element {
 			"id", "addItem",
 			"placeholder", "add TODO item",
 			vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
-				t.addItem(event.Data)
+				t.addItem(event.Data["Value"].(string))
 			},
 			),
 		),

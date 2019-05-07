@@ -49,5 +49,5 @@ func MakeEventHandler(eventType EventType, handlerFunc HandlerFunc) EventHandler
 // Event is the event data
 type Event struct {
 	Type string
-	Data string
+	Data map[string]interface{}
 }
