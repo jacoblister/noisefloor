@@ -1,0 +1,21 @@
+body {
+  margin-top: 40px;
+}
+
+rect {
+  shape-rendering: crispEdges;
+}
+.key-white {
+  stroke: black;
+  fill: white;
+}
+.key-white.depressed {
+  fill: lightcyan;
+}
+.key-black {
+  stroke: black;
+  fill: black;
+}
+.key-black.depressed {
+  fill: darkslategray;
+}

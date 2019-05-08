@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/jacoblister/noisefloor/app/assets"
 	"github.com/jacoblister/noisefloor/audiomodule"
 	"github.com/jacoblister/noisefloor/vdom"
 )
@@ -26,7 +27,7 @@ func App(driver Driver) {
 	go func() {
 		vdom.SetSVGNamespace()
 		vdom.RenderComponentToDom(&mods)
-		vdom.ListenAndServe()
+		vdom.ListenAndServe("/assets/files/", assets.Assets)
 	}()
 
 	signalChannel := make(chan os.Signal, 2)

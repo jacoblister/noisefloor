@@ -36,12 +36,18 @@ func (c *modules) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOu
 
 // Render returns the main view
 func (c *modules) Render() vdom.Element {
+	// <link rel="stylesheet" type="text/css" href="/style.css" />
+
 	elem := vdom.MakeElement("svg",
 		"id", "root",
 		"xmlns", "http://www.w3.org/2000/svg",
 		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
-		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
-		vdom.MakeElement("g", "transform", "translate(0,0)", &c.keyboard),
+		// vdom.MakeElement("link",
+		// 	"rel", "stylesheet",
+		// 	"type", "text/css",
+		// 	"href", "/style.css"),
+		vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
+		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.keyboard),
 	)
 	return elem
 }
