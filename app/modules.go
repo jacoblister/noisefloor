@@ -1,14 +1,15 @@
 package app
 
 import (
-	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard"
+	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard2"
+	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard2/onscreenkeyboard2UI"
 	"github.com/jacoblister/noisefloor/audiomodule/synth"
 	"github.com/jacoblister/noisefloor/midi"
 	"github.com/jacoblister/noisefloor/vdom"
 )
 
 type modules struct {
-	keyboard    onscreenkeyboard.Keyboard
+	keyboard    onscreenkeyboard2.Keyboard
 	synthEngine synth.Engine
 }
 
@@ -46,8 +47,11 @@ func (c *modules) Render() vdom.Element {
 		// 	"rel", "stylesheet",
 		// 	"type", "text/css",
 		// 	"href", "/style.css"),
-		vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
-		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.keyboard),
+		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
+		vdom.MakeElement("g",
+			"transform", "translate(0,0)",
+			onscreenkeyboard2UI.MakeKeyboard(&c.keyboard),
+		),
 	)
 	return elem
 }
