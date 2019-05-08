@@ -22,9 +22,7 @@ func (c *Clicker) Render() vdom.Element {
 		"id", "clicker",
 		"style", "background-color: orange; width: 100; line-height: 6; text-align: center; vertical-align: middle;",
 		vdom.MakeTextElement("Clicks: "+strconv.Itoa(c.clicks)),
-		vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
-			c.onClick(element, event)
-		}),
+		vdom.MakeEventHandler(vdom.Click, c.onClick),
 	)
 	return e
 }
