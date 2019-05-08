@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/jacoblister/noisefloor/app"
-	"github.com/jacoblister/noisefloor/audiomodule"
-	"github.com/jacoblister/noisefloor/audiomodule/synth"
+	"github.com/jacoblister/noisefloor/app/audiomodule"
+	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 

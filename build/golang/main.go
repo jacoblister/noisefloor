@@ -4,7 +4,7 @@ import (
 	"runtime/debug"
 
 	"github.com/jacoblister/noisefloor/app"
-	"github.com/jacoblister/noisefloor/audiomodule"
+	"github.com/jacoblister/noisefloor/app/audiomodule"
 )
 
 type noiseFloor struct {

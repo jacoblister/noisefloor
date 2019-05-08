@@ -3,7 +3,7 @@ package nf
 import (
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/audiomodule"
+	"github.com/jacoblister/noisefloor/app/audiomodule"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 

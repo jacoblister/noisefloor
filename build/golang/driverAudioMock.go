@@ -3,7 +3,7 @@ package nf
 import (
 	"time"
 
-	"github.com/jacoblister/noisefloor/audiomodule"
+	"github.com/jacoblister/noisefloor/app/audiomodule"
 )
 
 type driverAudioMock struct {

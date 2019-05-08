@@ -1,6 +1,6 @@
 package app
 
-import "github.com/jacoblister/noisefloor/audiomodule"
+import "github.com/jacoblister/noisefloor/app/audiomodule"
 
 // Driver is the Audio/MIDI device drive API
 type Driver interface {

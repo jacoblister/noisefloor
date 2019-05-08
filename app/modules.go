@@ -1,9 +1,8 @@
 package app
 
 import (
-	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard"
-	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard/onscreenkeyboardUI"
-	"github.com/jacoblister/noisefloor/audiomodule/synth"
+	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard"
+	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -50,8 +49,8 @@ func (c *modules) Render() vdom.Element {
 		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
 		vdom.MakeElement("g",
 			"transform", "translate(0,0)",
-			// &c.keyboard,
-			onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
+			// onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
+			&c.synthEngine,
 		),
 	)
 	return elem

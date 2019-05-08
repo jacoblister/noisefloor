@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/audiomodule"
+	"github.com/jacoblister/noisefloor/app/audiomodule"
 )
 
 //#include <string.h>

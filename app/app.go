@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	"github.com/jacoblister/noisefloor/app/assets"
-	"github.com/jacoblister/noisefloor/audiomodule"
+	"github.com/jacoblister/noisefloor/app/audiomodule"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 

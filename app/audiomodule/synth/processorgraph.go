@@ -1,7 +1,7 @@
 package synth
 
 import (
-	"github.com/jacoblister/noisefloor/audiomodule/synth/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/synth/processor"
 )
 
 // processorGraph is a graph of processors and connectors, plus exported parameter map
