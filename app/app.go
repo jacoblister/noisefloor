@@ -7,7 +7,7 @@ import (
 
 	"github.com/jacoblister/noisefloor/app/assets"
 	"github.com/jacoblister/noisefloor/audiomodule"
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 var mods modules

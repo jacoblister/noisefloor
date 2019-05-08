@@ -8,7 +8,7 @@ $global.Start = function(sampleRate) {
   SynthEngine.Start(sampleRate);
 };
 
-var midi = $packages["github.com/jacoblister/noisefloor/midi"];
+var midi = $packages["github.com/jacoblister/noisefloor/pkg/midi"];
 var sliceByte = $sliceType($Uint8);
 $global.MakeMidiEvent = function(time, data) {
   var sliceData = new sliceByte(data);

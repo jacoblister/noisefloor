@@ -3,7 +3,7 @@ package synth
 import (
 	"math"
 
-	"github.com/jacoblister/noisefloor/midi"
+	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 const mpePitchBendRange = 6

@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <!--
+      Load script into head (after body exists)
+      so it doesn't interfer with DOM operations.
+    -->
+    <script>
+      window.onload = function() {
+        var script = document.createElement("script");
+        script.src = "updating.js";
+        document.head.appendChild(script);
+      };
+    </script>
+  </head>
+</html>

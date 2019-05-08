@@ -1,0 +1,165 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      var socket;
+
+      function registerEventHandler(node, type, id) {
+        node.addEventListener(type, function(evt) {
+          let eventData = "";
+          switch (type) {
+            case "change":
+              eventData = { Value: evt.target.value };
+              break;
+            case "click":
+            case "mousedown":
+            case "mouseup":
+            case "mouseenter":
+            case "mouseleave":
+            case "mousemove":
+              eventData = {
+                Buttons: evt.buttons,
+                ClientX: evt.clientX,
+                ClientY: evt.clientY
+              };
+              break;
+          }
+
+          let domEvent = {
+            Type: type,
+            ElementId: id,
+            Data: eventData
+          };
+          console.log(domEvent);
+          socket.send(JSON.stringify(domEvent));
+        });
+      }
+
+      function createElementRecursive(svgNamespace, element) {
+        let node = null;
+        if (svgNamespace) {
+          node = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            element.Name
+          );
+        } else {
+          node = document.createElement(element.Name);
+        }
+
+        for (var name in element.Attrs) {
+          node.setAttribute(name, element.Attrs[name]);
+        }
+
+        for (var i = 0; i < element.Children.length; i++) {
+          if (element.Children[i].Type == 3) {
+            node.innerText = element.Children[i].Attrs["Text"];
+          } else {
+            child = createElementRecursive(svgNamespace, element.Children[i]);
+            node.appendChild(child);
+          }
+        }
+
+        for (var i = 0; i < element.EventHandlers.length; i++) {
+          registerEventHandler(
+            node,
+            element.EventHandlers[i].Type,
+            element.Attrs["id"]
+          );
+        }
+
+        return node;
+      }
+
+      function getElementByPath(path) {
+        let element = null;
+
+        // get root element if it exists, excluding any injected script elements
+        for (var i = 0; i < document.body.children.length; i++) {
+          if (!(document.body.children[i] instanceof HTMLScriptElement)) {
+            element = document.body.children[i];
+            break;
+          }
+        }
+
+        for (var i = 0; i < path.length; i++) {
+          element = element.children[path[i]];
+        }
+        return element;
+      }
+
+      function removeHeaderElements() {
+        for (var i = 0; i < document.head.children.length; i++) {
+          if (!(document.head.children[i] instanceof HTMLScriptElement)) {
+            document.head.removeChild(children[i]);
+          }
+        }
+      }
+
+      function applyPatchList(patchList) {
+        const Header = 0,
+          Insert = 1,
+          Remove = 2,
+          Replace = 3,
+          AttrSet = 4,
+          AttrRemove = 5,
+          TextSet = 6;
+
+        for (var i = 0; i < patchList.Patch.length; i++) {
+          let patch = patchList.Patch[i];
+
+          let parent = document.body;
+          let target = getElementByPath(patch.Path);
+          if (target != null) {
+            parent = target.parentElement;
+          }
+          switch (patch.Type) {
+            case Header:
+              removeHeaderElements();
+              let headerElement = createElementRecursive(false, patch.Element);
+              document.head.appendChild(headerElement);
+              break;
+            case Replace:
+              let element = createElementRecursive(
+                patchList.SVGNamespace,
+                patch.Element
+              );
+
+              if (target) {
+                parent.replaceChild(element, target);
+              } else {
+                parent.appendChild(element);
+              }
+              break;
+            case AttrSet:
+              target.setAttribute(patch.Attr.Name, patch.Attr.Value);
+              break;
+            case AttrRemove:
+              target.removeAttribute(patch.Attr.Name);
+              break;
+            case TextSet:
+              target.innerText = patch.Attr.Value;
+              break;
+          }
+        }
+      }
+
+      ws = initWS();
+
+      function initWS() {
+        socket = new WebSocket("ws://localhost:8080/client");
+        socket.onopen = function() {
+          console.log("socket open");
+        };
+        socket.onmessage = function(e) {
+          patchList = JSON.parse(e.data);
+          console.log("patchList:", patchList);
+          applyPatchList(patchList);
+        };
+        socket.onclose = function() {
+          console.log("socket close");
+        };
+        return socket;
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

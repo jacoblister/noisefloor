@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard"
-	"github.com/jacoblister/noisefloor/midi"
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/midi"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 // Keyboard is the full keyboard with UI

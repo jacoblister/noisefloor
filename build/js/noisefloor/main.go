@@ -5,7 +5,7 @@ import (
 	"github.com/jacoblister/noisefloor/app"
 	"github.com/jacoblister/noisefloor/audiomodule"
 	"github.com/jacoblister/noisefloor/audiomodule/synth"
-	"github.com/jacoblister/noisefloor/midi"
+	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 type noiseFloor struct {

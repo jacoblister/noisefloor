@@ -73,7 +73,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/midi"
+	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 type driverMidiJack struct {

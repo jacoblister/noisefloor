@@ -4,8 +4,8 @@ import (
 	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard"
 	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard/onscreenkeyboardUI"
 	"github.com/jacoblister/noisefloor/audiomodule/synth"
-	"github.com/jacoblister/noisefloor/midi"
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/midi"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 type modules struct {

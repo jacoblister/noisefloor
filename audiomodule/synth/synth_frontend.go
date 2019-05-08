@@ -3,7 +3,7 @@ package synth
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 // editState enumerated type

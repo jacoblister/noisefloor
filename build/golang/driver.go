@@ -4,7 +4,7 @@ import (
 	"unsafe"
 
 	"github.com/jacoblister/noisefloor/audiomodule"
-	"github.com/jacoblister/noisefloor/midi"
+	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 type driverMidi interface {

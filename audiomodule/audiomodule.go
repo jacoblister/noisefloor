@@ -1,7 +1,7 @@
 package audiomodule
 
 import (
-	"github.com/jacoblister/noisefloor/midi"
+	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 // MIDILevels contains global current MIDI CC Levels

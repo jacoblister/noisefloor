@@ -1,7 +1,0 @@
-example/clicker/clicker
-example/todo/todo
-example/todocomponent/todocomponent
-example/updating/updating
-example/updating/*.wasm
-!example/updating/wasm_exec.js
-example/vdom/vdom

@@ -1,6 +1,6 @@
 package onscreenkeyboard
 
-import "github.com/jacoblister/noisefloor/midi"
+import "github.com/jacoblister/noisefloor/pkg/midi"
 
 const keyMax = 127
 const velocityMax = 127
