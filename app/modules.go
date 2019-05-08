@@ -50,6 +50,7 @@ func (c *modules) Render() vdom.Element {
 		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
 		vdom.MakeElement("g",
 			"transform", "translate(0,0)",
+			// &c.keyboard,
 			onscreenkeyboard2UI.MakeKeyboard(&c.keyboard),
 		),
 	)

@@ -12,11 +12,11 @@ import (
 type Keyboard struct {
 	Keyboard *onscreenkeyboard2.Keyboard
 
-	keydown [keyMax]bool
+	// keydown [keyMax]bool
 }
 
 //MakeKeyboard create an new Keyboard UI componenet
-func MakeKeyboard(keyboard *onscreenkeyboard2.Keyboard) Keyboard {
+func MakeKeyboard(keyboard *onscreenkeyboard2.Keyboard) *Keyboard {
 	keyboardUI := Keyboard{Keyboard: keyboard}
 	keyboard.SetNoteEventFunc(keyboardUI.noteEventFromProcess)
 
@@ -25,19 +25,19 @@ func MakeKeyboard(keyboard *onscreenkeyboard2.Keyboard) Keyboard {
 	// 	keyboard.SetNoteEventFunc(nil)
 	// })
 
-	return keyboardUI
+	return &keyboardUI
 }
 
 const keyMax = 127
 const velocityMax = 127
 
 func (k *Keyboard) noteEventFromUI(keyNumber int, keyDown bool) {
-	if k.keydown[keyNumber] == keyDown {
+	if k.Keyboard.Keydown[keyNumber] == keyDown {
 		// return early if key already is same state
 		return
 	}
 
-	k.keydown[keyNumber] = keyDown
+	k.Keyboard.Keydown[keyNumber] = keyDown
 
 	var midiEvent midi.Event
 	if keyDown {
@@ -53,20 +53,16 @@ func (k *Keyboard) noteEventFromUI(keyNumber int, keyDown bool) {
 }
 
 func (k *Keyboard) noteEventFromProcess(keyNumber int, keyDown bool) {
-	k.keydown[keyNumber] = keyDown
+	k.Keyboard.Keydown[keyNumber] = keyDown
 
 	vdom.UpdateComponentBackground(k)
 }
 
 func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depressed bool) vdom.Element {
-	stroke := "black"
-	fill := "white"
-
 	keyType := "key-white"
 	width := 40
 	height := 160
 	if isBlack {
-		fill = "black"
 		keyType = "key-black"
 		xPosition += 28
 		width = 26
@@ -74,7 +70,7 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 	}
 
 	if depressed {
-		fill = "lightcyan"
+		keyType = keyType + " depressed"
 	}
 
 	key := vdom.MakeElement("rect",
@@ -84,8 +80,6 @@ func (k *Keyboard) renderKey(keyNumber int, isBlack bool, xPosition int, depress
 		"y", 10,
 		"width", width,
 		"height", height,
-		"stroke", stroke,
-		"fill", fill,
 		vdom.MakeEventHandler(vdom.MouseDown, func(element *vdom.Element, event *vdom.Event) {
 			k.noteEventFromUI(keyNumber, true)
 		}),
@@ -123,11 +117,11 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 				xPos += 40
 			}
 			if noteType == 0 && !isBlackKey(keyNumber) {
-				key := k.renderKey(keyNumber+keyStart, false, xPos, k.keydown[keyNumber+keyStart])
+				key := k.renderKey(keyNumber+keyStart, false, xPos, k.Keyboard.Keydown[keyNumber+keyStart])
 				parent.AppendChild(key)
 			}
 			if noteType == 1 && isBlackKey(keyNumber) {
-				key := k.renderKey(keyNumber+keyStart, true, xPos, k.keydown[keyNumber+keyStart])
+				key := k.renderKey(keyNumber+keyStart, true, xPos, k.Keyboard.Keydown[keyNumber+keyStart])
 				parent.AppendChild(key)
 			}
 		}

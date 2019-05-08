@@ -11,6 +11,7 @@ type NoteEventFunc func(keyNumber int, keyDown bool)
 // Keyboard is the onscreen keyboard processor
 type Keyboard struct {
 	MidiEvents    []midi.Event
+	Keydown       [keyMax]bool
 	noteEventFunc NoteEventFunc
 }
 
