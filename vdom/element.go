@@ -5,7 +5,8 @@ type ElementType int
 
 // XML element types
 const (
-	Root ElementType = iota
+	Head ElementType = iota
+	Root
 	Normal
 	Text
 )

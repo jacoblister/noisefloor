@@ -73,6 +73,16 @@ func getElementByPath(path []int) js.Value {
 	return element
 }
 
+func removeHeaderElements() {
+	head := js.Global().Get("document").Get("head")
+	children := head.Get("children")
+	for i := 0; i < children.Get("length").Int(); i++ {
+		if !(children.Index(i).InstanceOf(js.Global().Get("HTMLScriptElement"))) {
+			head.Call("removeChild", head, children.Index(i))
+		}
+	}
+}
+
 func applyPatchToDom(patchList PatchList) {
 	for i := 0; i < len(patchList.Patch); i++ {
 		patch := patchList.Patch[i]
@@ -84,6 +94,12 @@ func applyPatchToDom(patchList PatchList) {
 		}
 
 		switch patch.Type {
+		case Header:
+			removeHeaderElements()
+
+			head := js.Global().Get("document").Get("head")
+			element := createElementRecursive(false, &patch.Element)
+			head.Call("appendChild", element)
 		case Replace:
 			element := createElementRecursive(patchList.SVGNamespace, &patch.Element)
 
@@ -115,7 +131,7 @@ func componentUpdateListen(c chan Component) {
 }
 
 //ListenAndServe starts the javascript target
-func ListenAndServe() {
+func ListenAndServe(args ...interface{}) {
 	componentUpdate = make(chan Component, 10)
 	go componentUpdateListen(componentUpdate)
 

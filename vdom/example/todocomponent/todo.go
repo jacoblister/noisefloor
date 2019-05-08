@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/vdom/example/todocomponent/assets"
 )
 
 //Todo is the Todo component
@@ -55,7 +56,7 @@ func (t *Todo) Render() vdom.Element {
 			"id", "addItem",
 			"placeholder", "add TODO item",
 			vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
-				t.addItem(event.Data)
+				t.addItem(event.Data["Value"].(string))
 			},
 			),
 		),
@@ -75,5 +76,5 @@ func main() {
 	todo.items = append(todo.items, Item{Name: "Implement Components", Completed: false})
 
 	vdom.RenderComponentToDom(&todo)
-	vdom.ListenAndServe()
+	vdom.ListenAndServe("/assets/files/", assets.Assets)
 }

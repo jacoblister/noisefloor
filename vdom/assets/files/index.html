@@ -50,7 +50,7 @@
         }
 
         for (var i = 0; i < element.Children.length; i++) {
-          if (element.Children[i].Type == 2) {
+          if (element.Children[i].Type == 3) {
             node.innerText = element.Children[i].Attrs["Text"];
           } else {
             child = createElementRecursive(svgNamespace, element.Children[i]);
@@ -86,13 +86,22 @@
         return element;
       }
 
+      function removeHeaderElements() {
+        for (var i = 0; i < document.head.children.length; i++) {
+          if (!(document.head.children[i] instanceof HTMLScriptElement)) {
+            document.head.removeChild(children[i]);
+          }
+        }
+      }
+
       function applyPatchList(patchList) {
-        const Insert = 0,
-          Remove = 1,
-          Replace = 2,
-          AttrSet = 3,
-          AttrRemove = 4,
-          TextSet = 5;
+        const Header = 0,
+          Insert = 1,
+          Remove = 2,
+          Replace = 3,
+          AttrSet = 4,
+          AttrRemove = 5,
+          TextSet = 6;
 
         for (var i = 0; i < patchList.Patch.length; i++) {
           let patch = patchList.Patch[i];
@@ -103,6 +112,11 @@
             parent = target.parentElement;
           }
           switch (patch.Type) {
+            case Header:
+              removeHeaderElements();
+              let headerElement = createElementRecursive(false, patch.Element);
+              document.head.appendChild(headerElement);
+              break;
             case Replace:
               let element = createElementRecursive(
                 patchList.SVGNamespace,

@@ -143,7 +143,7 @@ func componentUpdateListen(c chan Component) {
 }
 
 //ListenAndServe begins and HTTP server for the application
-func ListenAndServe() {
+func ListenAndServe(args ...interface{}) {
 	applyPatchToDom(fullDomPatch())
 
 	activeConnections = map[*websocket.Conn]int{}
@@ -153,9 +153,17 @@ func ListenAndServe() {
 
 	// fs := http.FileServer(http.Dir("../../assets/files"))
 	fs := http.FileServer(assets.Assets)
-
-	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	http.Handle("/", fs)
 	http.HandleFunc("/client", clientHandler)
+
+	// Add optional resource handlers
+	if len(args) == 2 {
+		prefix := args[0].(string)
+		resourceFS := args[1].(http.FileSystem)
+
+		http.Handle(prefix, http.StripPrefix(prefix, http.FileServer(resourceFS)))
+	}
+
+	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

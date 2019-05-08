@@ -2,6 +2,7 @@ package vdom
 
 var dom = Element{Type: Root}           // dom is the current vdom as written to the dom
 var svgNamespace bool                   // svgNamespace indicates an SVG vs HTML document
+var headerElements []Element            // headerElements is elements list for the head section of the document
 var rootComponent Component             // rootComponent is the root of the component tree
 var componentMap map[Component]*Element // elementMap links active components to elements
 var componentUpdate chan Component      // componentUpdate is the background component update channel
@@ -9,6 +10,11 @@ var componentUpdate chan Component      // componentUpdate is the background com
 //SetSVGNamespace set the DOM namespace to SVG (default is HTML)
 func SetSVGNamespace() {
 	svgNamespace = true
+}
+
+//SetHeaderElements sets up links for the <head> section of the HTML document
+func SetHeaderElements(elements []Element) {
+	headerElements = elements
 }
 
 // SetDomRootElement sets the root DOM element
@@ -67,6 +73,14 @@ func updateDomEnd() PatchList {
 
 // fullDomPatch returns a patch to fully populate the DOM
 func fullDomPatch() PatchList {
-	patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{Patch{Type: Replace, Path: []int{}, Element: dom}}}
+	linkElement := MakeElement("link",
+		"rel", "stylesheet",
+		"type", "text/css",
+		"href", "assets/files/style.css")
+
+	patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{
+		Patch{Type: Header, Path: []int{}, Element: linkElement},
+		Patch{Type: Replace, Path: []int{}, Element: dom},
+	}}
 	return patchList
 }

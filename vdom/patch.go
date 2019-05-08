@@ -5,7 +5,8 @@ type PatchType int
 
 // Patch types
 const (
-	Insert PatchType = iota
+	Header PatchType = iota
+	Insert
 	Remove
 	Replace
 	AttrSet
