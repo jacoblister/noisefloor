@@ -7,9 +7,9 @@ type Processor interface {
 	// Process(vars ...[]*AudioFloat)
 }
 
-// ProcessorDefinition is a configured processor with coordinates
-type processorDefinition struct {
-	x         int
-	y         int
-	processor Processor
+// ProcessorDefinition is a configured processor with screen coordinates
+type ProcessorDefinition struct {
+	X         int
+	Y         int
+	Processor Processor
 }

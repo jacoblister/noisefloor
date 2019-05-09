@@ -1,8 +1,9 @@
-package synth
+package synthUI
 
 import (
 	"strconv"
 
+	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
@@ -17,8 +18,17 @@ const (
 	selectItems
 )
 
-type engineFrontend struct {
+// Engine is the synth engine UI
+type Engine struct {
+	Engine *synth.Engine
+
 	editState editState
+}
+
+//MakeEngine create an new Engine Edit UI componenet
+func MakeEngine(engine *synth.Engine) *Engine {
+	engineUI := Engine{Engine: engine}
+	return &engineUI
 }
 
 // Render displays the synth engine frontend,
@@ -29,13 +39,13 @@ func (e *Engine) handleUIEvent() {
 // Render displays the synth engine frontend.
 func (e *Engine) Render() vdom.Element {
 	processors := []vdom.Element{}
-	for i := 0; i < len(e.processorGraph.processorList); i++ {
-		processor := e.processorGraph.processorList[i]
+	for i := 0; i < len(e.Engine.ProcessorGraph.ProcessorList); i++ {
+		processor := e.Engine.ProcessorGraph.ProcessorList[i]
 		processors = append(processors,
 			vdom.MakeElement("rect",
 				"id", "makeosc",
-				"x", strconv.Itoa(processor.x),
-				"y", strconv.Itoa(processor.y),
+				"x", strconv.Itoa(processor.X),
+				"y", strconv.Itoa(processor.Y),
 				"width", "40",
 				"height", "20",
 				"stroke", "black",

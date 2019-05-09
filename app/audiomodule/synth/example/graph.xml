@@ -1,11 +1,15 @@
 <!-- Example simple synth patch -->
 <graph>
     <processors>
+        <processor x="0" y="0" name="Input" type="Input" count="2"/>
+        <processor x="0" y="0" name="Output" type="Output" count="2"/>
+        <processor x="0" y="0" name="MIDIInput" type="MIDIInput" count="2"/>
+
         <processor x="10" y="10" name="Oscillator:0" type="Oscillator" waveform="Sin"/>
         <processor x="10" y="100" name="Envelope:0" type="Envelope" delay="200"/>
         <processor x="100" y="10" name="Gain:0" type="Gain"/>
 
-        <processor x="100" y="10" name="subprocessor" type="Import" import="subprocessor.xml"/>
+        <processor x="100" y="10" name="SubProcessor" type="Import" import="subprocessor.xml"/>
     </processors>
     <connectors>
         <connector fromProcessor="Oscillator:0" fromPort="output" toProcessor="Gain:0" toPort="input"/>

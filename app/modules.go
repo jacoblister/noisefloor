@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard"
 	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
+	"github.com/jacoblister/noisefloor/app/audiomodule/synth/synthUI"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -50,7 +51,7 @@ func (c *modules) Render() vdom.Element {
 		vdom.MakeElement("g",
 			"transform", "translate(0,0)",
 			// onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
-			&c.synthEngine,
+			synthUI.MakeEngine(&c.synthEngine),
 		),
 	)
 	return elem
