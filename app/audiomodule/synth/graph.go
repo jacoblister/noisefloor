@@ -36,11 +36,39 @@ func loadProcessorGraph(filename string) Graph {
 	return graph
 }
 
+// CompileTarget enumerated type
+type CompileTarget int
+
+// CompileTarget implementation
+const (
+	CompileInterpreted CompileTarget = iota
+	CompileGolang
+	CompileJavascript
+	CompileWasm
+	CompileCPP
+)
+
 // AudioProcessorFunc in an audio processor, compatible with the audiomodule.AudioProcessor interface
 type AudioProcessorFunc func(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event)
 
-func compileProcessorGraph(graph Graph) AudioProcessorFunc {
-	return func(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
-		return samplesIn, midiIn
+// compileProcessorGraph compiles a graph, and returns a function to run it
+func compileProcessorGraph(graph Graph, target CompileTarget) AudioProcessorFunc {
+	// dummy implementation for now
+
+	switch target {
+	case CompileGolang:
+		return func(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
+			gain := processor.Gain{}
+
+			var len = len(samplesIn[0])
+			for i := 0; i < len; i++ {
+				output := gain.Process(1, 1)
+				samplesIn[0][i] = output
+				samplesIn[1][i] = output
+			}
+
+			return samplesIn, midiIn
+		}
 	}
+	panic("unsupported target")
 }
