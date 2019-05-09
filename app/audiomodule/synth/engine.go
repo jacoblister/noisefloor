@@ -11,7 +11,7 @@ type Engine struct {
 	patch     PatchMultiply
 	osc       processor.Oscillator
 
-	ProcessorGraph ProcessorGraph
+	Graph Graph
 }
 
 // Start initilized the engine, with a specified sampling rate
@@ -59,5 +59,5 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 
 // Load loads a graph into the synthengine from file
 func (e *Engine) Load(filename string) {
-	e.ProcessorGraph = loadProcessorGraph(filename)
+	e.Graph = loadProcessorGraph(filename)
 }

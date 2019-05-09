@@ -39,8 +39,8 @@ func (e *Engine) handleUIEvent() {
 // Render displays the synth engine frontend.
 func (e *Engine) Render() vdom.Element {
 	processors := []vdom.Element{}
-	for i := 0; i < len(e.Engine.ProcessorGraph.ProcessorList); i++ {
-		processor := e.Engine.ProcessorGraph.ProcessorList[i]
+	for i := 0; i < len(e.Engine.Graph.ProcessorList); i++ {
+		processor := e.Engine.Graph.ProcessorList[i]
 		processors = append(processors,
 			vdom.MakeElement("rect",
 				"id", "makeosc",

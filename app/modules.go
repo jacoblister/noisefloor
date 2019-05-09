@@ -49,7 +49,7 @@ func (c *modules) Render() vdom.Element {
 		// 	"href", "/style.css"),
 		// vdom.MakeElement("g", "transform", "translate(0,0)", &c.synthEngine),
 		vdom.MakeElement("g",
-			"transform", "translate(0,0)",
+			"transform", "translate(0,200)",
 			// onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
 			synthUI.MakeEngine(&c.synthEngine),
 		),
