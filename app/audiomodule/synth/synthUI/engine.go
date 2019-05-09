@@ -57,7 +57,7 @@ func (e *Engine) Render() vdom.Element {
 	elem := vdom.MakeElement("g",
 		"id", "synthengineedit",
 		vdom.MakeEventHandler(vdom.MouseMove, func(element *vdom.Element, event *vdom.Event) {
-			println("mouse move x=", event.Data["ClientX"].(int), " y=", event.Data["ClientY"].(int))
+			println("mouse move x=", event.Data["OffsetX"].(int), " y=", event.Data["OffsetY"].(int))
 		}),
 		vdom.MakeElement("rect",
 			"x", "100",

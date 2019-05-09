@@ -6,7 +6,7 @@ import (
 	"syscall/js"
 )
 
-func addEventHandler(element *Element, domNode js.Value, handler *EventHandler) {
+func addEventHandler(svgNamespace bool, element *Element, domNode js.Value, handler *EventHandler) {
 	domNode.Call("addEventListener", handler.Type, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		jsEvent := args[0]
 		eventData := map[string]interface{}{}
@@ -17,8 +17,16 @@ func addEventHandler(element *Element, domNode js.Value, handler *EventHandler) 
 			"mousedown",
 			"mouseup",
 			"mouseenter",
-			"mouseleave":
+			"mouseleave",
+			"mousemove":
 			eventData["Buttons"] = jsEvent.Get("buttons").Int()
+			eventData["ClientX"] = jsEvent.Get("clientX").Int()
+			eventData["ClientY"] = jsEvent.Get("clientY").Int()
+			if svgNamespace {
+				bbox := domNode.Call("getBBox")
+				eventData["OffsetX"] = jsEvent.Get("clientX").Int() - bbox.Get("x").Int()
+				eventData["OffsetY"] = jsEvent.Get("clientY").Int() - bbox.Get("y").Int()
+			}
 		}
 
 		event := Event{Type: handler.Type, Data: eventData}
@@ -47,7 +55,7 @@ func createElementRecursive(svgNamespace bool, element *Element) js.Value {
 	}
 
 	for _, handler := range element.EventHandlers {
-		addEventHandler(element, node, &handler)
+		addEventHandler(svgNamespace, element, node, &handler)
 	}
 
 	for _, child := range element.Children {

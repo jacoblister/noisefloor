@@ -3,7 +3,7 @@
     <script type="text/javascript">
       var socket;
 
-      function registerEventHandler(node, type, id) {
+      function registerEventHandler(svgNamespace, node, type, id) {
         node.addEventListener(type, function(evt) {
           let eventData = "";
           switch (type) {
@@ -21,6 +21,13 @@
                 ClientX: evt.clientX,
                 ClientY: evt.clientY
               };
+
+              if (svgNamespace) {
+                bbox = node.getBBox();
+                eventData.OffsetX = evt.clientX - bbox.x;
+                eventData.OffsetY = evt.clientY - bbox.y;
+              }
+
               break;
           }
 
@@ -60,6 +67,7 @@
 
         for (var i = 0; i < element.EventHandlers.length; i++) {
           registerEventHandler(
+            svgNamespace,
             node,
             element.EventHandlers[i].Type,
             element.Attrs["id"]
