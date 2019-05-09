@@ -26,6 +26,12 @@ func App(driver Driver) {
 
 	go func() {
 		vdom.SetSVGNamespace()
+		vdom.SetHeaderElements([]vdom.Element{
+			vdom.MakeElement("link",
+				"rel", "stylesheet",
+				"type", "text/css",
+				"href", "assets/files/style.css"),
+		})
 		vdom.RenderComponentToDom(&mods)
 		vdom.ListenAndServe("/assets/files/", assets.Assets)
 	}()
