@@ -5,8 +5,8 @@ package main
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/vdom"
-	"github.com/jacoblister/noisefloor/vdom/example/todocomponent/assets"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vdom/example/todocomponent/assets"
 )
 
 //Todo is the Todo component

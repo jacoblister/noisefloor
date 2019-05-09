@@ -2,7 +2,7 @@ package main
 
 // Simple VDOM iteraction without componenets
 
-import "github.com/jacoblister/noisefloor/vdom"
+import "github.com/jacoblister/noisefloor/pkg/vdom"
 
 func onClick(element *vdom.Element, event *vdom.Event) {
 	println("click was called from golang callback")

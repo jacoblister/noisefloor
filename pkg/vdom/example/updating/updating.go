@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 //Clicker is a click box with a background seconds count

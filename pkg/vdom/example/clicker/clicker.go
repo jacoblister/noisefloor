@@ -3,7 +3,7 @@ package main
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 //Clicker is a click box with a click count

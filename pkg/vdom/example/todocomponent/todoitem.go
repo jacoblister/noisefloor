@@ -3,7 +3,7 @@ package main
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
 // TodoItemToggleFunc is the toggle item callback
