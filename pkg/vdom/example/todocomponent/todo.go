@@ -72,6 +72,13 @@ func (t *Todo) Render() vdom.Element {
 func main() {
 	var todo Todo
 
+	vdom.SetHeaderElements([]vdom.Element{
+		vdom.MakeElement("link",
+			"rel", "stylesheet",
+			"type", "text/css",
+			"href", "assets/files/style.css"),
+	})
+
 	todo.items = append(todo.items, Item{Name: "Implement VDOM", Completed: true})
 	todo.items = append(todo.items, Item{Name: "Implement Components", Completed: false})
 
