@@ -23,7 +23,9 @@
               };
 
               if (svgNamespace) {
-                bbox = node.getBBox();
+                // bbox = node.getBBox();
+                bbox = node.getBoundingClientRect();
+                console.log(bbox);
                 eventData.OffsetX = evt.clientX - bbox.x;
                 eventData.OffsetY = evt.clientY - bbox.y;
               }

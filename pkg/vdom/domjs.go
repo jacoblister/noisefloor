@@ -23,7 +23,7 @@ func addEventHandler(svgNamespace bool, element *Element, domNode js.Value, hand
 			eventData["ClientX"] = jsEvent.Get("clientX").Int()
 			eventData["ClientY"] = jsEvent.Get("clientY").Int()
 			if svgNamespace {
-				bbox := domNode.Call("getBBox")
+				bbox := domNode.Call("getBoundingClientRect")
 				eventData["OffsetX"] = jsEvent.Get("clientX").Int() - bbox.Get("x").Int()
 				eventData["OffsetY"] = jsEvent.Get("clientY").Int() - bbox.Get("y").Int()
 			}
