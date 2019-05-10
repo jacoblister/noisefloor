@@ -48,27 +48,26 @@ const (
 	CompileCPP
 )
 
-// AudioProcessorFunc in an audio processor, compatible with the audiomodule.AudioProcessor interface
-type AudioProcessorFunc func(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event)
+// AudioProcessor is a frame based audio/midi processor
+type AudioProcessor interface {
+	Start(sampleRate int)
+	Stop()
+	Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event)
+}
+
+type graphOp struct {
+	processor Processor
+	inArgs    []int
+	outArgs   []int
+}
 
 // compileProcessorGraph compiles a graph, and returns a function to run it
-func compileProcessorGraph(graph Graph, target CompileTarget) AudioProcessorFunc {
+func compileProcessorGraph(graph Graph, target CompileTarget) AudioProcessor {
 	// dummy implementation for now
 
 	switch target {
 	case CompileGolang:
-		return func(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
-			gain := processor.Gain{}
-
-			var len = len(samplesIn[0])
-			for i := 0; i < len; i++ {
-				output := gain.Process(1, 1)
-				samplesIn[0][i] = output
-				samplesIn[1][i] = output
-			}
-
-			return samplesIn, midiIn
-		}
+		return nil
 	}
 	panic("unsupported target")
 }

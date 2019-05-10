@@ -25,11 +25,6 @@ type Envelope struct {
 	delta      float32
 }
 
-// Definition exports the Envelope processor definition
-func (e *Envelope) Definition() (name string, inputs []string, outputs []string) {
-	return "Envelope", []string{"gate", "trigger"}, []string{"output"}
-}
-
 // Start - init envelope generator
 func (e *Envelope) Start(sampleRate int) {
 	e.sampleRate = float32(sampleRate)

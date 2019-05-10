@@ -21,14 +21,6 @@ func MakeProcessor(name string) Processor {
 	return nil
 }
 
-func getProcessorInputs(p *Processor) []string {
-	return []string{}
-}
-
-func getProcessorOutputs(p *Processor) []string {
-	return []string{}
-}
-
 func getProcessorParameters(p *Processor) []ProcessorParameter {
 	return []ProcessorParameter{}
 }
