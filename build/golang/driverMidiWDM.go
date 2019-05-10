@@ -47,6 +47,7 @@ static inline wdm_midi_client* gowdm_midi_client_open(char *device_name) {
                 break;
             }
         }
+
     }
 
     if (inputDeviceId < 0) {
@@ -91,7 +92,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/jacoblister/noisefloor/midi"
+	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 type driverMidiWDM struct {
