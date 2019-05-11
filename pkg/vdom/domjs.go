@@ -106,8 +106,10 @@ func applyPatchToDom(patchList PatchList) {
 			removeHeaderElements()
 
 			head := js.Global().Get("document").Get("head")
-			element := createElementRecursive(false, &patch.Element)
-			head.Call("appendChild", element)
+			for j := 0; j < len(patch.Element.Children); j++ {
+				element := createElementRecursive(false, &patch.Element.Children[j])
+				head.Call("appendChild", element)
+			}
 		case Replace:
 			element := createElementRecursive(patchList.SVGNamespace, &patch.Element)
 

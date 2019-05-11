@@ -164,6 +164,5 @@ func ListenAndServe(args ...interface{}) {
 		http.Handle(prefix, http.StripPrefix(prefix, http.FileServer(resourceFS)))
 	}
 
-	// http.Handle("/res/", http.StripPrefix("/res/", fs))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

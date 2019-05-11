@@ -95,9 +95,9 @@
       }
 
       function removeHeaderElements() {
-        for (var i = 0; i < document.head.children.length; i++) {
+        for (var i = document.head.children.length - 1; i >= 0; i--) {
           if (!(document.head.children[i] instanceof HTMLScriptElement)) {
-            document.head.removeChild(children[i]);
+            document.head.removeChild(document.head.children[i]);
           }
         }
       }
@@ -122,8 +122,13 @@
           switch (patch.Type) {
             case Header:
               removeHeaderElements();
-              let headerElement = createElementRecursive(false, patch.Element);
-              document.head.appendChild(headerElement);
+              for (var j = 0; j < patch.Element.Children.length; j++) {
+                let headerElement = createElementRecursive(
+                  false,
+                  patch.Element.Children[j]
+                );
+                document.head.appendChild(headerElement);
+              }
               break;
             case Replace:
               let element = createElementRecursive(

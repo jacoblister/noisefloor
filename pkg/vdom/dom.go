@@ -75,16 +75,12 @@ func updateDomEnd() PatchList {
 func fullDomPatch() PatchList {
 	patchElements := []Patch{}
 
-	for i := 0; i < len(headerElements); i++ {
-		patchElements = append(patchElements, Patch{Type: Header, Path: []int{}, Element: headerElements[0]})
+	if headerElements != nil {
+		patchElements = append(patchElements, Patch{Type: Header, Path: []int{}, Element: Element{Children: headerElements}})
 	}
 	patchElements = append(patchElements, Patch{Type: Replace, Path: []int{}, Element: dom})
 
 	patchList := PatchList{SVGNamespace: svgNamespace, Patch: patchElements}
 
-	// patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{
-	// 	Patch{Type: Header, Path: []int{}, Element: linkElement},
-	// 	Patch{Type: Replace, Path: []int{}, Element: dom},
-	// }}
 	return patchList
 }

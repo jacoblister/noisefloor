@@ -3,10 +3,10 @@ package main
 // Obligatory Todo application
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/jacoblister/noisefloor/pkg/vdom"
-	"github.com/jacoblister/noisefloor/pkg/vdom/example/todocomponent/assets"
 )
 
 //Todo is the Todo component
@@ -51,21 +51,22 @@ func (t *Todo) Render() vdom.Element {
 		items = append(items, &item)
 	}
 
-	result := vdom.MakeElement("div",
-		vdom.MakeElement("input",
-			"id", "addItem",
-			"placeholder", "add TODO item",
-			vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
-				t.addItem(event.Data["Value"].(string))
-			},
-			),
-		),
-		items,
-		vdom.MakeElement("br"),
+	result :=
 		vdom.MakeElement("div",
-			vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))),
-		),
-	)
+			vdom.MakeElement("input",
+				"id", "addItem",
+				"placeholder", "add TODO item",
+				vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
+					t.addItem(event.Data["Value"].(string))
+				},
+				),
+			),
+			items,
+			vdom.MakeElement("br"),
+			vdom.MakeElement("div",
+				vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))),
+			),
+		)
 	return result
 }
 
@@ -77,11 +78,16 @@ func main() {
 			"rel", "stylesheet",
 			"type", "text/css",
 			"href", "assets/files/style.css"),
+		vdom.MakeElement("link",
+			"rel", "stylesheet",
+			"type", "text/css",
+			"href", "assets/files/bootstrap.min.css"),
 	})
 
 	todo.items = append(todo.items, Item{Name: "Implement VDOM", Completed: true})
 	todo.items = append(todo.items, Item{Name: "Implement Components", Completed: false})
 
 	vdom.RenderComponentToDom(&todo)
-	vdom.ListenAndServe("/assets/files/", assets.Assets)
+	// vdom.ListenAndServe("/assets/files/", assets.Assets)
+	vdom.ListenAndServe("/assets/files/", http.Dir("assets/files"))
 }
