@@ -40,6 +40,16 @@ func (t *Todo) removeItem(item *TodoItem) {
 	}
 }
 
+func (t *Todo) checkedItemCount() int {
+	count := 0
+	for i := 0; i < len(t.items); i++ {
+		if t.items[i].Completed {
+			count++
+		}
+	}
+	return count
+}
+
 func (t *Todo) renderItem(item *TodoItem, index int) vdom.Element {
 	var checked vdom.Attr
 	if item.Completed {
@@ -101,7 +111,9 @@ func (t *Todo) Render() vdom.Element {
 		items,
 		vdom.MakeElement("br"),
 		vdom.MakeElement("div",
-			vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))),
+			// vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))),
+			vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))+
+				", Checked items: "+strconv.Itoa(t.checkedItemCount())),
 		),
 	)
 	return result

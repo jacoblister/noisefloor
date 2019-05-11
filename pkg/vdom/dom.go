@@ -29,6 +29,7 @@ func RenderComponentToDom(component Component) {
 
 	componentMap = map[Component]*Element{}
 	updateDomTreeRecursive(&rootElement, []int{})
+	updateDomTreeRecursive(&rootElement, []int{})
 	SetDomRootElement(&rootElement)
 }
 
@@ -44,7 +45,9 @@ func UpdateComponentBackground(component Component) {
 
 // updateDomTreeRecursive updates the dom element path and componenet map for the whole tree
 func updateDomTreeRecursive(element *Element, path []int) {
-	element.Path = path
+	element.Path = make([]int, len(path))
+	copy(element.Path, path)
+
 	if element.Component != nil {
 		componentMap[element.Component] = element
 	}
@@ -65,7 +68,7 @@ func updateDomEnd() PatchList {
 	newDom := rootComponent.Render()
 	updateDomTreeRecursive(&newDom, []int{})
 
-	// patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{Patch{Type: Replace, Path: []int{}, Element: dom}}}
+	// patchList := PatchList{SVGNamespace: svgNamespace, Patch: []Patch{Patch{Type: Replace, Path: []int{}, Element: newDom}}}
 	patchList := diffElementTrees(&dom, &newDom)
 	dom = newDom
 	return patchList

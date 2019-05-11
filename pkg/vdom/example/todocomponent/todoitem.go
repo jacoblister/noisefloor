@@ -32,32 +32,36 @@ func (item *TodoItem) Render() vdom.Element {
 	prefix := strconv.Itoa(item.index) + ":"
 
 	element := vdom.MakeElement("div",
-		vdom.MakeElement("input",
-			"id", prefix+"check",
-			"type", "checkbox",
-			checked,
-			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
-				item.toggleItem(item.index)
-				vdom.UpdateComponent(item)
-			},
+		"class", "row",
+		vdom.MakeElement("div", "class", "col-md-6",
+			vdom.MakeElement("div",
+				"class", "custom-control custom-checkbox",
+				vdom.MakeElement("input",
+					"id", prefix+"check",
+					"type", "checkbox",
+					"class", "custom-control-input",
+					checked,
+					vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+						item.toggleItem(item.index)
+					},
+					),
+				),
+				vdom.MakeElement("label",
+					"class", "custom-control-label",
+					"for", prefix+"check",
+					vdom.MakeTextElement(item.Name),
+				),
 			),
 		),
-		vdom.MakeElement("span",
-			"id", prefix+"name",
-			"style", "display: inline-block; width: 200",
-			vdom.MakeTextElement(item.Name),
-			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
-				item.toggleItem(item.index)
-				vdom.UpdateComponent(item)
-			},
-			),
-		),
-		vdom.MakeElement("button",
-			"id", prefix+"remove",
-			vdom.MakeTextElement("remove"),
-			vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
-				item.removeItem(item.index)
-			},
+		vdom.MakeElement("div", "class", "col-md-6",
+			vdom.MakeElement("button",
+				"id", prefix+"remove",
+				"class", "btn btn-outline-primary float-right",
+				vdom.MakeTextElement("remove"),
+				vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+					item.removeItem(item.index)
+				},
+				),
 			),
 		),
 	)

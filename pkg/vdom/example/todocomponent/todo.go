@@ -27,7 +27,7 @@ func (t *Todo) addItem(name string) {
 
 func (t *Todo) toggleItem(index int) {
 	t.items[index].Completed = !t.items[index].Completed
-	// vdom.UpdateComponent(t)
+	vdom.UpdateComponent(t)
 }
 
 func (t *Todo) removeItem(index int) {
@@ -35,10 +35,19 @@ func (t *Todo) removeItem(index int) {
 	vdom.UpdateComponent(t)
 }
 
+func (t *Todo) checkedItemCount() int {
+	count := 0
+	for i := 0; i < len(t.items); i++ {
+		if t.items[i].Completed {
+			count++
+		}
+	}
+	return count
+}
+
 //Render renders the Clicker component
 func (t *Todo) Render() vdom.Element {
-	items := []vdom.Component{}
-
+	items := vdom.MakeElement("ul", "class", "list-group mb-3")
 	for i := 0; i < len(t.items); i++ {
 		item := TodoItem{i, t.items[i].Name, t.items[i].Completed,
 			func(index int) {
@@ -48,23 +57,49 @@ func (t *Todo) Render() vdom.Element {
 				t.removeItem(index)
 			},
 		}
-		items = append(items, &item)
+
+		li := vdom.MakeElement("li",
+			"class", "list-group-item",
+			&item)
+		items.AppendChild(li)
 	}
 
 	result :=
 		vdom.MakeElement("div",
-			vdom.MakeElement("input",
-				"id", "addItem",
-				"placeholder", "add TODO item",
-				vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
-					t.addItem(event.Data["Value"].(string))
-				},
-				),
-			),
-			items,
-			vdom.MakeElement("br"),
+			"style", "position: absolute; top: 0; left: 0; height: 100%; width: 100%;",
+			"class", "bg-light",
 			vdom.MakeElement("div",
-				vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))),
+				"class", "container",
+				vdom.MakeElement("div",
+					"class", "py-5 text-center",
+					vdom.MakeElement("h2", vdom.MakeTextElement("Todo Check List")),
+					vdom.MakeElement("p",
+						"class", "lead",
+						vdom.MakeTextElement(
+							"Add items to the list below, then, the check them off, or remove them ",
+						)),
+				),
+				vdom.MakeElement("div",
+					vdom.MakeElement("h4",
+						"class", "mb-3",
+						vdom.MakeTextElement("Todo Items")),
+					vdom.MakeElement("input",
+						"id", "addItem",
+						"class", "form-control",
+						"placeholder", "Add Todo item",
+						vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
+							t.addItem(event.Data["Value"].(string))
+						},
+						),
+					),
+					vdom.MakeElement("br"),
+					items,
+					vdom.MakeElement("br"),
+					vdom.MakeElement("div",
+						vdom.MakeTextElement("Total items: "+strconv.Itoa(len(t.items))+
+							", Checked items: "+strconv.Itoa(t.checkedItemCount())),
+					),
+				),
 			),
 		)
 	return result
