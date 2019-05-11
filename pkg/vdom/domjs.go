@@ -122,6 +122,8 @@ func applyPatchToDom(patchList PatchList) {
 			target.Call("setAttribute", patch.Attr.Name, patch.Attr.Value)
 		case AttrRemove:
 			target.Call("removeAttribute", patch.Attr.Name)
+		case ValueSet:
+			target.Set("value", patch.Attr.Value)
 		case TextSet:
 			target.Set("innerText", patch.Attr.Value)
 		}

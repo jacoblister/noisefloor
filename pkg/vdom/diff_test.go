@@ -63,6 +63,30 @@ func TestDiffElementTrees_attributes(t *testing.T) {
 	// Then ... result patch has single patch of new tree
 	assert.Equal(t, 1, len(result.Patch))
 	assert.Equal(t, Patch{Type: AttrRemove, Path: []int{}, Attr: Attr{Name: "width"}}, result.Patch[0])
+
+	// Given ... 'value' attribute
+	old = Element{Path: []int{}, Attrs: map[string]interface{}{"value": "80%"}}
+	new = Element{Path: []int{}, Attrs: map[string]interface{}{"value": "100%"}}
+
+	// When ...
+	result = diffElementTrees(&old, &new)
+
+	// Then ... result patch has single patch of new tree
+	assert.Equal(t, 1, len(result.Patch))
+	assert.Equal(t, Patch{Type: ValueSet, Path: []int{}, Attr: Attr{Name: "value", Value: "100%"}}, result.Patch[0])
+}
+
+func TestDiffElementTrees_textElement(t *testing.T) {
+	// Given ... text element
+	old := Element{Type: Text, Path: []int{0}, Attrs: map[string]interface{}{"Text": "old"}}
+	new := Element{Type: Text, Path: []int{0}, Attrs: map[string]interface{}{"Text": "new"}}
+
+	// When ...
+	result := diffElementTrees(&old, &new)
+
+	// Then ... result patch has single patch with set text
+	assert.Equal(t, 1, len(result.Patch))
+	assert.Equal(t, Patch{Type: TextSet, Path: []int{}, Attr: Attr{Name: "Text", Value: "new"}}, result.Patch[0])
 }
 
 func TestDiffElementTrees_elements(t *testing.T) {

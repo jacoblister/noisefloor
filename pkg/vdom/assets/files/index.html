@@ -109,7 +109,8 @@
           Replace = 3,
           AttrSet = 4,
           AttrRemove = 5,
-          TextSet = 6;
+          ValueSet = 6,
+          TextSet = 7;
 
         for (var i = 0; i < patchList.Patch.length; i++) {
           let patch = patchList.Patch[i];
@@ -147,6 +148,9 @@
               break;
             case AttrRemove:
               target.removeAttribute(patch.Attr.Name);
+              break;
+            case ValueSet:
+              target.value = patch.Attr.Value;
               break;
             case TextSet:
               target.innerText = patch.Attr.Value;

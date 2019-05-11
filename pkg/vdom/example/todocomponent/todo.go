@@ -11,7 +11,8 @@ import (
 
 //Todo is the Todo component
 type Todo struct {
-	items []Item
+	items       []Item
+	newItemText string
 }
 
 //Item is the todo item state
@@ -80,16 +81,31 @@ func (t *Todo) Render() vdom.Element {
 						)),
 				),
 				vdom.MakeElement("div",
-					vdom.MakeElement("h4",
-						"class", "mb-3",
-						vdom.MakeTextElement("Todo Items")),
-					vdom.MakeElement("input",
-						"id", "addItem",
-						"class", "form-control",
-						"placeholder", "Add Todo item",
-						vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
-							t.addItem(event.Data["Value"].(string))
-						},
+					vdom.MakeElement("div",
+						"class", "container",
+						vdom.MakeElement("h4",
+							"class", "row mb-3",
+							vdom.MakeTextElement("Todo Items")),
+						vdom.MakeElement("div",
+							"class", "row",
+							vdom.MakeElement("input",
+								"id", "addItem",
+								"class", "col-md-10 form-control",
+								"placeholder", "Add Todo item",
+								"value", t.newItemText,
+								vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
+									t.newItemText = event.Data["Value"].(string)
+								}),
+							),
+							vdom.MakeElement("button",
+								"id", "add",
+								"class", "col-md-2 btn btn-outline-primary float-right",
+								vdom.MakeTextElement("Add Item"),
+								vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
+									t.addItem(t.newItemText)
+									t.newItemText = ""
+								}),
+							),
 						),
 					),
 					vdom.MakeElement("br"),

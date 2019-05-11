@@ -11,6 +11,7 @@ const (
 	Replace
 	AttrSet
 	AttrRemove
+	ValueSet
 	TextSet
 )
 

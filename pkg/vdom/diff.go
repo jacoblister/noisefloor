@@ -25,7 +25,11 @@ func diffElementTreesRecursive(old *Element, new *Element) []Patch {
 	for key := range new.Attrs {
 		value, present := old.Attrs[key]
 		if !present || value != new.Attrs[key] {
-			patch := Patch{Type: AttrSet, Path: old.Path, Attr: Attr{Name: key, Value: new.Attrs[key]}}
+			setType := AttrSet
+			if key == "value" {
+				setType = ValueSet
+			}
+			patch := Patch{Type: setType, Path: old.Path, Attr: Attr{Name: key, Value: new.Attrs[key]}}
 			patchList = append(patchList, patch)
 		}
 		delete(oldAttrs, key)
