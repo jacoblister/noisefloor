@@ -1,5 +1,7 @@
 package vdom
 
+import "fmt"
+
 // ElementType enumerated type
 type ElementType int
 
@@ -65,6 +67,9 @@ func MakeElement(name string, args ...interface{}) Element {
 				childElement.Component = arg[j]
 				element.Children = append(element.Children, childElement)
 			}
+		default:
+			fmt.Println("Unsuppoerted: ", arg)
+			panic("its over")
 		}
 	}
 	return element
