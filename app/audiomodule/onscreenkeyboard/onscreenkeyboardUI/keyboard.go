@@ -3,7 +3,7 @@ package onscreenkeyboardUI
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/audiomodule/onscreenkeyboard"
+	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
