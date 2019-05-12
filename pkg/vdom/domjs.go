@@ -88,7 +88,7 @@ func getElementByPath(path []int) js.Value {
 func removeHeaderElements() {
 	head := js.Global().Get("document").Get("head")
 	children := head.Get("children")
-	for i := 0; i < children.Get("length").Int(); i++ {
+	for i := children.Get("length").Int() - 1; i > 0; i-- {
 		if !(children.Index(i).InstanceOf(js.Global().Get("HTMLScriptElement"))) {
 			head.Call("removeChild", head, children.Index(i))
 		}
@@ -152,4 +152,7 @@ func ListenAndServe(args ...interface{}) {
 	go componentUpdateListen(componentUpdate)
 
 	applyPatchToDom(fullDomPatch())
+
+	done := make(chan struct{})
+	<-done
 }
