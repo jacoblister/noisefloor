@@ -27,6 +27,10 @@ func addEventHandler(svgNamespace bool, element *Element, domNode js.Value, hand
 				eventData["OffsetX"] = jsEvent.Get("clientX").Int() - bbox.Get("x").Int()
 				eventData["OffsetY"] = jsEvent.Get("clientY").Int() - bbox.Get("y").Int()
 			}
+		case "keydown",
+			"keyup":
+			eventData["key"] = jsEvent.Get("key").String()
+			eventData["KeyCode"] = jsEvent.Get("keyCode").Int()
 		}
 
 		event := Event{Type: handler.Type, Data: eventData}

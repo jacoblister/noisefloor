@@ -5,7 +5,7 @@
 
       function registerEventHandler(svgNamespace, node, type, id) {
         node.addEventListener(type, function(evt) {
-          let eventData = "";
+          let eventData = {};
           switch (type) {
             case "change":
               eventData = { Value: evt.target.value };
@@ -27,8 +27,13 @@
                 eventData.OffsetX = evt.clientX - bbox.x;
                 eventData.OffsetY = evt.clientY - bbox.y;
               }
-
               break;
+            case "keyup":
+            case "keydown":
+              eventData = {
+                Key: evt.key,
+                KeyCode: evt.keyCode
+              };
           }
 
           let domEvent = {

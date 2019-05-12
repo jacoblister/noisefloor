@@ -13,6 +13,7 @@ import (
 type Todo struct {
 	items       []Item
 	newItemText string
+	inputReady  bool
 }
 
 //Item is the todo item state
@@ -21,8 +22,14 @@ type Item struct {
 	Completed bool
 }
 
-func (t *Todo) addItem(name string) {
-	t.items = append(t.items, Item{Name: name, Completed: false})
+func (t *Todo) addItem() {
+	if t.newItemText == "" {
+		return
+	}
+
+	t.items = append(t.items, Item{Name: t.newItemText, Completed: false})
+	t.newItemText = ""
+	t.inputReady = false
 	vdom.UpdateComponent(t)
 }
 
@@ -65,6 +72,11 @@ func (t *Todo) Render() vdom.Element {
 		items.AppendChild(li)
 	}
 
+	disableAttr := vdom.Attr{}
+	if t.inputReady == false {
+		disableAttr = vdom.Attr{Name: "disabled", Value: "true"}
+	}
+
 	result :=
 		vdom.MakeElement("div",
 			"style", "position: absolute; top: 0; left: 0; height: 100%; width: 100%;",
@@ -96,14 +108,20 @@ func (t *Todo) Render() vdom.Element {
 								vdom.MakeEventHandler(vdom.Change, func(element *vdom.Element, event *vdom.Event) {
 									t.newItemText = event.Data["Value"].(string)
 								}),
+								vdom.MakeEventHandler(vdom.KeyUp, func(element *vdom.Element, event *vdom.Event) {
+									t.inputReady = true
+									if event.Data["KeyCode"] == 13 {
+										t.addItem()
+									}
+								}),
 							),
 							vdom.MakeElement("button",
 								"id", "add",
 								"class", "col-md-2 btn btn-outline-primary float-right",
+								disableAttr,
 								vdom.MakeTextElement("Add Item"),
 								vdom.MakeEventHandler(vdom.Click, func(element *vdom.Element, event *vdom.Event) {
-									t.addItem(t.newItemText)
-									t.newItemText = ""
+									t.addItem()
 								}),
 							),
 						),
