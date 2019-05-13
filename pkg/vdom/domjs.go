@@ -68,7 +68,11 @@ func createElementRecursive(svgNamespace bool, element *Element) js.Value {
 			childNode := createElementRecursive(svgNamespace, &child)
 			node.Call("appendChild", childNode)
 		case Text:
-			node.Set("innerText", child.Attrs["Text"])
+			if svgNamespace {
+				node.Set("textContent", child.Attrs["Text"])
+			} else {
+				node.Set("innerText", child.Attrs["Text"])
+			}
 		}
 	}
 

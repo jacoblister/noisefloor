@@ -63,7 +63,11 @@
 
         for (var i = 0; i < element.Children.length; i++) {
           if (element.Children[i].Type == 3) {
-            node.innerText = element.Children[i].Attrs["Text"];
+            if (svgNamespace) {
+              node.textContent = element.Children[i].Attrs["Text"];
+            } else {
+              node.innerText = element.Children[i].Attrs["Text"];
+            }
           } else {
             child = createElementRecursive(svgNamespace, element.Children[i]);
             node.appendChild(child);
