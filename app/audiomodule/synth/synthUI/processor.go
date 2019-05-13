@@ -37,6 +37,7 @@ func (p *Processor) Render() vdom.Element {
 			"height", 4,
 			"stroke", "black",
 			"fill", "black",
+			"cursor", "crosshair",
 		)
 		inConnectors = append(inConnectors, connector)
 	}
@@ -51,6 +52,7 @@ func (p *Processor) Render() vdom.Element {
 			"height", 4,
 			"stroke", "black",
 			"fill", "black",
+			"cursor", "crosshair",
 		)
 		outConnectors = append(outConnectors, connector)
 	}
