@@ -6,39 +6,38 @@ import (
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
-type dividerSetFunc func(pos int)
-
-//LayoutVSplit vertical split container, with center resize bar
-type LayoutVSplit struct {
-	width          int
-	height         int
-	divider        int
-	moving         *bool
-	leftComponent  vdom.Component
-	rightComponent vdom.Component
-	dividerSetFunc dividerSetFunc
+//LayoutHSplit vertical split container, with center resize bar
+type LayoutHSplit struct {
+	width           int
+	height          int
+	divider         int
+	moving          *bool
+	topComponent    vdom.Component
+	bottomComponent vdom.Component
+	dividerSetFunc  dividerSetFunc
 }
 
-//MakeLayoutVSplit create a new Layout horizontal split componenet
-func MakeLayoutVSplit(width int, height int, divider int, moving *bool,
+//MakeLayoutHSplit create a new Layout vertical split componenet
+func MakeLayoutHSplit(width int, height int, divider int, moving *bool,
 	leftComponent vdom.Component, rightComponent vdom.Component,
-	dividerSetFunc dividerSetFunc) *LayoutVSplit {
-	layoutVSplit := LayoutVSplit{width, height, divider, moving,
+	dividerSetFunc dividerSetFunc) *LayoutHSplit {
+	layoutHSplit := LayoutHSplit{width, height, divider, moving,
 		leftComponent, rightComponent,
 		dividerSetFunc}
-	return &layoutVSplit
+	return &layoutHSplit
 }
 
-//Render renders the LayoutHSplit component
-func (l *LayoutVSplit) Render() vdom.Element {
+//Render renders the LayoutVSplit component
+func (l *LayoutHSplit) Render() vdom.Element {
 	disablePointerIfMoving := vdom.Attr{}
 	if *l.moving {
 		disablePointerIfMoving = vdom.Attr{Name: "pointer-events", Value: "none"}
 	}
 
 	e := vdom.MakeElement("g",
+		// "pointer-events", "none",
 		vdom.MakeElement("rect",
-			"id", "v-divider",
+			"id", "h-divider",
 			"stroke", "none",
 			"fill", "white",
 			"x", 1,
@@ -48,43 +47,42 @@ func (l *LayoutVSplit) Render() vdom.Element {
 			vdom.MakeEventHandler(vdom.MouseUp, func(element *vdom.Element, event *vdom.Event) {
 				if *l.moving == true {
 					*l.moving = false
-					l.dividerSetFunc(event.Data["OffsetX"].(int))
+					l.dividerSetFunc(event.Data["OffsetY"].(int))
 				}
 			}),
 			vdom.MakeEventHandler(vdom.MouseLeave, func(element *vdom.Element, event *vdom.Event) {
 				if *l.moving == true {
 					*l.moving = false
-					l.dividerSetFunc(event.Data["OffsetX"].(int))
+					l.dividerSetFunc(event.Data["OffsetY"].(int))
 				}
 			}),
 			vdom.MakeEventHandler(vdom.MouseMove, func(element *vdom.Element, event *vdom.Event) {
 				if *l.moving == true {
-					l.dividerSetFunc(event.Data["OffsetX"].(int))
+					l.dividerSetFunc(event.Data["OffsetY"].(int))
 				}
 			}),
 		),
 		vdom.MakeElement("line",
-			"id", "v-dividerline",
+			"id", "h-dividerline",
 			"stroke", "gray",
-			"x1", l.divider,
-			"y1", 0,
-			"x2", l.divider,
-			"y2", l.height,
-			"cursor", "ew-resize",
+			"x1", 0,
+			"y1", l.divider,
+			"x2", l.width,
+			"y2", l.divider,
+			"cursor", "ns-resize",
 			disablePointerIfMoving,
-
 			vdom.MakeEventHandler(vdom.MouseDown, func(element *vdom.Element, event *vdom.Event) {
 				*l.moving = true
 			}),
 		),
 		vdom.MakeElement("g",
-			l.leftComponent,
+			l.topComponent,
 			disablePointerIfMoving,
 		),
 		vdom.MakeElement("g",
-			"transform", "translate("+strconv.Itoa(l.divider)+",0)",
+			"transform", "translate(0,"+strconv.Itoa(l.divider)+")",
+			l.bottomComponent,
 			disablePointerIfMoving,
-			l.rightComponent,
 		),
 	)
 	return e
