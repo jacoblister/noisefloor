@@ -39,6 +39,11 @@ func updateEventHandlersRecursive(element *Element) {
 		}
 		key := eventHandlerKey{id: id, eventType: handler.Type}
 		value := eventHandlerValue{element: element, eventHandler: handler, Type: handler.Type}
+
+		_, present := eventHandlerMap[key]
+		if present {
+			panic("Duplicate element key for event handler: " + id)
+		}
 		eventHandlerMap[key] = value
 	}
 
