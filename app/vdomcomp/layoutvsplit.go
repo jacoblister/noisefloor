@@ -72,7 +72,6 @@ func (l *LayoutVSplit) Render() vdom.Element {
 			"y2", l.height,
 			"cursor", "ew-resize",
 			disablePointerIfMoving,
-
 			vdom.MakeEventHandler(vdom.MouseDown, func(element *vdom.Element, event *vdom.Event) {
 				*l.moving = true
 			}),
