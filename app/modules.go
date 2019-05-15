@@ -9,8 +9,9 @@ import (
 )
 
 type modules struct {
-	keyboard    onscreenkeyboard.Keyboard
-	synthEngine synth.Engine
+	keyboard           onscreenkeyboard.Keyboard
+	synthEngine        synth.Engine
+	synthUIEngineState synthUI.EngineState
 }
 
 // Start begin the main application audio processing
@@ -44,7 +45,7 @@ func (c *modules) Render() vdom.Element {
 		vdom.MakeElement("g",
 			"transform", "translate(0,200)",
 			// onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
-			synthUI.MakeEngine(&c.synthEngine),
+			synthUI.MakeEngine(&c.synthEngine, &c.synthUIEngineState),
 		),
 	)
 	return elem

@@ -14,11 +14,12 @@ const procConnWidth = 6
 // Processor is a synth processor block (with inputs and outputs displayed)
 type Processor struct {
 	ProcessorDefinition *synth.ProcessorDefinition
+	handlerFunc         vdom.HandlerFunc
 }
 
 //MakeProcessor create an new Processor UI componenet
-func MakeProcessor(processorDefinition *synth.ProcessorDefinition) *Processor {
-	processor := Processor{ProcessorDefinition: processorDefinition}
+func MakeProcessor(processorDefinition *synth.ProcessorDefinition, handlerFunc vdom.HandlerFunc) *Processor {
+	processor := Processor{ProcessorDefinition: processorDefinition, handlerFunc: handlerFunc}
 	return &processor
 }
 
@@ -30,9 +31,24 @@ func (p *Processor) GetConnectorPoint(isInput bool, index int) (x int, y int) {
 		return x, y
 	}
 
-	x = p.ProcessorDefinition.X + (procConnWidth / 2)
+	x = p.ProcessorDefinition.X + procWidth - (procConnWidth / 2)
 	y = p.ProcessorDefinition.Y + (index+1)*(procConnWidth*2) + (procConnWidth / 2)
 	return x, y
+}
+
+func (p *Processor) processorEventHandler(element *vdom.Element, event *vdom.Event) {
+	event.Data["Source"] = "processor"
+	event.Data["Processor"] = p.ProcessorDefinition
+	event.Data["OffsetX"] = event.Data["OffsetX"].(int) + p.ProcessorDefinition.X
+	event.Data["OffsetY"] = event.Data["OffsetY"].(int) + p.ProcessorDefinition.Y
+	p.handlerFunc(element, event)
+}
+
+func (p *Processor) makeConnectorEventHandler(isInput bool, index int) vdom.HandlerFunc {
+	return func(element *vdom.Element, event *vdom.Event) {
+		event.Data["Source"] = "connector"
+		p.handlerFunc(element, event)
+	}
 }
 
 // Render displays a processor
@@ -50,6 +66,7 @@ func (p *Processor) Render() vdom.Element {
 			"stroke", "black",
 			"fill", "white",
 			"cursor", "crosshair",
+			vdom.MakeEventHandler(vdom.MouseDown, p.makeConnectorEventHandler(true, i)),
 		)
 		inConnectors = append(inConnectors, connector)
 	}
@@ -57,7 +74,7 @@ func (p *Processor) Render() vdom.Element {
 	outConnectors := []vdom.Element{}
 	for i := 0; i < len(procOutputs); i++ {
 		connector := vdom.MakeElement("rect",
-			"id", procName+":inconn:"+strconv.Itoa(i),
+			"id", procName+":outconn:"+strconv.Itoa(i),
 			"x", p.ProcessorDefinition.X+procWidth-procConnWidth,
 			"y", p.ProcessorDefinition.Y+(i+1)*(procConnWidth*2),
 			"width", procConnWidth,
@@ -65,13 +82,14 @@ func (p *Processor) Render() vdom.Element {
 			"stroke", "black",
 			"fill", "white",
 			"cursor", "crosshair",
+			vdom.MakeEventHandler(vdom.MouseDown, p.makeConnectorEventHandler(false, i)),
 		)
 		outConnectors = append(outConnectors, connector)
 	}
 
 	element := vdom.MakeElement("g",
 		vdom.MakeElement("rect",
-			"id", "makeosc",
+			"id", procName,
 			"x", p.ProcessorDefinition.X,
 			"y", p.ProcessorDefinition.Y,
 			"width", procWidth,
@@ -79,6 +97,9 @@ func (p *Processor) Render() vdom.Element {
 			"stroke", "black",
 			"fill", "white",
 			"cursor", "pointer",
+			vdom.MakeEventHandler(vdom.MouseDown, p.processorEventHandler),
+			vdom.MakeEventHandler(vdom.MouseUp, p.processorEventHandler),
+			vdom.MakeEventHandler(vdom.MouseMove, p.processorEventHandler),
 		),
 		inConnectors,
 		outConnectors,
