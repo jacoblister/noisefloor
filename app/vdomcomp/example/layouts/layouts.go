@@ -5,23 +5,6 @@ import (
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
-//Text is a simple Text component for testing
-type Text struct {
-	text string
-}
-
-//Render renders the Text component
-func (t *Text) Render() vdom.Element {
-	elem := vdom.MakeElement("text",
-		"alignment-baseline", "text-before-edge",
-		"x", 0,
-		"y", 0,
-		vdom.MakeTextElement(t.text),
-	)
-
-	return elem
-}
-
 //App is a simple SVG example
 type App struct {
 	hDividerPos    int
@@ -33,7 +16,7 @@ type App struct {
 //Render renders the App component
 func (a *App) Render() vdom.Element {
 	hSplit := vdomcomp.MakeLayoutHSplit(640-a.vDividerPos, 480, a.hDividerPos, &a.hDividerMoving,
-		&Text{"top"}, &Text{"bottom"},
+		&vdomcomp.Text{Text: "top"}, &vdomcomp.Text{Text: "bottom"},
 		func(pos int) {
 			if pos > 100 {
 				a.hDividerPos = pos
@@ -42,7 +25,7 @@ func (a *App) Render() vdom.Element {
 	)
 
 	vSplit := vdomcomp.MakeLayoutVSplit(640, 480, a.vDividerPos, &a.vDividerMoving,
-		&Text{"left"}, hSplit,
+		&vdomcomp.Text{Text: "left"}, hSplit,
 		func(pos int) {
 			if pos > 100 {
 				a.vDividerPos = pos

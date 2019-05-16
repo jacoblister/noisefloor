@@ -25,6 +25,7 @@ func App(driver Driver) {
 	driver.Start(hardwareDevices, &mods)
 
 	go func() {
+		mods.Init()
 		vdom.SetSVGNamespace()
 		vdom.SetHeaderElements([]vdom.Element{
 			vdom.MakeElement("link",
