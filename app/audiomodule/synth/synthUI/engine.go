@@ -26,6 +26,7 @@ type Engine struct {
 type EngineState struct {
 	editState         editState
 	selectedProcessor *synth.ProcessorDefinition
+	selectedConnector *synth.Connector
 	mouseOffsetX      int
 	mouseOffsetY      int
 }
@@ -34,6 +35,15 @@ type EngineState struct {
 func MakeEngine(engine *synth.Engine, engineState *EngineState) *Engine {
 	engineUI := Engine{Engine: engine, state: engineState}
 	return &engineUI
+}
+
+func (e *Engine) getConnectorForProcessor(processor synth.Processor, isInput bool, index int) *synth.Connector {
+	// for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
+	// 	connector := e.Engine.Graph.ConnectorList[i]
+	// 	if connector.FromProcessor == processor || connector.ToProcessor == processor {
+	// 	}
+	// }
+	return nil
 }
 
 // handleUIEvent processes a User Interface event,
@@ -50,6 +60,21 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				e.state.mouseOffsetX = event.Data["OffsetX"].(int) - processor.X
 				e.state.mouseOffsetY = event.Data["OffsetY"].(int) - processor.Y
 				e.state.editState = moveProcessor
+			}
+		case "connector":
+			switch event.Type {
+			case "mousedown":
+				// processor := event.Data["Processor"].(*synth.ProcessorDefinition)
+				// connector := e.getConnectorForProcessor(
+				// 	processor.Processor,
+				// 	event.Data["IsInput"].(bool),
+				// 	event.Data["Index"].(int))
+				println("edit connector")
+				// processor := event.Data["Processor"].(*synth.ProcessorDefinition)
+				// e.state.selectedProcessor = processor
+				// e.state.mouseOffsetX = event.Data["OffsetX"].(int) - processor.X
+				// e.state.mouseOffsetY = event.Data["OffsetY"].(int) - processor.Y
+				// e.state.editState = moveProcessor
 			}
 		}
 	case moveProcessor:

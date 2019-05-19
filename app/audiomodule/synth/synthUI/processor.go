@@ -47,6 +47,9 @@ func (p *Processor) processorEventHandler(element *vdom.Element, event *vdom.Eve
 func (p *Processor) makeConnectorEventHandler(isInput bool, index int) vdom.HandlerFunc {
 	return func(element *vdom.Element, event *vdom.Event) {
 		event.Data["Source"] = "connector"
+		event.Data["Processor"] = p.ProcessorDefinition
+		event.Data["IsInput"] = isInput
+		event.Data["Index"] = index
 		p.handlerFunc(element, event)
 	}
 }
