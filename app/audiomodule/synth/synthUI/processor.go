@@ -37,7 +37,7 @@ func (p *Processor) GetConnectorPoint(isInput bool, index int) (x int, y int) {
 }
 
 func (p *Processor) processorEventHandler(element *vdom.Element, event *vdom.Event) {
-	event.Data["Source"] = "processor"
+	event.Data["Source"] = ESProcessor
 	event.Data["Processor"] = p.ProcessorDefinition
 	event.Data["OffsetX"] = event.Data["OffsetX"].(int) + p.ProcessorDefinition.X
 	event.Data["OffsetY"] = event.Data["OffsetY"].(int) + p.ProcessorDefinition.Y
@@ -46,7 +46,7 @@ func (p *Processor) processorEventHandler(element *vdom.Element, event *vdom.Eve
 
 func (p *Processor) makeConnectorEventHandler(isInput bool, index int) vdom.HandlerFunc {
 	return func(element *vdom.Element, event *vdom.Event) {
-		event.Data["Source"] = "connector"
+		event.Data["Source"] = ESConnector
 		event.Data["Processor"] = p.ProcessorDefinition
 		event.Data["IsInput"] = isInput
 		event.Data["Index"] = index
@@ -70,6 +70,7 @@ func (p *Processor) Render() vdom.Element {
 			"fill", "white",
 			"cursor", "crosshair",
 			vdom.MakeEventHandler(vdom.MouseDown, p.makeConnectorEventHandler(true, i)),
+			vdom.MakeEventHandler(vdom.MouseMove, p.makeConnectorEventHandler(true, i)),
 		)
 		inConnectors = append(inConnectors, connector)
 	}
@@ -86,6 +87,7 @@ func (p *Processor) Render() vdom.Element {
 			"fill", "white",
 			"cursor", "crosshair",
 			vdom.MakeEventHandler(vdom.MouseDown, p.makeConnectorEventHandler(false, i)),
+			vdom.MakeEventHandler(vdom.MouseMove, p.makeConnectorEventHandler(false, i)),
 		)
 		outConnectors = append(outConnectors, connector)
 	}
