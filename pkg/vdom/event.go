@@ -1,38 +1,22 @@
 package vdom
 
 // EventType is the DOM event type
-type EventType int
+type EventType string
 
-// XML event handler types
+// HTML/SVG event handler types
 const (
-	Click EventType = iota
-	MouseDown
-	MouseUp
-	MouseEnter
-	MouseLeave
-	MouseMove
-	TouchStart
-	TouchEnd
-	KeyDown
-	KeyUp
-	Change
+	Click      EventType = "click"
+	MouseDown            = "mousedown"
+	MouseUp              = "mouseup"
+	MouseEnter           = "mouseenter"
+	MouseLeave           = "mouseleave"
+	MouseMove            = "mousemove"
+	TouchStart           = "touchstart"
+	TouchEnd             = "touchend"
+	KeyDown              = "keydown"
+	KeyUp                = "keyup"
+	Change               = "change"
 )
-
-func (e EventType) String() string {
-	return [...]string{
-		"click",
-		"mousedown",
-		"mouseup",
-		"mouseenter",
-		"mouseleave",
-		"mousemove",
-		"touchstart",
-		"touchend",
-		"keydown",
-		"keyup",
-		"change",
-	}[e]
-}
 
 // HandlerFunc is the registered callback method
 type HandlerFunc func(*Element, *Event)
@@ -45,7 +29,7 @@ type EventHandler struct {
 
 // MakeEventHandler creates a EventHanlder with a listener function
 func MakeEventHandler(eventType EventType, handlerFunc HandlerFunc) EventHandler {
-	return EventHandler{Type: eventType.String(), handlerFunc: handlerFunc}
+	return EventHandler{Type: string(eventType), handlerFunc: handlerFunc}
 }
 
 // Event is the event data

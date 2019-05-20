@@ -74,7 +74,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			e.state.mouseOffsetY = event.Data["OffsetY"].(int)
 		case ESProcessor:
 			switch event.Type {
-			case "mousedown":
+			case vdom.MouseDown:
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
 				e.state.selectedProcessor = processor
 				e.state.mouseOffsetX = event.Data["OffsetX"].(int) - processor.X
@@ -83,7 +83,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			}
 		case ESConnector:
 			switch event.Type {
-			case "mousedown":
+			case vdom.MouseDown:
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
 				connector := e.getConnectorForProcessor(
 					processor.Processor,
@@ -98,26 +98,26 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		}
 	case moveProcessor:
 		switch event.Type {
-		case "mousemove":
+		case vdom.MouseMove:
 			e.state.selectedProcessor.X = event.Data["OffsetX"].(int) - e.state.mouseOffsetX
 			e.state.selectedProcessor.Y = event.Data["OffsetY"].(int) - e.state.mouseOffsetY
-		case "mouseup":
+		case vdom.MouseUp:
 			e.state.editState = idle
 		}
 	case connectNodes:
 		switch event.Data["Source"] {
 		case ESMain:
 			switch event.Type {
-			case "mousemove":
+			case vdom.MouseMove:
 				e.state.mouseOffsetX = event.Data["OffsetX"].(int)
 				e.state.mouseOffsetY = event.Data["OffsetY"].(int)
-			case "mouseup":
+			case vdom.MouseUp:
 				println("connect exit")
 				e.state.editState = idle
 			}
 		case ESConnector:
 			switch event.Type {
-			case "mousemove":
+			case vdom.MouseMove:
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
 				fmt.Println(e.state.selectedConnectorIsInput)
 				if e.state.selectedConnectorIsInput {
@@ -128,7 +128,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 					e.state.selectedConnector.FromPort = event.Data["Index"].(int)
 				}
 				println("connector plugged")
-			case "mouseup":
+			case vdom.MouseUp:
 				println("connector plugged")
 			}
 		}
