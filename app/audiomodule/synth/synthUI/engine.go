@@ -36,12 +36,14 @@ type Engine struct {
 
 // EngineState is the synth engine UI stateful store
 type EngineState struct {
-	editState                editState
-	selectedProcessor        *synth.ProcessorDefinition
-	selectedConnector        *synth.Connector
-	selectedConnectorIsInput bool
-	mouseOffsetX             int
-	mouseOffsetY             int
+	editState                  editState
+	selectedProcessor          *synth.ProcessorDefinition
+	selectedConnector          *synth.Connector
+	selectedConnectorIsInput   bool
+	selectedConnectorProcessor synth.Processor
+	selectedConnectorPort      int
+	mouseOffsetX               int
+	mouseOffsetY               int
 }
 
 //MakeEngine create an new Engine Edit UI componenet
@@ -61,6 +63,11 @@ func (e *Engine) getConnectorForProcessor(processor synth.Processor, isInput boo
 		}
 	}
 	return nil
+}
+
+func (e *Engine) updateConnector(connector *synth.Connector, isInput bool,
+	targetProcessor synth.Processor, targetPort int) {
+	fmt.Println(e.Engine.Graph.ConnectorList)
 }
 
 // handleUIEvent processes a User Interface event,
@@ -111,25 +118,22 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			case vdom.MouseMove:
 				e.state.mouseOffsetX = event.Data["OffsetX"].(int)
 				e.state.mouseOffsetY = event.Data["OffsetY"].(int)
+				e.state.selectedConnectorProcessor = nil
 			case vdom.MouseUp:
-				println("connect exit")
+				e.updateConnector(e.state.selectedConnector, e.state.selectedConnectorIsInput,
+					e.state.selectedConnectorProcessor, e.state.selectedConnectorPort)
 				e.state.editState = idle
 			}
 		case ESConnector:
 			switch event.Type {
 			case vdom.MouseMove:
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
-				fmt.Println(e.state.selectedConnectorIsInput)
-				if e.state.selectedConnectorIsInput {
-					e.state.selectedConnector.ToProcessor = processor.Processor
-					e.state.selectedConnector.ToPort = event.Data["Index"].(int)
-				} else {
-					e.state.selectedConnector.FromProcessor = processor.Processor
-					e.state.selectedConnector.FromPort = event.Data["Index"].(int)
-				}
-				println("connector plugged")
+				e.state.selectedConnectorProcessor = processor.Processor
+				e.state.selectedConnectorPort = event.Data["Index"].(int)
 			case vdom.MouseUp:
-				println("connector plugged")
+				e.updateConnector(e.state.selectedConnector, e.state.selectedConnectorIsInput,
+					e.state.selectedConnectorProcessor, e.state.selectedConnectorPort)
+				e.state.editState = idle
 			}
 		}
 	}
