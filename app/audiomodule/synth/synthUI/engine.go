@@ -1,8 +1,6 @@
 package synthUI
 
 import (
-	"fmt"
-
 	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -36,14 +34,16 @@ type Engine struct {
 
 // EngineState is the synth engine UI stateful store
 type EngineState struct {
-	editState                  editState
-	selectedProcessor          *synth.ProcessorDefinition
-	selectedConnector          *synth.Connector
-	selectedConnectorIsInput   bool
-	selectedConnectorProcessor synth.Processor
-	selectedConnectorPort      int
-	mouseOffsetX               int
-	mouseOffsetY               int
+	editState                editState
+	selectedProcessor        *synth.ProcessorDefinition
+	selectedConnector        *synth.Connector
+	selectedConnectorIsInput bool
+	targetProcessor          synth.Processor
+	targetPort               int
+	targetPortIsInput        bool
+	mouseOffsetX             int
+	mouseOffsetY             int
+	mouseIgnore              bool
 }
 
 //MakeEngine create an new Engine Edit UI componenet
@@ -52,7 +52,8 @@ func MakeEngine(engine *synth.Engine, engineState *EngineState) *Engine {
 	return &engineUI
 }
 
-func (e *Engine) getConnectorForProcessor(processor synth.Processor, isInput bool, index int) *synth.Connector {
+//connectorForProcessor finds the connector give a target
+func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, index int) *synth.Connector {
 	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
 		connector := &e.Engine.Graph.ConnectorList[i]
 		if isInput && connector.ToProcessor == processor && connector.ToPort == index {
@@ -65,9 +66,59 @@ func (e *Engine) getConnectorForProcessor(processor synth.Processor, isInput boo
 	return nil
 }
 
-func (e *Engine) updateConnector(connector *synth.Connector, isInput bool,
-	targetProcessor synth.Processor, targetPort int) {
-	fmt.Println(e.Engine.Graph.ConnectorList)
+// connectorTargetIndex iterates the connector list,
+// and gets the index and count of current connections at target
+func (e *Engine) connectorTargetIndex(connector *synth.Connector,
+	targetIsInput bool, targetProcessor synth.Processor, targetPort int) (index int, count int) {
+	count = 0
+	index = -1
+	list := e.Engine.Graph.ConnectorList
+	for i := 0; i < len(list); i++ {
+		if &list[i] == connector {
+			index = i
+			continue
+		}
+		if targetIsInput && list[i].ToProcessor == targetProcessor && list[i].ToPort == targetPort {
+			count++
+		}
+		if !targetIsInput && list[i].FromProcessor == targetProcessor && list[i].FromPort == targetPort {
+			count++
+		}
+	}
+
+	return index, count
+}
+
+// updateConnector updates the connector list after change (create, modify, delete)
+func (e *Engine) updateConnector(connector *synth.Connector,
+	targetIsInput bool, targetProcessor synth.Processor, targetPort int) {
+
+	index, targetCount := e.connectorTargetIndex(connector, targetIsInput, targetProcessor, targetPort)
+
+	// delete connector operation
+	if targetProcessor == nil {
+		list := e.Engine.Graph.ConnectorList
+		e.Engine.Graph.ConnectorList = append(list[:index], list[index+1:]...)
+		return
+	}
+
+	// allow input to output connections only
+	if e.state.selectedConnectorIsInput != targetIsInput {
+		return
+	}
+
+	// do not allow connection if connector already exists
+	if targetCount > 0 {
+		return
+	}
+
+	if targetIsInput {
+		connector.ToProcessor = targetProcessor
+		connector.ToPort = targetPort
+	} else {
+		connector.FromProcessor = targetProcessor
+		connector.FromPort = targetPort
+	}
 }
 
 // handleUIEvent processes a User Interface event,
@@ -91,15 +142,28 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case ESConnector:
 			switch event.Type {
 			case vdom.MouseDown:
+				isInput := event.Data["IsInput"].(bool)
+				index := event.Data["Index"].(int)
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
-				connector := e.getConnectorForProcessor(
-					processor.Processor,
-					event.Data["IsInput"].(bool),
-					event.Data["Index"].(int))
+				connector := e.connectorForProcessor(processor.Processor, isInput, index)
 
+				e.state.selectedConnectorIsInput = isInput
+				if connector == nil {
+					// new connector, allocate now
+					connector = &synth.Connector{}
+					if isInput {
+						connector.ToProcessor = processor.Processor
+						connector.ToPort = index
+					} else {
+						connector.FromProcessor = processor.Processor
+						connector.FromPort = index
+					}
+					e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
+					connector = &e.Engine.Graph.ConnectorList[len(e.Engine.Graph.ConnectorList)-1]
+					e.state.selectedConnectorIsInput = !isInput
+				}
 				e.state.selectedProcessor = processor
 				e.state.selectedConnector = connector
-				e.state.selectedConnectorIsInput = event.Data["IsInput"].(bool)
 				e.state.editState = connectNodes
 			}
 		}
@@ -116,23 +180,29 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case ESMain:
 			switch event.Type {
 			case vdom.MouseMove:
-				e.state.mouseOffsetX = event.Data["OffsetX"].(int)
-				e.state.mouseOffsetY = event.Data["OffsetY"].(int)
-				e.state.selectedConnectorProcessor = nil
+				if !e.state.mouseIgnore {
+					// ignore if previous event was mouse move (repeat from connector/processor)
+					e.state.mouseOffsetX = event.Data["OffsetX"].(int)
+					e.state.mouseOffsetY = event.Data["OffsetY"].(int)
+					e.state.targetProcessor = nil
+				}
+				e.state.mouseIgnore = false
 			case vdom.MouseUp:
-				e.updateConnector(e.state.selectedConnector, e.state.selectedConnectorIsInput,
-					e.state.selectedConnectorProcessor, e.state.selectedConnectorPort)
+				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,
+					e.state.targetProcessor, e.state.targetPort)
 				e.state.editState = idle
 			}
 		case ESConnector:
 			switch event.Type {
 			case vdom.MouseMove:
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
-				e.state.selectedConnectorProcessor = processor.Processor
-				e.state.selectedConnectorPort = event.Data["Index"].(int)
+				e.state.targetPortIsInput = event.Data["IsInput"].(bool)
+				e.state.targetProcessor = processor.Processor
+				e.state.targetPort = event.Data["Index"].(int)
+				e.state.mouseIgnore = true
 			case vdom.MouseUp:
-				e.updateConnector(e.state.selectedConnector, e.state.selectedConnectorIsInput,
-					e.state.selectedConnectorProcessor, e.state.selectedConnectorPort)
+				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,
+					e.state.targetProcessor, e.state.targetPort)
 				e.state.editState = idle
 			}
 		}
@@ -146,23 +216,35 @@ func (e *Engine) mainUIEventHandler(element *vdom.Element, event *vdom.Event) {
 
 // connectorCoordinates returns the coordinates for the connector, which may be being edited
 func (e *Engine) connectorCoordinates(connector *synth.Connector, fromProcessor *Processor, toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, stroke string) {
-	x1, y1 = fromProcessor.GetConnectorPoint(false, connector.FromPort)
-	x2, y2 = toProcessor.GetConnectorPoint(true, connector.ToPort)
+	if fromProcessor != nil {
+		x1, y1 = fromProcessor.GetConnectorPoint(false, connector.FromPort)
+	}
+	if toProcessor != nil {
+		x2, y2 = toProcessor.GetConnectorPoint(true, connector.ToPort)
+	}
 	stroke = "darkblue"
 
-	if e.state.editState == connectNodes {
-		if connector == e.state.selectedConnector {
-			if e.state.selectedConnectorIsInput {
-				x2 = e.state.mouseOffsetX
-				y2 = e.state.mouseOffsetY
-			} else {
-				x1 = e.state.mouseOffsetX
-				y1 = e.state.mouseOffsetY
-			}
+	if e.state.editState != connectNodes {
+		return
+	}
+
+	_, targetCount := e.connectorTargetIndex(connector,
+		e.state.targetPortIsInput, e.state.targetProcessor, e.state.targetPort)
+
+	if connector == e.state.selectedConnector {
+		if e.state.selectedConnectorIsInput {
+			x2 = e.state.mouseOffsetX
+			y2 = e.state.mouseOffsetY
+		} else {
+			x1 = e.state.mouseOffsetX
+			y1 = e.state.mouseOffsetY
+		}
+		if e.state.targetProcessor == nil ||
+			e.state.targetPortIsInput != e.state.selectedConnectorIsInput ||
+			targetCount > 0 {
 			stroke = "grey"
 		}
 	}
-
 	return
 }
 

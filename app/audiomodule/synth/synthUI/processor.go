@@ -23,7 +23,7 @@ func MakeProcessor(processorDefinition *synth.ProcessorDefinition, handlerFunc v
 	return &processor
 }
 
-//GetConnectorPoint gets to co-ordinates of an input or output connection point
+//GetConnectorPoint gets the co-ordinates of an input or output connection point
 func (p *Processor) GetConnectorPoint(isInput bool, index int) (x int, y int) {
 	if isInput {
 		x = p.ProcessorDefinition.X + (procConnWidth / 2)
