@@ -91,20 +91,19 @@ func (e *Engine) updateConnector(connector *synth.Connector,
 
 	index, targetCount := e.connectorTargetIndex(connector, targetIsInput, targetProcessor, targetPort)
 
+	// allow input to output connections only
+	// do not allow connection if connector already exists
+	if e.state.selectedConnectorIsInput != targetIsInput || targetCount > 0 {
+		targetProcessor = nil
+	}
+
 	// delete connector operation
 	if targetProcessor == nil {
-		list := e.Engine.Graph.ConnectorList
-		e.Engine.Graph.ConnectorList = append(list[:index], list[index+1:]...)
-		return
-	}
-
-	// allow input to output connections only
-	if e.state.selectedConnectorIsInput != targetIsInput {
-		return
-	}
-
-	// do not allow connection if connector already exists
-	if targetCount > 0 {
+		// only update if not in add
+		if e.state.editState == connectionEdit {
+			list := e.Engine.Graph.ConnectorList
+			e.Engine.Graph.ConnectorList = append(list[:index], list[index+1:]...)
+		}
 		return
 	}
 
@@ -143,15 +142,14 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 
 				e.state.selectedConnectorIsInput = isInput
 				if connector == nil {
-					// new connector, allocate now
+					// new connector
 					connector = &synth.Connector{}
 					connector.SetProcessor(isInput, processor.Processor)
 					connector.SetPort(isInput, index)
-					// e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
-					// connector = &e.Engine.Graph.ConnectorList[len(e.Engine.Graph.ConnectorList)-1]
 					e.state.selectedConnectorIsInput = !isInput
 					e.state.editState = connectionAdd
 				} else {
+					// existing connector
 					e.state.editState = connectionEdit
 				}
 				e.state.selectedProcessor = processor
@@ -272,7 +270,7 @@ func (e *Engine) Render() vdom.Element {
 		connectors = append(connectors, line)
 	}
 
-	// maim view
+	// main view
 	elem := vdom.MakeElement("g",
 		"id", "synthengineedit",
 		vdom.MakeEventHandler(vdom.MouseUp, e.mainUIEventHandler),

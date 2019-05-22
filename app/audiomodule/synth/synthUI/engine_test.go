@@ -14,7 +14,7 @@ func TestUpdateConnector(t *testing.T) {
 	gainB := processor.Gain{}
 	connectorList := []synth.Connector{synth.Connector{FromProcessor: &gainA, FromPort: 0}}
 	graph := synth.Graph{ConnectorList: connectorList}
-	engine := &Engine{Engine: &synth.Engine{Graph: graph}, state: &EngineState{}}
+	engine := &Engine{Engine: &synth.Engine{Graph: graph}, state: &EngineState{editState: connectionEdit}}
 
 	// When ... No target processor
 	engine.updateConnector(&engine.Engine.Graph.ConnectorList[0], true, nil, 0)
