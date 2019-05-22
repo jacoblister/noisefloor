@@ -56,10 +56,7 @@ func MakeEngine(engine *synth.Engine, engineState *EngineState) *Engine {
 func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, index int) *synth.Connector {
 	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
 		connector := &e.Engine.Graph.ConnectorList[i]
-		if isInput && connector.ToProcessor == processor && connector.ToPort == index {
-			return connector
-		}
-		if !isInput && connector.FromProcessor == processor && connector.FromPort == index {
+		if connector.Processor(isInput) == processor {
 			return connector
 		}
 	}
@@ -78,10 +75,8 @@ func (e *Engine) connectorTargetIndex(connector *synth.Connector,
 			index = i
 			continue
 		}
-		if targetIsInput && list[i].ToProcessor == targetProcessor && list[i].ToPort == targetPort {
-			count++
-		}
-		if !targetIsInput && list[i].FromProcessor == targetProcessor && list[i].FromPort == targetPort {
+		if list[i].Processor(targetIsInput) == targetProcessor &&
+			list[i].Port(targetIsInput) == targetPort {
 			count++
 		}
 	}
@@ -112,13 +107,8 @@ func (e *Engine) updateConnector(connector *synth.Connector,
 		return
 	}
 
-	if targetIsInput {
-		connector.ToProcessor = targetProcessor
-		connector.ToPort = targetPort
-	} else {
-		connector.FromProcessor = targetProcessor
-		connector.FromPort = targetPort
-	}
+	connector.SetProcessor(targetIsInput, targetProcessor)
+	connector.SetPort(targetIsInput, targetPort)
 }
 
 // handleUIEvent processes a User Interface event,
@@ -151,13 +141,8 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				if connector == nil {
 					// new connector, allocate now
 					connector = &synth.Connector{}
-					if isInput {
-						connector.ToProcessor = processor.Processor
-						connector.ToPort = index
-					} else {
-						connector.FromProcessor = processor.Processor
-						connector.FromPort = index
-					}
+					connector.SetProcessor(isInput, processor.Processor)
+					connector.SetPort(isInput, index)
 					e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
 					connector = &e.Engine.Graph.ConnectorList[len(e.Engine.Graph.ConnectorList)-1]
 					e.state.selectedConnectorIsInput = !isInput
