@@ -12,7 +12,8 @@ type editState int
 const (
 	idle editState = iota
 	moveProcessor
-	connectNodes
+	connectionEdit
+	connectionAdd
 	selectItems
 )
 
@@ -109,6 +110,9 @@ func (e *Engine) updateConnector(connector *synth.Connector,
 
 	connector.SetProcessor(targetIsInput, targetProcessor)
 	connector.SetPort(targetIsInput, targetPort)
+	if e.state.editState == connectionAdd {
+		e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
+	}
 }
 
 // handleUIEvent processes a User Interface event,
@@ -143,13 +147,15 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 					connector = &synth.Connector{}
 					connector.SetProcessor(isInput, processor.Processor)
 					connector.SetPort(isInput, index)
-					e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
-					connector = &e.Engine.Graph.ConnectorList[len(e.Engine.Graph.ConnectorList)-1]
+					// e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
+					// connector = &e.Engine.Graph.ConnectorList[len(e.Engine.Graph.ConnectorList)-1]
 					e.state.selectedConnectorIsInput = !isInput
+					e.state.editState = connectionAdd
+				} else {
+					e.state.editState = connectionEdit
 				}
 				e.state.selectedProcessor = processor
 				e.state.selectedConnector = connector
-				e.state.editState = connectNodes
 			}
 		}
 	case moveProcessor:
@@ -160,7 +166,9 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case vdom.MouseUp:
 			e.state.editState = idle
 		}
-	case connectNodes:
+	case connectionEdit:
+		fallthrough
+	case connectionAdd:
 		switch event.Data["Source"] {
 		case ESMain:
 			switch event.Type {
@@ -209,14 +217,14 @@ func (e *Engine) connectorCoordinates(connector *synth.Connector, fromProcessor 
 	}
 	stroke = "darkblue"
 
-	if e.state.editState != connectNodes {
+	if e.state.editState != connectionEdit && e.state.editState != connectionAdd {
 		return
 	}
 
 	_, targetCount := e.connectorTargetIndex(connector,
 		e.state.targetPortIsInput, e.state.targetProcessor, e.state.targetPort)
 
-	if connector == e.state.selectedConnector {
+	if *connector == *e.state.selectedConnector {
 		if e.state.selectedConnectorIsInput {
 			x2 = e.state.mouseOffsetX
 			y2 = e.state.mouseOffsetY
@@ -246,9 +254,13 @@ func (e *Engine) Render() vdom.Element {
 	}
 
 	// connectors
+	connectionList := e.Engine.Graph.ConnectorList
+	if e.state.editState == connectionAdd {
+		connectionList = append(connectionList, *e.state.selectedConnector)
+	}
 	connectors := []vdom.Element{}
-	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
-		connector := &e.Engine.Graph.ConnectorList[i]
+	for i := 0; i < len(connectionList); i++ {
+		connector := &connectionList[i]
 		x1, y1, x2, y2, stroke := e.connectorCoordinates(connector, processorMap[connector.FromProcessor], processorMap[connector.ToProcessor])
 		line := vdom.MakeElement("line",
 			"x1", float64(x1)+0.5,
