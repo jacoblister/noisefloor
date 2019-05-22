@@ -24,11 +24,11 @@ func (g *Gain) ProcessArray(in []float32) (output []float32) {
 
 // Definition exports processor definition
 func (o *Oscillator) Definition() (name string, inputs []string, outputs []string) {
-	return "Oscillator", []string{}, []string{"output"}
+	return "Oscillator", []string{"freq"}, []string{"output"}
 }
 
 //ProcessArray calls process with an array of input/output samples
 func (o *Oscillator) ProcessArray(in []float32) (output []float32) {
-	out := o.Process()
+	out := o.Process(in[0])
 	return []float32{out}
 }

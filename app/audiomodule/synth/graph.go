@@ -18,7 +18,6 @@ func loadProcessorGraph(filename string) Graph {
 	graph := Graph{}
 
 	osc := processor.Oscillator{}
-	osc.Freq = 440
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 100, Y: 100, Processor: &osc})
 	env := processor.Envelope{}

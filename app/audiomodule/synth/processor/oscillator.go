@@ -21,7 +21,6 @@ const maxSamples = 48000
 // Oscillator - basic wave function generator
 type Oscillator struct {
 	Waveform Waveform `default:"Sin"`
-	Freq     float32  `default:"440" min:"20" max:"20000"`
 
 	sampleRate    float32
 	currentSample float32
@@ -35,7 +34,6 @@ func (o *Oscillator) Start(sampleRate int) {
 	}
 
 	o.sampleRate = float32(sampleRate)
-	o.Freq = 220
 
 	for i := 0; i < sampleRate; i++ {
 		o.waveTable[Sin][i] = float32(math.Sin(float64(2*math.Pi*float64(i)) / float64(sampleRate)))
@@ -51,10 +49,10 @@ func (o *Oscillator) Start(sampleRate int) {
 func (o *Oscillator) Stop() {}
 
 // Process - produce next sample
-func (o *Oscillator) Process() (output float32) {
+func (o *Oscillator) Process(freq float32) (output float32) {
 	output = o.waveTable[o.Waveform][int(o.currentSample)]
 
-	o.currentSample += o.Freq
+	o.currentSample += freq
 	if o.currentSample >= o.sampleRate {
 		o.currentSample -= o.sampleRate
 	}

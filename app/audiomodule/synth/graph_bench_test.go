@@ -67,7 +67,7 @@ func (g *golangEngine) Process(samplesIn [][]float32, midiIn []midi.Event) (samp
 	var len = len(samplesIn[0])
 
 	for i := 0; i < len; i++ {
-		osc := g.osc.Process()
+		osc := g.osc.Process(440)
 		env := g.env.Process(0, 0)
 		out := g.gain.Process(osc, env)
 		samplesIn[0][i] = out

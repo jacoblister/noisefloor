@@ -20,8 +20,7 @@ func (p *Patch) Start(sampleRate int) {
 
 // Process - produce next sample
 func (p *Patch) Process(freq float32, gate float32, trigger float32) (output float32) {
-	p.oscillator.Freq = freq
-	sample := p.oscillator.Process()
+	sample := p.oscillator.Process(freq)
 	env := p.envelope.Process(gate, trigger)
 
 	output = p.gain.Process(sample, env)

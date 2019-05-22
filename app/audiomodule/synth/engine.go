@@ -22,7 +22,6 @@ func (e *Engine) Start(sampleRate int) {
 
 	e.osc.Start(sampleRate)
 	e.osc.Waveform = processor.Sin
-	e.osc.Freq = 440
 }
 
 // Stop suspends the engine
