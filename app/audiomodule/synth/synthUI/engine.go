@@ -54,10 +54,10 @@ func MakeEngine(engine *synth.Engine, engineState *EngineState) *Engine {
 }
 
 //connectorForProcessor finds the connector give a target
-func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, index int) *synth.Connector {
+func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, port int) *synth.Connector {
 	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
 		connector := &e.Engine.Graph.ConnectorList[i]
-		if connector.Processor(isInput) == processor && connector.Port(isInput) == index {
+		if connector.Processor(isInput) == processor && connector.Port(isInput) == port {
 			return connector
 		}
 	}
@@ -136,16 +136,16 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			switch event.Type {
 			case vdom.MouseDown:
 				isInput := event.Data["IsInput"].(bool)
-				index := event.Data["Index"].(int)
+				port := event.Data["Port"].(int)
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
-				connector := e.connectorForProcessor(processor.Processor, isInput, index)
+				connector := e.connectorForProcessor(processor.Processor, isInput, port)
 
 				e.state.selectedConnectorIsInput = isInput
 				if connector == nil {
 					// new connector
 					connector = &synth.Connector{}
 					connector.SetProcessor(isInput, processor.Processor)
-					connector.SetPort(isInput, index)
+					connector.SetPort(isInput, port)
 					e.state.selectedConnectorIsInput = !isInput
 					e.state.editState = connectionAdd
 				} else {
@@ -189,7 +189,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
 				e.state.targetPortIsInput = event.Data["IsInput"].(bool)
 				e.state.targetProcessor = processor.Processor
-				e.state.targetPort = event.Data["Index"].(int)
+				e.state.targetPort = event.Data["Port"].(int)
 				e.state.mouseIgnore = true
 			case vdom.MouseUp:
 				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,

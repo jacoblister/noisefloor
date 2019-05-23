@@ -24,15 +24,15 @@ func MakeProcessor(processorDefinition *synth.ProcessorDefinition, handlerFunc v
 }
 
 //GetConnectorPoint gets the co-ordinates of an input or output connection point
-func (p *Processor) GetConnectorPoint(isInput bool, index int) (x int, y int) {
+func (p *Processor) GetConnectorPoint(isInput bool, port int) (x int, y int) {
 	if isInput {
 		x = p.ProcessorDefinition.X + (procConnWidth / 2)
-		y = p.ProcessorDefinition.Y + (index+1)*(procConnWidth*2) + (procConnWidth / 2)
+		y = p.ProcessorDefinition.Y + (port+1)*(procConnWidth*2) + (procConnWidth / 2)
 		return x, y
 	}
 
 	x = p.ProcessorDefinition.X + procWidth - (procConnWidth / 2)
-	y = p.ProcessorDefinition.Y + (index+1)*(procConnWidth*2) + (procConnWidth / 2)
+	y = p.ProcessorDefinition.Y + (port+1)*(procConnWidth*2) + (procConnWidth / 2)
 	return x, y
 }
 
@@ -44,12 +44,12 @@ func (p *Processor) processorEventHandler(element *vdom.Element, event *vdom.Eve
 	p.handlerFunc(element, event)
 }
 
-func (p *Processor) makeConnectorEventHandler(isInput bool, index int) vdom.HandlerFunc {
+func (p *Processor) makeConnectorEventHandler(isInput bool, port int) vdom.HandlerFunc {
 	return func(element *vdom.Element, event *vdom.Event) {
 		event.Data["Source"] = ESConnector
 		event.Data["Processor"] = p.ProcessorDefinition
 		event.Data["IsInput"] = isInput
-		event.Data["Index"] = index
+		event.Data["Port"] = port
 		p.handlerFunc(element, event)
 	}
 }
