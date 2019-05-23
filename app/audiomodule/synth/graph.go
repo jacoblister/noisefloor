@@ -19,13 +19,17 @@ func loadProcessorGraph(filename string) Graph {
 
 	osc := processor.Oscillator{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 100, Y: 100, Processor: &osc})
+		ProcessorDefinition{X: 200, Y: 100, Processor: &osc})
 	env := processor.Envelope{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 100, Y: 200, Processor: &env})
+		ProcessorDefinition{X: 200, Y: 200, Processor: &env})
 	gain := processor.Gain{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 200, Y: 100, Processor: &gain})
+		ProcessorDefinition{X: 300, Y: 100, Processor: &gain})
+	outputTerminal := processor.Terminal{}
+	outputTerminal.SetParameters(true, 2)
+	graph.ProcessorList = append(graph.ProcessorList,
+		ProcessorDefinition{X: 400, Y: 100, Processor: &outputTerminal})
 
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})

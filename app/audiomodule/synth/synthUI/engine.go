@@ -92,8 +92,9 @@ func (e *Engine) updateConnector(connector *synth.Connector,
 	index, targetCount := e.connectorTargetIndex(connector, targetIsInput, targetProcessor, targetPort)
 
 	// allow input to output connections only
-	// do not allow connection if connector already exists
-	if e.state.selectedConnectorIsInput != targetIsInput || targetCount > 0 {
+	// do not allow connection if connector already exists on input connector
+	if e.state.selectedConnectorIsInput != targetIsInput ||
+		targetIsInput && targetCount > 0 {
 		targetProcessor = nil
 	}
 
@@ -232,7 +233,7 @@ func (e *Engine) connectorCoordinates(connector *synth.Connector, fromProcessor 
 		}
 		if e.state.targetProcessor == nil ||
 			e.state.targetPortIsInput != e.state.selectedConnectorIsInput ||
-			targetCount > 0 {
+			(e.state.targetPortIsInput && targetCount > 0) {
 			stroke = "grey"
 		}
 	}
