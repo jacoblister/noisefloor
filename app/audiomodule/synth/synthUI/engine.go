@@ -57,7 +57,7 @@ func MakeEngine(engine *synth.Engine, engineState *EngineState) *Engine {
 func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, index int) *synth.Connector {
 	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
 		connector := &e.Engine.Graph.ConnectorList[i]
-		if connector.Processor(isInput) == processor {
+		if connector.Processor(isInput) == processor && connector.Port(isInput) == index {
 			return connector
 		}
 	}
