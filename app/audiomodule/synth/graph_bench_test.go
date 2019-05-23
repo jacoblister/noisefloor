@@ -8,6 +8,22 @@ import (
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
+func BenchmarkArrayLookup(b *testing.B) {
+	array := []float32{0, 1, 2, 3}
+
+	for i := 0; i < b.N; i++ {
+		_ = array[3]
+	}
+}
+
+func BenchmarkMapLookup(b *testing.B) {
+	array := map[string]float32{"one": 1, "two": 2, "three": 3, "four": 4}
+
+	for i := 0; i < b.N; i++ {
+		_ = array["three"]
+	}
+}
+
 func BenchmarkSingleCall(b *testing.B) {
 	gain := processor.Gain{}
 
@@ -98,22 +114,23 @@ func BenchmarkCompileGolang(b *testing.B) {
 }
 
 type interpretedEngine struct {
-	osc  processor.Oscillator
-	env  processor.Envelope
-	gain processor.Gain
-	vars []float32
-	ops  []graphOp
+	processor []Processor
+	midiInput []float32
+	vars      []float32
+	ops       []graphOp
 }
 
 func (g *interpretedEngine) Start(sampleRate int) {
-	g.osc.Start(sampleRate)
-	g.env.Start(sampleRate)
-	g.gain.Start(sampleRate)
+	g.processor = []Processor{&processor.Oscillator{}, &processor.Envelope{}, &processor.Gain{}}
+	for i := 0; i < len(g.processor); i++ {
+		g.processor[i].Start(sampleRate)
+	}
 
 	g.vars = make([]float32, 8, 8)
-	g.ops = append(g.ops, graphOp{&g.osc, []int{}, []int{3}})
-	g.ops = append(g.ops, graphOp{&g.env, []int{1, 2}, []int{4}})
-	g.ops = append(g.ops, graphOp{&g.gain, []int{5, 6}, []int{7}})
+	g.midiInput = []float32{0, 1, 2}
+	g.ops = append(g.ops, graphOp{g.processor[0], []int{0}, []int{3}})
+	g.ops = append(g.ops, graphOp{g.processor[1], []int{1, 2}, []int{4}})
+	g.ops = append(g.ops, graphOp{g.processor[2], []int{5, 6}, []int{7}})
 }
 
 func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
@@ -139,7 +156,6 @@ func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) 
 }
 
 func (g *interpretedEngine) Stop() {
-	g.osc.Stop()
 }
 
 func BenchmarkCompileIntepreted(b *testing.B) {

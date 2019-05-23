@@ -2,6 +2,7 @@ package synth
 
 import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/synth/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/synth/processor/processorbuiltin"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
@@ -17,6 +18,9 @@ type Graph struct {
 func loadProcessorGraph(filename string) Graph {
 	graph := Graph{}
 
+	midiInput := processorbuiltin.MIDIInput{}
+	graph.ProcessorList = append(graph.ProcessorList,
+		ProcessorDefinition{X: 100, Y: 100, Processor: &midiInput})
 	osc := processor.Oscillator{}
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 200, Y: 100, Processor: &osc})
@@ -26,15 +30,26 @@ func loadProcessorGraph(filename string) Graph {
 	gain := processor.Gain{}
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 300, Y: 100, Processor: &gain})
-	outputTerminal := processor.Terminal{}
+	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 400, Y: 100, Processor: &outputTerminal})
 
 	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1})
+
+	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
 
 	return graph
 }
