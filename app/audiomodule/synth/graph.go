@@ -79,6 +79,14 @@ type graphOp struct {
 	outArgs   []int
 }
 
+type graphExecutor struct {
+	processor   []Processor
+	inputNodes  []int
+	outputNodes []int
+	vars        []float32
+	ops         []graphOp
+}
+
 // compileProcessorGraph compiles a graph, and returns a function to run it
 func compileProcessorGraph(graph Graph, target CompileTarget) AudioProcessor {
 	// dummy implementation for now
