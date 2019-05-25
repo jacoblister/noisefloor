@@ -228,7 +228,7 @@ long tramp_asioMessage(long selector, long value, void* message, double* opt)
 // NOTE: Called on a separate thread from main() thread.
 ASIOTime *tramp_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processNow)
 {
-    // printf("ASIO buffer switch size=%d index=%d\n", asio_client.buffer_length, index);
+    printf("ASIO buffer switch size=%d index=%d\n", asio_client.buffer_length, index);
     // memcpy(asio_client.channel_out[0][index], asio_client.channel_in[0][index], asio_client.buffer_length * 4);
 
     for (int i = 0; i < asio_client.channel_in_count; i++) {

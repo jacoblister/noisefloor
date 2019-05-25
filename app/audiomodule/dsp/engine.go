@@ -1,7 +1,7 @@
-package synth
+package dsp
 
 import (
-	"github.com/jacoblister/noisefloor/app/audiomodule/synth/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 

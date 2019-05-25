@@ -1,4 +1,4 @@
-package synth
+package dsp
 
 //Connector specifies a connection between two Processors
 type Connector struct {

@@ -1,4 +1,4 @@
-package synth
+package dsp
 
 // ProcessorParameter defines a processor setting and its limits
 type ProcessorParameter struct {

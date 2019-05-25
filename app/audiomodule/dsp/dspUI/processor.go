@@ -1,9 +1,9 @@
-package synthUI
+package dspUI
 
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
@@ -11,14 +11,14 @@ const procWidth = 40
 const procHeight = 80
 const procConnWidth = 6
 
-// Processor is a synth processor block (with inputs and outputs displayed)
+// Processor is a dsp processor block (with inputs and outputs displayed)
 type Processor struct {
-	ProcessorDefinition *synth.ProcessorDefinition
+	ProcessorDefinition *dsp.ProcessorDefinition
 	handlerFunc         vdom.HandlerFunc
 }
 
 //MakeProcessor create an new Processor UI componenet
-func MakeProcessor(processorDefinition *synth.ProcessorDefinition, handlerFunc vdom.HandlerFunc) *Processor {
+func MakeProcessor(processorDefinition *dsp.ProcessorDefinition, handlerFunc vdom.HandlerFunc) *Processor {
 	processor := Processor{ProcessorDefinition: processorDefinition, handlerFunc: handlerFunc}
 	return &processor
 }

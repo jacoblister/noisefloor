@@ -19,7 +19,7 @@ func GetAudioProcessor() audiomodule.AudioProcessor {
 
 // App is the main entry point for the application
 func App(driver Driver) {
-	mods.synthEngine.Load("") // Load synth engine patch
+	mods.dspEngine.Load("") // Load dsp engine patch
 
 	hardwareDevices := HardwareDevices{}
 	driver.Start(hardwareDevices, &mods)

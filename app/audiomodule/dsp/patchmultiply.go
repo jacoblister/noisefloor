@@ -1,4 +1,4 @@
-package synth
+package dsp
 
 // PatchMultiply contains multiple copies of a patch
 type PatchMultiply struct {

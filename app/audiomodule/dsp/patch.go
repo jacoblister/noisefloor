@@ -1,6 +1,6 @@
-package synth
+package dsp
 
-import "github.com/jacoblister/noisefloor/app/audiomodule/synth/processor"
+import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
 // Patch is a simple minimal example patch
 type Patch struct {

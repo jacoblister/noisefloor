@@ -1,7 +1,7 @@
-package synthUI
+package dspUI
 
 import (
-	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
@@ -27,19 +27,19 @@ const (
 	ESConnector
 )
 
-// Engine is the synth engine UI
+// Engine is the dsp engine UI
 type Engine struct {
-	Engine *synth.Engine
+	Engine *dsp.Engine
 	state  *EngineState
 }
 
-// EngineState is the synth engine UI stateful store
+// EngineState is the dsp engine UI stateful store
 type EngineState struct {
 	editState                editState
-	selectedProcessor        *synth.ProcessorDefinition
-	selectedConnector        *synth.Connector
+	selectedProcessor        *dsp.ProcessorDefinition
+	selectedConnector        *dsp.Connector
 	selectedConnectorIsInput bool
-	targetProcessor          synth.Processor
+	targetProcessor          dsp.Processor
 	targetPort               int
 	targetPortIsInput        bool
 	mouseOffsetX             int
@@ -48,13 +48,13 @@ type EngineState struct {
 }
 
 //MakeEngine create an new Engine Edit UI componenet
-func MakeEngine(engine *synth.Engine, engineState *EngineState) *Engine {
+func MakeEngine(engine *dsp.Engine, engineState *EngineState) *Engine {
 	engineUI := Engine{Engine: engine, state: engineState}
 	return &engineUI
 }
 
 //connectorForProcessor finds the connector give a target
-func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, port int) *synth.Connector {
+func (e *Engine) connectorForProcessor(processor dsp.Processor, isInput bool, port int) *dsp.Connector {
 	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
 		connector := &e.Engine.Graph.ConnectorList[i]
 		if connector.Processor(isInput) == processor && connector.Port(isInput) == port {
@@ -66,8 +66,8 @@ func (e *Engine) connectorForProcessor(processor synth.Processor, isInput bool, 
 
 // connectorTargetIndex iterates the connector list,
 // and gets the index and count of current connections at target
-func (e *Engine) connectorTargetIndex(connector *synth.Connector,
-	targetIsInput bool, targetProcessor synth.Processor, targetPort int) (index int, count int) {
+func (e *Engine) connectorTargetIndex(connector *dsp.Connector,
+	targetIsInput bool, targetProcessor dsp.Processor, targetPort int) (index int, count int) {
 	count = 0
 	index = -1
 	list := e.Engine.Graph.ConnectorList
@@ -86,8 +86,8 @@ func (e *Engine) connectorTargetIndex(connector *synth.Connector,
 }
 
 // updateConnector updates the connector list after change (create, modify, delete)
-func (e *Engine) updateConnector(connector *synth.Connector,
-	targetIsInput bool, targetProcessor synth.Processor, targetPort int) {
+func (e *Engine) updateConnector(connector *dsp.Connector,
+	targetIsInput bool, targetProcessor dsp.Processor, targetPort int) {
 
 	index, targetCount := e.connectorTargetIndex(connector, targetIsInput, targetProcessor, targetPort)
 
@@ -127,7 +127,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case ESProcessor:
 			switch event.Type {
 			case vdom.MouseDown:
-				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
+				processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
 				e.state.selectedProcessor = processor
 				e.state.mouseOffsetX = event.Data["OffsetX"].(int) - processor.X
 				e.state.mouseOffsetY = event.Data["OffsetY"].(int) - processor.Y
@@ -138,13 +138,13 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			case vdom.MouseDown:
 				isInput := event.Data["IsInput"].(bool)
 				port := event.Data["Port"].(int)
-				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
+				processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
 				connector := e.connectorForProcessor(processor.Processor, isInput, port)
 
 				e.state.selectedConnectorIsInput = isInput
 				if connector == nil {
 					// new connector
-					connector = &synth.Connector{}
+					connector = &dsp.Connector{}
 					connector.SetProcessor(isInput, processor.Processor)
 					connector.SetPort(isInput, port)
 					e.state.selectedConnectorIsInput = !isInput
@@ -187,7 +187,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case ESConnector:
 			switch event.Type {
 			case vdom.MouseMove:
-				processor := event.Data["Processor"].(*synth.ProcessorDefinition)
+				processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
 				e.state.targetPortIsInput = event.Data["IsInput"].(bool)
 				e.state.targetProcessor = processor.Processor
 				e.state.targetPort = event.Data["Port"].(int)
@@ -207,7 +207,7 @@ func (e *Engine) mainUIEventHandler(element *vdom.Element, event *vdom.Event) {
 }
 
 // connectorCoordinates returns the coordinates for the connector, which may be being edited
-func (e *Engine) connectorCoordinates(connector *synth.Connector, fromProcessor *Processor, toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, stroke string) {
+func (e *Engine) connectorCoordinates(connector *dsp.Connector, fromProcessor *Processor, toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, stroke string) {
 	if fromProcessor != nil {
 		x1, y1 = fromProcessor.GetConnectorPoint(false, connector.FromPort)
 	}
@@ -240,11 +240,11 @@ func (e *Engine) connectorCoordinates(connector *synth.Connector, fromProcessor 
 	return
 }
 
-// Render displays the synth engine frontend.
+// Render displays the dsp engine frontend.
 func (e *Engine) Render() vdom.Element {
 	// processors
 	processors := []vdom.Component{}
-	processorMap := map[synth.Processor]*Processor{}
+	processorMap := map[dsp.Processor]*Processor{}
 	for i := 0; i < len(e.Engine.Graph.ProcessorList); i++ {
 		processorDef := &e.Engine.Graph.ProcessorList[i]
 		processor := MakeProcessor(processorDef, e.handleUIEvent)
@@ -273,7 +273,7 @@ func (e *Engine) Render() vdom.Element {
 
 	// main view
 	elem := vdom.MakeElement("g",
-		"id", "synthengineedit",
+		"id", "dspengineedit",
 		vdom.MakeEventHandler(vdom.MouseUp, e.mainUIEventHandler),
 		vdom.MakeEventHandler(vdom.MouseDown, e.mainUIEventHandler),
 		vdom.MakeEventHandler(vdom.MouseMove, e.mainUIEventHandler),

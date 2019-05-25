@@ -1,4 +1,4 @@
-package synth
+package dsp
 
 import (
 	"math"

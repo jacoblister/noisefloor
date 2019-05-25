@@ -4,7 +4,7 @@ import (
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/jacoblister/noisefloor/app"
 	"github.com/jacoblister/noisefloor/app/audiomodule"
-	"github.com/jacoblister/noisefloor/app/audiomodule/synth"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
@@ -31,7 +31,7 @@ func (nf *noiseFloor) Stop(hardwareDevices app.HardwareDevices) {
 // main in the application entry point
 func main() {
 	js.Global.Set("noisefloorjs", map[string]interface{}{
-		"MakeProcessor":     synth.MakeProcessor,
+		"MakeProcessor":     dsp.MakeProcessor,
 		"MakeComponent":     audiomodule.MakeComponent,
 		"MakeMidiEvent":     midi.MakeMidiEvent,
 		"GetAudioProcessor": app.GetAudioProcessor,

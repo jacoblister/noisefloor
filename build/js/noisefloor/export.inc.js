@@ -1,12 +1,11 @@
 // Export raw gopherjs transpiled processsing units to javascript (without externalization)
-var synth =
-  $packages["github.com/jacoblister/noisefloor/app/audiomodule/synth"];
-$global.MakeProcessor = synth.MakeProcessor;
+var dsp = $packages["github.com/jacoblister/noisefloor/app/audiomodule/dsp"];
+$global.MakeProcessor = dsp.MakeProcessor;
 
 var app = $packages["github.com/jacoblister/noisefloor/app"];
 $global.Start = function(sampleRate) {
-  var SynthEngine = app.GetAudioProcessor();
-  SynthEngine.Start(sampleRate);
+  var DSPEngine = app.GetAudioProcessor();
+  DSPEngine.Start(sampleRate);
 };
 
 var midi = $packages["github.com/jacoblister/noisefloor/pkg/midi"];
@@ -22,7 +21,7 @@ var sliceSliceFloat32 = $sliceType(sliceFloat32);
 var sliceMidiEvent = $sliceType(midi.Event);
 
 $global.Process = function(samplesIn, midiIn) {
-  var SynthEngine = app.GetAudioProcessor();
+  var DSPEngine = app.GetAudioProcessor();
 
   var samplesInSlice = $makeSlice(
     sliceSliceFloat32,
@@ -46,7 +45,7 @@ $global.Process = function(samplesIn, midiIn) {
     midiInSlice.$array[i] = midi.MakeMidiEvent(midiIn[i].time, dataSlice);
   }
 
-  let [samplesOutSlice, midiOutSlice] = SynthEngine.Process(
+  let [samplesOutSlice, midiOutSlice] = DSPEngine.Process(
     samplesInSlice,
     midiInSlice
   );

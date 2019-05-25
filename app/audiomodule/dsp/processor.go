@@ -1,4 +1,4 @@
-package synth
+package dsp
 
 //Processor interface
 type Processor interface {
