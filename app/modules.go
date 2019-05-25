@@ -4,7 +4,7 @@ import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/dspUI"
 	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard"
-	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard/onscreenkeyboardUI"
+	"github.com/jacoblister/noisefloor/app/vdomcomp"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -49,29 +49,29 @@ func (c *modules) Init() {
 
 // Render returns the main view
 func (c *modules) Render() vdom.Element {
-	elem := vdom.MakeElement("svg",
-		"id", "root",
-		"xmlns", "http://www.w3.org/2000/svg",
-		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
-		onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
-	)
-
-	// dspUI := dspUI.MakeEngine(&c.dspEngine, &c.state.dspUIEngineState)
-	// vSplit := vdomcomp.MakeLayoutVSplit(640, 480, c.state.vDividerPos, &c.state.vDividerMoving,
-	// 	&vdomcomp.Text{Text: "menus"}, dspUI,
-	// 	func(pos int) {
-	// 		if pos > 100 {
-	// 			c.state.vDividerPos = pos
-	// 		}
-	// 	},
-	// )
-	//
 	// elem := vdom.MakeElement("svg",
 	// 	"id", "root",
 	// 	"xmlns", "http://www.w3.org/2000/svg",
 	// 	"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
-	// 	vSplit,
+	// 	onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
 	// )
+
+	dspUI := dspUI.MakeEngine(&c.dspEngine, &c.state.dspUIEngineState)
+	vSplit := vdomcomp.MakeLayoutVSplit(1024, 768, c.state.vDividerPos, &c.state.vDividerMoving,
+		&vdomcomp.Text{Text: "menus"}, dspUI,
+		func(pos int) {
+			if pos > 100 {
+				c.state.vDividerPos = pos
+			}
+		},
+	)
+
+	elem := vdom.MakeElement("svg",
+		"id", "root",
+		"xmlns", "http://www.w3.org/2000/svg",
+		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
+		vSplit,
+	)
 
 	return elem
 }

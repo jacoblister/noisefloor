@@ -20,20 +20,20 @@ func loadProcessorGraph(filename string) Graph {
 
 	midiInput := processorbuiltin.MIDIInput{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 100, Y: 100, Processor: &midiInput})
+		ProcessorDefinition{X: 80, Y: 80, Processor: &midiInput})
 	osc := processor.Oscillator{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 200, Y: 100, Processor: &osc})
+		ProcessorDefinition{X: 240, Y: 80, Processor: &osc})
 	env := processor.Envelope{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 200, Y: 200, Processor: &env})
+		ProcessorDefinition{X: 240, Y: 240, Processor: &env})
 	gain := processor.Gain{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 300, Y: 100, Processor: &gain})
+		ProcessorDefinition{X: 400, Y: 80, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 400, Y: 100, Processor: &outputTerminal})
+		ProcessorDefinition{X: 560, Y: 80, Processor: &outputTerminal})
 
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})

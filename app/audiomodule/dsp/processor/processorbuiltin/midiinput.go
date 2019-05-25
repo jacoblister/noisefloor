@@ -18,7 +18,7 @@ func (m *MIDIInput) Process(i int) (frequency float32, gate float32, trigger flo
 
 // Definition exports processor definition
 func (m *MIDIInput) Definition() (name string, inputs []string, outputs []string) {
-	return "MIDIInput", []string{}, []string{"frequency", "level", "trigger", "channel"}
+	return "MIDIInput", []string{}, []string{"Frq", "Lvl", "Trg", "Chn"}
 }
 
 //ProcessArray calls process with an array of input/output samples

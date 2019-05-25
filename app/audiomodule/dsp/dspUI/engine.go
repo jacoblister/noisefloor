@@ -160,8 +160,13 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 	case moveProcessor:
 		switch event.Type {
 		case vdom.MouseMove:
-			e.state.selectedProcessor.X = event.Data["OffsetX"].(int) - e.state.mouseOffsetX
-			e.state.selectedProcessor.Y = event.Data["OffsetY"].(int) - e.state.mouseOffsetY
+			// snap to grid
+			x := event.Data["OffsetX"].(int) - e.state.mouseOffsetX
+			y := event.Data["OffsetY"].(int) - e.state.mouseOffsetY
+			x = x - (x % procConnWidth)
+			y = y - (y % procConnWidth)
+			e.state.selectedProcessor.X = x
+			e.state.selectedProcessor.Y = y
 		case vdom.MouseUp:
 			e.state.editState = idle
 		}
@@ -207,14 +212,17 @@ func (e *Engine) mainUIEventHandler(element *vdom.Element, event *vdom.Event) {
 }
 
 // connectorCoordinates returns the coordinates for the connector, which may be being edited
-func (e *Engine) connectorCoordinates(connector *dsp.Connector, fromProcessor *Processor, toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, stroke string) {
+func (e *Engine) connectorCoordinates(
+	connector *dsp.Connector,
+	fromProcessor *Processor,
+	toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, isConnected bool) {
 	if fromProcessor != nil {
 		x1, y1 = fromProcessor.GetConnectorPoint(false, connector.FromPort)
 	}
 	if toProcessor != nil {
 		x2, y2 = toProcessor.GetConnectorPoint(true, connector.ToPort)
 	}
-	stroke = "darkblue"
+	isConnected = true
 
 	if e.state.editState != connectionEdit && e.state.editState != connectionAdd {
 		return
@@ -234,7 +242,7 @@ func (e *Engine) connectorCoordinates(connector *dsp.Connector, fromProcessor *P
 		if e.state.targetProcessor == nil ||
 			e.state.targetPortIsInput != e.state.selectedConnectorIsInput ||
 			(e.state.targetPortIsInput && targetCount > 0) {
-			stroke = "grey"
+			isConnected = false
 		}
 	}
 	return
@@ -257,18 +265,12 @@ func (e *Engine) Render() vdom.Element {
 	if e.state.editState == connectionAdd {
 		connectionList = append(connectionList, *e.state.selectedConnector)
 	}
-	connectors := []vdom.Element{}
+	connectors := []vdom.Component{}
 	for i := 0; i < len(connectionList); i++ {
 		connector := &connectionList[i]
-		x1, y1, x2, y2, stroke := e.connectorCoordinates(connector, processorMap[connector.FromProcessor], processorMap[connector.ToProcessor])
-		line := vdom.MakeElement("line",
-			"x1", float64(x1)+0.5,
-			"y1", float64(y1)+0.5,
-			"x2", float64(x2)+0.5,
-			"y2", float64(y2)+0.5,
-			"stroke", stroke,
-		)
-		connectors = append(connectors, line)
+		x1, y1, x2, y2, isConnected := e.connectorCoordinates(connector, processorMap[connector.FromProcessor], processorMap[connector.ToProcessor])
+		connectorLine := &Connector{x1: x1, y1: y1, x2: x2, y2: y2, isConnected: isConnected}
+		connectors = append(connectors, connectorLine)
 	}
 
 	// main view
@@ -280,8 +282,8 @@ func (e *Engine) Render() vdom.Element {
 		vdom.MakeElement("rect",
 			"x", 0,
 			"y", 0,
-			"width", 640,
-			"height", 400,
+			"width", 800,
+			"height", 600,
 			"stroke", "black",
 			"fill", "white",
 		),

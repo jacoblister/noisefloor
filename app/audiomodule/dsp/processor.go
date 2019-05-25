@@ -14,3 +14,13 @@ type ProcessorDefinition struct {
 	Y         int
 	Processor Processor
 }
+
+// MaxConnectors get this maximum of input and output connectors
+func (p *ProcessorDefinition) MaxConnectors() int {
+	_, procInputs, procOutputs := p.Processor.Definition()
+	result := len(procInputs)
+	if len(procOutputs) > result {
+		result = len(procOutputs)
+	}
+	return result
+}

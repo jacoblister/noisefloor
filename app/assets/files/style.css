@@ -2,9 +2,19 @@ body {
   margin-top: 40px;
 }
 
+text {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+
 rect {
   shape-rendering: crispEdges;
 }
+
 .key-white {
   stroke: black;
   fill: white;

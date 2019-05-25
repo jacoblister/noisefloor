@@ -30,9 +30,9 @@ func (t *Terminal) Definition() (name string, inputs []string, outputs []string)
 
 	for i := 0; i < t.connectors; i++ {
 		if t.isInput {
-			inputs = append(inputs, "in"+strconv.Itoa(i))
+			inputs = append(inputs, "In"+strconv.Itoa(i))
 		} else {
-			outputs = append(inputs, "out"+strconv.Itoa(i))
+			outputs = append(inputs, "Out"+strconv.Itoa(i))
 		}
 	}
 
