@@ -4,7 +4,6 @@ package nf
 
 import (
 	"fmt"
-	"reflect"
 	"unsafe"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule"
@@ -17,37 +16,6 @@ type driverAudioASIO struct {
 	asioDriver     *ASIODriver
 	audioProcessor audiomodule.AudioProcessor
 	driverMidi     driverMidi
-}
-
-//export goAudioASIOCallback
-func goAudioASIOCallback(arg unsafe.Pointer, blockLength C.int,
-	channelInCount C.int, channelIn unsafe.Pointer,
-	channelOutCount C.int, channelOut unsafe.Pointer) {
-
-	samplesIn := make([][]float32, channelInCount, channelInCount)
-	blockLengthInt := int(blockLength)
-	blockSizeInt := blockLengthInt * int(unsafe.Sizeof(samplesIn[0][0]))
-
-	for i := 0; i < int(channelInCount); i++ {
-		samplesInData := indexPointer(channelIn, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesInData), Len: blockLengthInt, Cap: blockLengthInt}
-		s := *(*[]float32)(unsafe.Pointer(h))
-		samplesIn[i] = s
-	}
-
-	dp := *(*driverAudioASIO)(arg)
-	midiIn := dp.driverMidi.readEvents()
-
-	samplesOutSlice, midiOut := dp.audioProcessor.Process(samplesIn, midiIn)
-
-	for i := 0; i < int(channelOutCount); i++ {
-		hdr := (*reflect.SliceHeader)(unsafe.Pointer(&samplesOutSlice[i]))
-		C.memcpy(indexPointer(channelOut, i), unsafe.Pointer(hdr.Data), C.ulonglong(blockSizeInt))
-	}
-
-	dp.driverMidi.writeEvents(midiOut)
-
-	// dp.asioDriver.ASIO.OutputReady()
 }
 
 func (d *driverAudioASIO) setMidiDriver(driverMidi driverMidi) {

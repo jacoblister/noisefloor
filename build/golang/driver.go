@@ -3,9 +3,12 @@ package nf
 import (
 	"unsafe"
 
+	"C"
+
 	"github.com/jacoblister/noisefloor/app/audiomodule"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
+import "reflect"
 
 type driverMidi interface {
 	start()
@@ -28,4 +31,32 @@ func indexPointer(ptr unsafe.Pointer, i int) unsafe.Pointer {
 	var ptrSize = unsafe.Sizeof(&p)
 
 	return unsafe.Pointer(*(**uintptr)(unsafe.Pointer(uintptr(ptr) + uintptr(i)*ptrSize)))
+}
+
+//export goAudioCallback
+func goAudioCallback(arg unsafe.Pointer, blockLength C.int,
+	channelInCount int, channelIn unsafe.Pointer,
+	channelOutCount int, channelOut unsafe.Pointer) {
+
+	samplesIn := make([][]float32, channelInCount, channelInCount)
+	blockLengthInt := int(blockLength)
+
+	for i := 0; i < int(channelInCount); i++ {
+		samplesInData := indexPointer(channelIn, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesInData), Len: blockLengthInt, Cap: blockLengthInt}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		samplesIn[i] = s
+	}
+
+	dp := *(*driverAudioASIO)(arg)
+	midiIn := dp.driverMidi.readEvents()
+	samplesOutSlice, midiOut := dp.audioProcessor.Process(samplesIn, midiIn)
+	dp.driverMidi.writeEvents(midiOut)
+
+	for i := 0; i < int(channelOutCount); i++ {
+		samplesOutData := indexPointer(channelOut, i)
+		h := &reflect.SliceHeader{Data: uintptr(samplesOutData), Len: blockLengthInt, Cap: blockLengthInt}
+		s := *(*[]float32)(unsafe.Pointer(h))
+		copy(s[:], samplesOutSlice[i][:])
+	}
 }
