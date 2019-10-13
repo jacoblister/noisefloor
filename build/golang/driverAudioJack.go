@@ -79,7 +79,6 @@ static inline int gojack_client_sampling_rate() {
 import "C"
 
 import (
-	"reflect"
 	"unsafe"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule"
@@ -95,38 +94,27 @@ func goAudioJackCallback(arg unsafe.Pointer, blockLength C.int,
 	channelInCount C.int, channelIn unsafe.Pointer,
 	channelOutCount C.int, channelOut unsafe.Pointer) {
 
-	samplesIn := make([][]float32, channelInCount, channelInCount)
-	blockLengthInt := int(blockLength)
-	blockSizeInt := blockLengthInt * int(unsafe.Sizeof(samplesIn[0][0]))
+	driverAudio := (*driverAudioJack)(arg)
 
-	for i := 0; i < int(channelInCount); i++ {
-		samplesInData := indexPointer(channelIn, i)
-		h := &reflect.SliceHeader{Data: uintptr(samplesInData), Len: blockLengthInt, Cap: blockLengthInt}
-		s := *(*[]float32)(unsafe.Pointer(h))
-		samplesIn[i] = s
-	}
-
-	dp := *(*driverAudioJack)(arg)
-	midiIn := dp.driverMidi.readEvents()
-
-	samplesOutSlice, midiOut := dp.audioProcessor.Process(samplesIn, midiIn)
-
-	for i := 0; i < int(channelOutCount); i++ {
-		hdr := (*reflect.SliceHeader)(unsafe.Pointer(&samplesOutSlice[i]))
-		C.memcpy(indexPointer(channelOut, i), unsafe.Pointer(hdr.Data), C.ulong(blockSizeInt))
-	}
-
-	dp.driverMidi.writeEvents(midiOut)
-
+	goAudioCallback(driverAudio, int(blockLength), int(channelInCount), channelIn, int(channelOutCount), channelOut)
 }
 
-func (d *driverAudioJack) setMidiDriver(driverMidi driverMidi) {
+func (d *driverAudioJack) getDriverMidi() driverMidi {
+	return d.driverMidi
+}
+
+func (d *driverAudioJack) setDriverMidi(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
+}
+
+func (d *driverAudioJack) getAudioProcessor() audiomodule.AudioProcessor {
+	return d.audioProcessor
 }
 
 func (d *driverAudioJack) setAudioProcessor(audioProcessor audiomodule.AudioProcessor) {
 	d.audioProcessor = audioProcessor
 }
+
 func (d *driverAudioJack) start() {
 	uintPtr := uintptr(unsafe.Pointer(d))
 	C.gojack_client_open((C.ulong)(uintPtr))
