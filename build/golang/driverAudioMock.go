@@ -23,18 +23,26 @@ func (d *driverAudioMock) mockProcess() {
 			println("Mock Audio Stop")
 			return
 		case <-time.After(1 * time.Second):
-			// println("Mock Audio Process...")
+			println("Mock Audio Process...")
 			samples := [][]float32{{}}
 			midiIn := d.driverMidi.readEvents()
 			_, midiOut := d.audioProcessor.Process(samples, midiIn)
 			d.driverMidi.writeEvents(midiOut)
-			// println()
+			// goAudioCallback(d, 0, 0, unsafe.Pointer(nil), 0, unsafe.Pointer(nil))
 		}
 	}
 }
 
-func (d *driverAudioMock) setMidiDriver(driverMidi driverMidi) {
+func (d *driverAudioMock) getDriverMidi() driverMidi {
+	return d.driverMidi
+}
+
+func (d *driverAudioMock) setDriverMidi(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
+}
+
+func (d *driverAudioMock) getAudioProcessor() audiomodule.AudioProcessor {
+	return d.audioProcessor
 }
 
 func (d *driverAudioMock) setAudioProcessor(audioProcessor audiomodule.AudioProcessor) {

@@ -18,13 +18,32 @@ type driverAudioASIO struct {
 	driverMidi     driverMidi
 }
 
-func (d *driverAudioASIO) setMidiDriver(driverMidi driverMidi) {
+//export goAudioASIOCallback
+func goAudioASIOCallback(arg unsafe.Pointer, blockLength int,
+	channelInCount int, channelIn unsafe.Pointer,
+	channelOutCount int, channelOut unsafe.Pointer) {
+
+	driverAudio := (*driverAudioASIO)(arg)
+
+	goAudioCallback(driverAudio, blockLength, channelInCount, channelIn, channelOutCount, channelOut)
+}
+
+func (d *driverAudioASIO) getDriverMidi() driverMidi {
+	return d.driverMidi
+}
+
+func (d *driverAudioASIO) setDriverMidi(driverMidi driverMidi) {
 	d.driverMidi = driverMidi
+}
+
+func (d *driverAudioASIO) getAudioProcessor() audiomodule.AudioProcessor {
+	return d.audioProcessor
 }
 
 func (d *driverAudioASIO) setAudioProcessor(audioProcessor audiomodule.AudioProcessor) {
 	d.audioProcessor = audioProcessor
 }
+
 func (d *driverAudioASIO) start() {
 	println("ASIO start")
 

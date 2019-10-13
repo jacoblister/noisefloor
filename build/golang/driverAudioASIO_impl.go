@@ -27,7 +27,7 @@ typedef struct {
 
 asio_c_client asio_client;
 
-extern void goAudioCallback(uintptr_t arg, int blockLength,
+extern void goAudioASIOCallback(uintptr_t arg, int blockLength,
 	int channelInCount, void *channelIn,
 	int channelOutCount, void *channelOut);
 
@@ -237,7 +237,7 @@ ASIOTime *tramp_bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool pr
         }
     }
 
-    goAudioCallback((uintptr_t)asio_client.arg, asio_client.buffer_length,
+    goAudioASIOCallback((uintptr_t)asio_client.arg, asio_client.buffer_length,
         asio_client.channel_in_count, asio_client.channel_in_float32,
         asio_client.channel_out_count, asio_client.channel_out_float32
     );

@@ -13,7 +13,7 @@ type noiseFloor struct {
 }
 
 func (nf *noiseFloor) Start(hardwareDevices app.HardwareDevices, audioProcessor audiomodule.AudioProcessor) {
-	nf.driverAudio.setMidiDriver(nf.driverMidi)
+	nf.driverAudio.setDriverMidi(nf.driverMidi)
 	nf.driverAudio.setAudioProcessor(audioProcessor)
 	nf.driverMidi.start()
 	nf.driverAudio.start()
@@ -29,11 +29,11 @@ func (nf *noiseFloor) Stop(hardwareDevices app.HardwareDevices) {
 func Main() {
 	debug.SetGCPercent(-1)
 
-	nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}}
+	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}}
+	// nf := noiseFloor{driverAudio: &driverAudioWASAPI{}, driverMidi: &driverMidiMock{}}
 	// nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiWDM{}}
-	// nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiMock{}}
+	nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiMock{}}
 	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiWDM{}}
 	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}}
-
 	app.App(&nf)
 }

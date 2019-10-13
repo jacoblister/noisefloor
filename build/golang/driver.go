@@ -18,7 +18,9 @@ type driverMidi interface {
 }
 
 type driverAudio interface {
-	setMidiDriver(driverMidi driverMidi)
+	getDriverMidi() driverMidi
+	setDriverMidi(driverMidi driverMidi)
+	getAudioProcessor() audiomodule.AudioProcessor
 	setAudioProcessor(audioProcessor audiomodule.AudioProcessor)
 	samplingRate() int
 	start()
@@ -33,8 +35,7 @@ func indexPointer(ptr unsafe.Pointer, i int) unsafe.Pointer {
 	return unsafe.Pointer(*(**uintptr)(unsafe.Pointer(uintptr(ptr) + uintptr(i)*ptrSize)))
 }
 
-//export goAudioCallback
-func goAudioCallback(arg unsafe.Pointer, blockLength C.int,
+func goAudioCallback(driverAudio driverAudio, blockLength int,
 	channelInCount int, channelIn unsafe.Pointer,
 	channelOutCount int, channelOut unsafe.Pointer) {
 
@@ -48,10 +49,9 @@ func goAudioCallback(arg unsafe.Pointer, blockLength C.int,
 		samplesIn[i] = s
 	}
 
-	dp := *(*driverAudioASIO)(arg)
-	midiIn := dp.driverMidi.readEvents()
-	samplesOutSlice, midiOut := dp.audioProcessor.Process(samplesIn, midiIn)
-	dp.driverMidi.writeEvents(midiOut)
+	midiIn := driverAudio.getDriverMidi().readEvents()
+	samplesOutSlice, midiOut := driverAudio.getAudioProcessor().Process(samplesIn, midiIn)
+	driverAudio.getDriverMidi().writeEvents(midiOut)
 
 	for i := 0; i < int(channelOutCount); i++ {
 		samplesOutData := indexPointer(channelOut, i)
