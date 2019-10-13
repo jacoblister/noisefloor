@@ -4,6 +4,7 @@ import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/dspUI"
 	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard"
+	"github.com/jacoblister/noisefloor/app/audiomodule/onscreenkeyboard/onscreenkeyboardUI"
 	"github.com/jacoblister/noisefloor/app/vdomcomp"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
@@ -43,7 +44,7 @@ func (c *modules) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOu
 
 func (c *modules) Init() {
 	if c.state.vDividerPos == 0 {
-		c.state.vDividerPos = 200
+		c.state.vDividerPos = 500
 	}
 }
 
@@ -56,9 +57,19 @@ func (c *modules) Render() vdom.Element {
 	// 	onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
 	// )
 
+	// dspUI := dspUI.MakeEngine(&c.dspEngine, &c.state.dspUIEngineState)
+	// vSplit := vdomcomp.MakeLayoutVSplit(1024, 768, c.state.vDividerPos, &c.state.vDividerMoving,
+	// 	&vdomcomp.Text{Text: "menus"}, dspUI,
+	// 	func(pos int) {
+	// 		if pos > 100 {
+	// 			c.state.vDividerPos = pos
+	// 		}
+	// 	},
+	// )
+
 	dspUI := dspUI.MakeEngine(&c.dspEngine, &c.state.dspUIEngineState)
-	vSplit := vdomcomp.MakeLayoutVSplit(1024, 768, c.state.vDividerPos, &c.state.vDividerMoving,
-		&vdomcomp.Text{Text: "menus"}, dspUI,
+	vSplit := vdomcomp.MakeLayoutHSplit(1024, 768, c.state.vDividerPos, &c.state.vDividerMoving,
+		dspUI, onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
 		func(pos int) {
 			if pos > 100 {
 				c.state.vDividerPos = pos
