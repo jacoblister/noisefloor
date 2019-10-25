@@ -5,13 +5,22 @@ import (
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
+// ProcessEventFunc is a callback on update of DSP processing
+type ProcessEventFunc func()
+
 // Engine - DSP processing engine
 type Engine struct {
-	midiinput MIDIInput
-	patch     PatchMultiply
-	osc       processor.Oscillator
+	midiinput        MIDIInput
+	patch            PatchMultiply
+	osc              processor.Oscillator
+	Graph            Graph
+	processEventSkip int
+	processEventFunc ProcessEventFunc
+}
 
-	Graph Graph
+// SetProcessEventFunc sets a notify callback when a process update occurs
+func (e *Engine) SetProcessEventFunc(processEventFunc ProcessEventFunc) {
+	e.processEventFunc = processEventFunc
 }
 
 // Start initilized the engine, with a specified sampling rate
@@ -51,6 +60,15 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 
 		samplesIn[0][i] = sample
 		samplesIn[1][i] = sample
+	}
+
+	// notify front end if registered
+	if e.processEventFunc != nil {
+		e.processEventSkip--
+		if e.processEventSkip <= 0 {
+			e.processEventSkip = 4
+			e.processEventFunc()
+		}
 	}
 
 	return samplesIn, midiIn

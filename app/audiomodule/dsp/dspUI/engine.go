@@ -50,7 +50,14 @@ type EngineState struct {
 //MakeEngine create an new Engine Edit UI componenet
 func MakeEngine(engine *dsp.Engine, engineState *EngineState) *Engine {
 	engineUI := Engine{Engine: engine, state: engineState}
+	engine.SetProcessEventFunc(engineUI.processEvent)
+
 	return &engineUI
+}
+
+func (e *Engine) processEvent() {
+	println("process event")
+	vdom.UpdateComponentBackground(e)
 }
 
 //connectorForProcessor finds the connector give a target
