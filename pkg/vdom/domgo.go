@@ -5,6 +5,7 @@ package vdom
 import (
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/jacoblister/noisefloor/pkg/vdom/assets"
@@ -27,6 +28,7 @@ type domEvent struct {
 	Data      map[string]interface{}
 }
 
+var domUpdateMutex sync.Mutex
 var eventHandlerMap map[eventHandlerKey]eventHandlerValue
 
 //updateEventHandlersRecursive set all event handlers in the element tree
@@ -127,7 +129,9 @@ func clientProcess(conn *websocket.Conn) {
 			println("conn read error")
 			break
 		}
+		domUpdateMutex.Lock()
 		handleDomEvent(msg)
+		domUpdateMutex.Unlock()
 	}
 }
 
@@ -136,10 +140,12 @@ func componentUpdateListen(c chan Component) {
 	for {
 		component := <-c
 
+		domUpdateMutex.Lock()
 		updateDomBegin()
 		UpdateComponent(component)
 		patch := updateDomEnd()
 		applyPatchToDom(fullDomPatch()) // TODO - improve this, not efficient, should apply new patch, not full patch
+		domUpdateMutex.Unlock()
 
 		for conn := range activeConnections {
 			conn.WriteJSON(patch)
