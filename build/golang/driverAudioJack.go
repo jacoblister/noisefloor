@@ -124,6 +124,5 @@ func (d *driverAudioJack) stop() {
 }
 
 func (d *driverAudioJack) samplingRate() int {
-	println(C.gojack_client_sampling_rate())
 	return int(C.gojack_client_sampling_rate())
 }
