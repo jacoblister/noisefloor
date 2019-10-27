@@ -6,6 +6,8 @@ type Connector struct {
 	FromPort      int
 	ToProcessor   Processor
 	ToPort        int
+
+	Value float32 // current sample value
 }
 
 //Processor is the getter for the Connector Processor

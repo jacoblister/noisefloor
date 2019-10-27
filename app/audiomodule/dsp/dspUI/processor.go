@@ -11,6 +11,8 @@ const procWidth = 80
 const procHeight = 80
 const procConnWidth = 8
 
+var level int
+
 // Processor is a dsp processor block (with inputs and outputs displayed)
 type Processor struct {
 	ProcessorDefinition *dsp.ProcessorDefinition
@@ -67,7 +69,8 @@ func (p *Processor) Render() vdom.Element {
 			"width", procConnWidth,
 			"height", procConnWidth,
 			"stroke", "black",
-			"fill", "white",
+			"fill", "none",
+			"pointer-events", "all",
 			"cursor", "crosshair",
 			vdom.MakeEventHandler(vdom.MouseDown, p.makeConnectorEventHandler(true, i)),
 			vdom.MakeEventHandler(vdom.MouseMove, p.makeConnectorEventHandler(true, i)),
@@ -96,7 +99,8 @@ func (p *Processor) Render() vdom.Element {
 			"width", procConnWidth,
 			"height", procConnWidth,
 			"stroke", "black",
-			"fill", "white",
+			"fill", "none",
+			"pointer-events", "all",
 			"cursor", "crosshair",
 			vdom.MakeEventHandler(vdom.MouseDown, p.makeConnectorEventHandler(false, i)),
 			vdom.MakeEventHandler(vdom.MouseMove, p.makeConnectorEventHandler(false, i)),

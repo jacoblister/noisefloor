@@ -70,7 +70,7 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 	if e.processEventFunc != nil {
 		e.processEventSkip--
 		if e.processEventSkip <= 0 {
-			e.processEventSkip = 4
+			e.processEventSkip = 1
 			e.processEventFunc()
 		}
 	}

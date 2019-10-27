@@ -56,7 +56,6 @@ func MakeEngine(engine *dsp.Engine, engineState *EngineState) *Engine {
 }
 
 func (e *Engine) processEvent() {
-	println("process event")
 	vdom.UpdateComponentBackground(e)
 }
 
@@ -276,7 +275,7 @@ func (e *Engine) Render() vdom.Element {
 	for i := 0; i < len(connectionList); i++ {
 		connector := &connectionList[i]
 		x1, y1, x2, y2, isConnected := e.connectorCoordinates(connector, processorMap[connector.FromProcessor], processorMap[connector.ToProcessor])
-		connectorLine := &Connector{x1: x1, y1: y1, x2: x2, y2: y2, isConnected: isConnected}
+		connectorLine := &Connector{x1: x1, y1: y1, x2: x2, y2: y2, isConnected: isConnected, value: connector.Value}
 		connectors = append(connectors, connectorLine)
 	}
 
@@ -294,8 +293,8 @@ func (e *Engine) Render() vdom.Element {
 			"stroke", "black",
 			"fill", "white",
 		),
-		connectors,
 		processors,
+		connectors,
 	)
 
 	return elem
