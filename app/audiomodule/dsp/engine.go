@@ -2,6 +2,7 @@ package dsp
 
 import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
@@ -10,10 +11,11 @@ type ProcessEventFunc func()
 
 // Engine - DSP processing engine
 type Engine struct {
-	midiinput        MIDIInput
+	midiinput        processorbuiltin.MIDIInput
 	patch            PatchMultiply
 	osc              processor.Oscillator
 	Graph            Graph
+	compiledGraph    compiledGraph
 	processEventSkip int
 	processEventFunc ProcessEventFunc
 }
@@ -26,9 +28,10 @@ func (e *Engine) SetProcessEventFunc(processEventFunc ProcessEventFunc) {
 // Start initilized the engine, with a specified sampling rate
 func (e *Engine) Start(sampleRate int) {
 	println("do DSP start, sample rate:", sampleRate)
-	e.midiinput.Start()
-	e.patch.Start(sampleRate)
+	// e.compiledGraph.Start(sampleRate)
 
+	e.midiinput.Start(sampleRate)
+	e.patch.Start(sampleRate)
 	e.osc.Start(sampleRate)
 	e.osc.Waveform = processor.Sin
 }
@@ -40,27 +43,28 @@ func (e *Engine) Stop() {
 
 // Process processes a block of samples and midi events
 func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
-	e.midiinput.ProcessMIDI(midiIn)
+	// e.midiinput.ProcessMIDI(midiIn)
+	// var len = len(samplesIn[0])
+	// for i := 0; i < len; i++ {
+	// 	// var sample = e.osc.Process()
+	// 	// freqs := e.midiinput.Process()
+	// 	var sample = e.patch.Process(&e.midiinput)
+	// 	sample += samplesIn[0][i]
+	//
+	// 	// mic := samplesIn[0][i] * 500
+	// 	// mod := e.osc.Process()
+	// 	// if mod < 0 {
+	// 	// 	mod = 0
+	// 	// }
+	// 	// mic *= mod
+	// 	// sample += mic
+	// 	// sample = e.osc.Process()
+	//
+	// 	samplesIn[0][i] = sample
+	// 	samplesIn[1][i] = sample
+	// }
 
-	var len = len(samplesIn[0])
-	for i := 0; i < len; i++ {
-		// var sample = e.osc.Process()
-		freqs := e.midiinput.Process()
-		var sample = e.patch.Process(freqs)
-		sample += samplesIn[0][i]
-
-		// mic := samplesIn[0][i] * 500
-		// mod := e.osc.Process()
-		// if mod < 0 {
-		// 	mod = 0
-		// }
-		// mic *= mod
-		// sample += mic
-		// sample = e.osc.Process()
-
-		samplesIn[0][i] = sample
-		samplesIn[1][i] = sample
-	}
+	samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
 
 	// notify front end if registered
 	if e.processEventFunc != nil {
@@ -77,4 +81,8 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 // Load loads a graph into the synthengine from file
 func (e *Engine) Load(filename string) {
 	e.Graph = loadProcessorGraph(filename)
+	e.compiledGraph = compileProcessorGraph(e.Graph, CompileInterpreted)
+
+	// TODO - totally wrong place for this - avoid race conditon in engine startup
+	e.compiledGraph.Start(48000)
 }

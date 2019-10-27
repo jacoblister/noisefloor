@@ -7,6 +7,9 @@ import "strconv"
 type Terminal struct {
 	isInput    bool
 	connectors int
+
+	samples     [][]float32
+	sampleIndex int
 }
 
 // Start - init envelope generator
@@ -21,6 +24,12 @@ func (t *Terminal) Process() {
 func (t *Terminal) SetParameters(isInput bool, connectors int) {
 	t.isInput = isInput
 	t.connectors = connectors
+}
+
+//SetSamples resets the input/output sample buffer
+func (t *Terminal) SetSamples(samples [][]float32) {
+	t.samples = samples
+	t.sampleIndex = 0
 }
 
 // Definition exports the terminal connectors, given the input/output type and count
@@ -40,7 +49,12 @@ func (t *Terminal) Definition() (name string, inputs []string, outputs []string)
 }
 
 //ProcessArray calls process with an array of input/output samples
-//is is a no-op for Terminal, which is not compiled in the graph
 func (t *Terminal) ProcessArray(in []float32) (output []float32) {
-	return
+	//TODO handle input terminal
+
+	for i := 0; i < len(in); i++ {
+		t.samples[i][t.sampleIndex] = in[i]
+	}
+	t.sampleIndex++
+	return in
 }

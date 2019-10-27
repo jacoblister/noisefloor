@@ -38,7 +38,7 @@ func UpdateComponent(component Component) {
 }
 
 // UpdateComponentBackground allows a background process to
-// notifiy a state change in a component
+// notify a state change in a component
 func UpdateComponentBackground(component Component) {
 	componentUpdate <- component
 }

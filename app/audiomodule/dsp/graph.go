@@ -3,7 +3,6 @@ package dsp
 import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
-	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 // Graph is a graph of processors and connectors, plus exported parameter map
@@ -52,48 +51,4 @@ func loadProcessorGraph(filename string) Graph {
 		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
 
 	return graph
-}
-
-// CompileTarget enumerated type
-type CompileTarget int
-
-// CompileTarget implementation
-const (
-	CompileInterpreted CompileTarget = iota
-	CompileGolang
-	CompileJavascript
-	CompileWasm
-	CompileCPP
-)
-
-// AudioProcessor is a frame based audio/midi processor
-type AudioProcessor interface {
-	Start(sampleRate int)
-	Stop()
-	Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event)
-}
-
-type graphOp struct {
-	processor Processor
-	inArgs    []int
-	outArgs   []int
-}
-
-type graphExecutor struct {
-	processor   []Processor
-	inputNodes  []int
-	outputNodes []int
-	vars        []float32
-	ops         []graphOp
-}
-
-// compileProcessorGraph compiles a graph, and returns a function to run it
-func compileProcessorGraph(graph Graph, target CompileTarget) AudioProcessor {
-	// dummy implementation for now
-
-	switch target {
-	case CompileGolang:
-		return nil
-	}
-	panic("unsupported target")
 }
