@@ -13,18 +13,6 @@ type Graph struct {
 }
 
 func (g *Graph) connectorsForProcessor(processor Processor, isInput bool) []*Connector {
-	result := []*Connector{}
-	for i := 0; i < len(g.ConnectorList); i++ {
-		if isInput && g.ConnectorList[i].ToProcessor == processor {
-			result = append(result, &g.ConnectorList[i])
-		}
-		if !isInput && g.ConnectorList[i].FromProcessor == processor {
-			result = append(result, &g.ConnectorList[i])
-		}
-	}
-
-	// append filler 'empty' connectors
-	// TODO - Move count getter to processor method
 	_, procInputs, procOutputs := processor.Definition()
 	connectorCount := 0
 	if isInput {
@@ -32,14 +20,19 @@ func (g *Graph) connectorsForProcessor(processor Processor, isInput bool) []*Con
 	} else {
 		connectorCount = len(procOutputs)
 	}
-	fillCount := connectorCount - len(result)
-	if fillCount < 0 {
-		panic("processor connection count exceeded")
-	}
-	for i := 0; i < fillCount; i++ {
-		result = append(result, &Connector{})
+	result := make([]*Connector, connectorCount, connectorCount)
+	for i := 0; i < len(result); i++ {
+		result[i] = &Connector{}
 	}
 
+	for i := 0; i < len(g.ConnectorList); i++ {
+		if isInput && g.ConnectorList[i].ToProcessor == processor {
+			result[g.ConnectorList[i].ToPort] = &g.ConnectorList[i]
+		}
+		if !isInput && g.ConnectorList[i].FromProcessor == processor {
+			result[g.ConnectorList[i].FromPort] = &g.ConnectorList[i]
+		}
+	}
 	return result
 }
 
