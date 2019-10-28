@@ -12,6 +12,37 @@ type Graph struct {
 	ConnectorList []Connector
 }
 
+func (g *Graph) connectorsForProcessor(processor Processor, isInput bool) []*Connector {
+	result := []*Connector{}
+	for i := 0; i < len(g.ConnectorList); i++ {
+		if isInput && g.ConnectorList[i].ToProcessor == processor {
+			result = append(result, &g.ConnectorList[i])
+		}
+		if !isInput && g.ConnectorList[i].FromProcessor == processor {
+			result = append(result, &g.ConnectorList[i])
+		}
+	}
+
+	// append filler 'empty' connectors
+	// TODO - Move count getter to processor method
+	_, procInputs, procOutputs := processor.Definition()
+	connectorCount := 0
+	if isInput {
+		connectorCount = len(procInputs)
+	} else {
+		connectorCount = len(procOutputs)
+	}
+	fillCount := connectorCount - len(result)
+	if fillCount < 0 {
+		panic("processor connection count exceeded")
+	}
+	for i := 0; i < fillCount; i++ {
+		result = append(result, &Connector{})
+	}
+
+	return result
+}
+
 // loadProcessorGraph loads a procesor graph from file
 // just sets up a static graph for now
 func loadProcessorGraph(filename string) Graph {
@@ -47,8 +78,8 @@ func loadProcessorGraph(filename string) Graph {
 		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
-	graph.ConnectorList = append(graph.ConnectorList,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
+	// graph.ConnectorList = append(graph.ConnectorList,
+	// 	Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
 
 	return graph
 }

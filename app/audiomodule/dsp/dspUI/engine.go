@@ -194,6 +194,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,
 					e.state.targetProcessor, e.state.targetPort)
 				e.state.editState = idle
+				e.Engine.RecompileGraph()
 			}
 		case ESConnector:
 			switch event.Type {
@@ -207,6 +208,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,
 					e.state.targetProcessor, e.state.targetPort)
 				e.state.editState = idle
+				e.Engine.RecompileGraph()
 			}
 		}
 	}

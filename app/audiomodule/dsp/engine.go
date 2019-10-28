@@ -64,7 +64,9 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 	// 	samplesIn[1][i] = sample
 	// }
 
-	samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
+	if e.compiledGraph != nil {
+		samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
+	}
 
 	// notify front end if registered
 	if e.processEventFunc != nil {
@@ -78,11 +80,21 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 	return samplesIn, midiIn
 }
 
+// RecompileGraph recompiles the current graph
+func (e *Engine) RecompileGraph() {
+	println("Recompile graph")
+	e.compiledGraph = nil
+
+	// TODO - totally wrong place for this - avoid race conditon in engine startup
+	compiledGraph := compileProcessorGraph(e.Graph, CompileInterpreted)
+	compiledGraph.Start(48000)
+
+	e.compiledGraph = compiledGraph
+}
+
 // Load loads a graph into the synthengine from file
 func (e *Engine) Load(filename string) {
 	e.Graph = loadProcessorGraph(filename)
-	e.compiledGraph = compileProcessorGraph(e.Graph, CompileInterpreted)
 
-	// TODO - totally wrong place for this - avoid race conditon in engine startup
-	e.compiledGraph.Start(48000)
+	e.RecompileGraph()
 }

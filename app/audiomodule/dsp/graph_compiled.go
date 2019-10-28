@@ -38,22 +38,46 @@ type graphExecutor struct {
 }
 
 func compileGraphExecutor(graph Graph) graphExecutor {
-	graphExecutor := graphExecutor{}
-	graphExecutor.midiInput = graph.ProcessorList[0].Processor.(*processorbuiltin.MIDIInput)
-	graphExecutor.outputTerm = graph.ProcessorList[4].Processor.(*processorbuiltin.Terminal)
+	// graphExecutor := graphExecutor{}
+	// graphExecutor.midiInput = graph.ProcessorList[0].Processor.(*processorbuiltin.MIDIInput)
+	// graphExecutor.outputTerm = graph.ProcessorList[4].Processor.(*processorbuiltin.Terminal)
+	//
+	// nullConnector := Connector{}
+	// graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[0].Processor,
+	// 	[]*Connector{}, []*Connector{&graph.ConnectorList[0], &graph.ConnectorList[1], &graph.ConnectorList[2],
+	// 		&nullConnector, &nullConnector, &nullConnector, &nullConnector}})
+	// graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[1].Processor,
+	// 	[]*Connector{&graph.ConnectorList[0]}, []*Connector{&graph.ConnectorList[3]}})
+	// graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[2].Processor,
+	// 	[]*Connector{&graph.ConnectorList[1], &graph.ConnectorList[2]}, []*Connector{&graph.ConnectorList[4]}})
+	// graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[3].Processor,
+	// 	[]*Connector{&graph.ConnectorList[3], &graph.ConnectorList[4]}, []*Connector{&graph.ConnectorList[5]}})
+	// graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[4].Processor,
+	// 	[]*Connector{&graph.ConnectorList[5], &nullConnector}, []*Connector{}})
+	//
+	// return graphExecutor
 
-	nullConnector := Connector{}
-	graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[0].Processor,
-		[]*Connector{}, []*Connector{&graph.ConnectorList[0], &graph.ConnectorList[1], &graph.ConnectorList[2],
-			&nullConnector, &nullConnector, &nullConnector, &nullConnector}})
-	graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[1].Processor,
-		[]*Connector{&graph.ConnectorList[0]}, []*Connector{&graph.ConnectorList[3]}})
-	graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[2].Processor,
-		[]*Connector{&graph.ConnectorList[1], &graph.ConnectorList[2]}, []*Connector{&graph.ConnectorList[4]}})
-	graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[3].Processor,
-		[]*Connector{&graph.ConnectorList[3], &graph.ConnectorList[4]}, []*Connector{&graph.ConnectorList[5]}})
-	graphExecutor.ops = append(graphExecutor.ops, graphOp{graph.ProcessorList[4].Processor,
-		[]*Connector{&graph.ConnectorList[5], &graph.ConnectorList[5]}, []*Connector{}})
+	graphExecutor := graphExecutor{}
+
+	for i := 0; i < len(graph.ProcessorList); i++ {
+		// check for 'special' processors
+		midiInput, ok := graph.ProcessorList[i].Processor.(*processorbuiltin.MIDIInput)
+		if ok {
+			graphExecutor.midiInput = midiInput
+		}
+		terminal, ok := graph.ProcessorList[i].Processor.(*processorbuiltin.Terminal)
+		if ok {
+			graphExecutor.outputTerm = terminal
+		}
+
+		graphExecutor.ops = append(graphExecutor.ops,
+			graphOp{
+				graph.ProcessorList[i].Processor,
+				graph.connectorsForProcessor(graph.ProcessorList[i].Processor, true),
+				graph.connectorsForProcessor(graph.ProcessorList[i].Processor, false),
+			},
+		)
+	}
 
 	return graphExecutor
 }
