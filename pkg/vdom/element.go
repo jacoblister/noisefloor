@@ -67,6 +67,7 @@ func MakeElement(name string, args ...interface{}) Element {
 				childElement.Component = arg[j]
 				element.Children = append(element.Children, childElement)
 			}
+		case nil:
 		default:
 			fmt.Println("Unsuppoerted: ", arg)
 			panic("its over")

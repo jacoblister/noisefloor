@@ -43,20 +43,26 @@ func loadProcessorGraph(filename string) Graph {
 
 	midiInput := processorbuiltin.MIDIInput{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 80, Y: 80, Processor: &midiInput})
+		ProcessorDefinition{X: 16, Y: 16, Processor: &midiInput})
 	osc := processor.Oscillator{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 240, Y: 80, Processor: &osc})
+		ProcessorDefinition{X: 120, Y: 16, Processor: &osc})
 	env := processor.Envelope{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 240, Y: 240, Processor: &env})
+		ProcessorDefinition{X: 120, Y: 72, Processor: &env})
 	gain := processor.Gain{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 400, Y: 80, Processor: &gain})
+		ProcessorDefinition{X: 224, Y: 16, Processor: &gain})
+	splitter := processor.Splitter{}
+	graph.ProcessorList = append(graph.ProcessorList,
+		ProcessorDefinition{X: 328, Y: 16, Processor: &splitter})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 560, Y: 80, Processor: &outputTerminal})
+		ProcessorDefinition{X: 432, Y: 16, Processor: &outputTerminal})
+	scope := processor.Scope{}
+	graph.ProcessorList = append(graph.ProcessorList,
+		ProcessorDefinition{X: 432, Y: 96, Processor: &scope})
 
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
@@ -70,9 +76,13 @@ func loadProcessorGraph(filename string) Graph {
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
 	graph.ConnectorList = append(graph.ConnectorList,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
-	// graph.ConnectorList = append(graph.ConnectorList,
-	// 	Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
+		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &splitter, ToPort: 0})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &splitter, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &splitter, FromPort: 1, ToProcessor: &outputTerminal, ToPort: 1})
+	graph.ConnectorList = append(graph.ConnectorList,
+		Connector{FromProcessor: &splitter, FromPort: 3, ToProcessor: &scope, ToPort: 0})
 
 	return graph
 }

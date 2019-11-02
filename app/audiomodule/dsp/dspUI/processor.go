@@ -136,6 +136,8 @@ func (p *Processor) Render() vdom.Element {
 		"y2", float64(p.ProcessorDefinition.Y)+16+0.5,
 	)
 
+	component, _ := p.ProcessorDefinition.Processor.(vdom.Component)
+
 	element := vdom.MakeElement("g",
 		vdom.MakeElement("rect",
 			"id", procName,
@@ -154,6 +156,10 @@ func (p *Processor) Render() vdom.Element {
 		procLine,
 		inConnectors,
 		outConnectors,
+		vdom.MakeElement("g",
+			"transform", "translate("+strconv.Itoa(p.ProcessorDefinition.X)+","+strconv.Itoa(p.ProcessorDefinition.Y)+")",
+			component,
+		),
 	)
 
 	return element
