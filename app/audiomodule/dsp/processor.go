@@ -12,6 +12,7 @@ type Processor interface {
 type ProcessorDefinition struct {
 	X         int
 	Y         int
+	Name      string
 	Processor Processor
 }
 

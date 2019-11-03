@@ -69,7 +69,12 @@ func (p *Processor) Render() vdom.Element {
 		procWidth, procHeight = customRenderDimentions.CustomRenderDimentions()
 	}
 
-	procName, procInputs, procOutputs := p.ProcessorDefinition.Processor.Definition()
+	procName := p.ProcessorDefinition.Name
+	procDefName, procInputs, procOutputs := p.ProcessorDefinition.Processor.Definition()
+	if len(procName) == 0 {
+		procName = procDefName
+	}
+
 	inConnectors := []vdom.Element{}
 	for i := 0; i < len(procInputs); i++ {
 		x, y := p.GetConnectorPoint(procWidth, true, i)
