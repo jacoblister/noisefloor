@@ -12,25 +12,33 @@ type Graph struct {
 	ConnectorList []Connector
 }
 
-func (g *Graph) connectorsForProcessor(processor Processor, isInput bool) []*Connector {
-	_, procInputs, procOutputs := processor.Definition()
-	connectorCount := 0
-	if isInput {
-		connectorCount = len(procInputs)
-	} else {
-		connectorCount = len(procOutputs)
-	}
+func (g *Graph) inputConnectorsForProcessor(processor Processor) []*Connector {
+	_, procInputs, _ := processor.Definition()
+	connectorCount := len(procInputs)
 	result := make([]*Connector, connectorCount, connectorCount)
 	for i := 0; i < len(result); i++ {
 		result[i] = &Connector{}
 	}
 
 	for i := 0; i < len(g.ConnectorList); i++ {
-		if isInput && g.ConnectorList[i].ToProcessor == processor {
+		if g.ConnectorList[i].ToProcessor == processor {
 			result[g.ConnectorList[i].ToPort] = &g.ConnectorList[i]
 		}
-		if !isInput && g.ConnectorList[i].FromProcessor == processor {
-			result[g.ConnectorList[i].FromPort] = &g.ConnectorList[i]
+	}
+	return result
+}
+
+func (g *Graph) outputConnectorsForProcessor(processor Processor) [][]*Connector {
+	_, _, procOutputs := processor.Definition()
+	connectorCount := len(procOutputs)
+	result := make([][]*Connector, connectorCount, connectorCount)
+	for i := 0; i < len(result); i++ {
+		result[i] = make([]*Connector, 0, 0)
+	}
+
+	for i := 0; i < len(g.ConnectorList); i++ {
+		if g.ConnectorList[i].FromProcessor == processor {
+			result[g.ConnectorList[i].FromPort] = append(result[g.ConnectorList[i].FromPort], &g.ConnectorList[i])
 		}
 	}
 	return result
@@ -53,16 +61,16 @@ func loadProcessorGraph(filename string) Graph {
 	gain := processor.Gain{}
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 224, Y: 16, Processor: &gain})
-	splitter := processor.Splitter{}
-	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 328, Y: 16, Processor: &splitter})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 432, Y: 16, Processor: &outputTerminal})
-	scope := processor.Scope{}
+		ProcessorDefinition{X: 328, Y: 16, Processor: &outputTerminal})
+	scope := processor.Scope{Trigger: true, Skip: 0}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 432, Y: 96, Processor: &scope})
+		ProcessorDefinition{X: 328, Y: 96, Processor: &scope})
+	scope2 := processor.Scope{Trigger: false, Skip: 200}
+	graph.ProcessorList = append(graph.ProcessorList,
+		ProcessorDefinition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
 
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
@@ -76,13 +84,13 @@ func loadProcessorGraph(filename string) Graph {
 	graph.ConnectorList = append(graph.ConnectorList,
 		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
 	graph.ConnectorList = append(graph.ConnectorList,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &splitter, ToPort: 0})
+		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
 	graph.ConnectorList = append(graph.ConnectorList,
-		Connector{FromProcessor: &splitter, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
+		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
 	graph.ConnectorList = append(graph.ConnectorList,
-		Connector{FromProcessor: &splitter, FromPort: 1, ToProcessor: &outputTerminal, ToPort: 1})
+		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &scope, ToPort: 0})
 	graph.ConnectorList = append(graph.ConnectorList,
-		Connector{FromProcessor: &splitter, FromPort: 3, ToProcessor: &scope, ToPort: 0})
+		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &scope2, ToPort: 0})
 
 	return graph
 }

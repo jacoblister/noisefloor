@@ -40,7 +40,9 @@ func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) 
 			}
 			outArgs := g.graphExecutor.ops[j].processor.ProcessArray(inArgs)
 			for k := 0; k < len(op.connectorOut); k++ {
-				op.connectorOut[k].Value = outArgs[k]
+				for l := 0; l < len(op.connectorOut[k]); l++ {
+					op.connectorOut[k][l].Value = outArgs[k]
+				}
 			}
 		}
 		if g.graphExecutor.midiInput != nil {

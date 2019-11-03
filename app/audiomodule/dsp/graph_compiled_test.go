@@ -88,11 +88,11 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 	assert.Equal(t, &midiInput, result.ops[0].processor)
 	assert.Equal(t, []*Connector{}, result.ops[0].connectorIn)
 	assert.Equal(t,
-		[]*Connector{
-			&Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0},
-			&Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0},
-			&Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1},
-			&Connector{}, &Connector{}, &Connector{}, &Connector{},
+		[][]*Connector{
+			{&Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0}},
+			{&Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0}},
+			{&Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1}},
+			{}, {}, {}, {},
 		},
 		result.ops[0].connectorOut)
 	assert.Equal(t, &osc, result.ops[1].processor)
@@ -101,9 +101,9 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 			&Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0},
 		}, result.ops[1].connectorIn)
 	assert.Equal(t,
-		[]*Connector{
+		[][]*Connector{{
 			&Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0},
-		}, result.ops[1].connectorOut)
+		}}, result.ops[1].connectorOut)
 	assert.Equal(t, &env, result.ops[2].processor)
 	assert.Equal(t,
 		[]*Connector{
@@ -112,9 +112,9 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 		},
 		result.ops[2].connectorIn)
 	assert.Equal(t,
-		[]*Connector{
+		[][]*Connector{{
 			&Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1},
-		},
+		}},
 		result.ops[2].connectorOut)
 	assert.Equal(t, &gain, result.ops[3].processor)
 	assert.Equal(t,
@@ -124,9 +124,9 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 		},
 		result.ops[3].connectorIn)
 	assert.Equal(t,
-		[]*Connector{
+		[][]*Connector{{
 			&Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0},
-		},
+		}},
 		result.ops[3].connectorOut)
 	assert.Equal(t, &outputTerminal, result.ops[4].processor)
 	assert.Equal(t,
@@ -135,5 +135,5 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 			&Connector{},
 		},
 		result.ops[4].connectorIn)
-	assert.Equal(t, []*Connector{}, result.ops[4].connectorOut)
+	assert.Equal(t, [][]*Connector{}, result.ops[4].connectorOut)
 }
