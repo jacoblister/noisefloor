@@ -3,6 +3,7 @@ package processorbuiltin
 import (
 	"math"
 
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
@@ -141,8 +142,9 @@ func (m *MIDIInput) NextSample() {
 }
 
 // Definition exports processor definition
-func (m *MIDIInput) Definition() (name string, inputs []string, outputs []string) {
-	return "MIDIInput", []string{}, []string{"Frq", "Lvl", "Trg", "Aft", "Sld", "Rel", "Chn"}
+func (m *MIDIInput) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "MIDIInput", []string{}, []string{"Frq", "Lvl", "Trg", "Aft", "Sld", "Rel", "Chn"},
+		[]processor.Parameter{}
 }
 
 //ProcessArray calls process with an array of input/output samples
@@ -150,3 +152,6 @@ func (m *MIDIInput) ProcessArray(in []float32) (output []float32) {
 	frequency, gate, trigger, aftertouch, slide, release, channel := m.Process(0)
 	return []float32{frequency, gate, trigger, aftertouch, slide, release, channel}
 }
+
+//SetParameter set a single processor parameter
+func (m *MIDIInput) SetParameter(index int, value float32) {}

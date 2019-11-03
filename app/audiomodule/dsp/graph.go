@@ -13,7 +13,7 @@ type Graph struct {
 }
 
 func (g *Graph) inputConnectorsForProcessor(processor Processor) []*Connector {
-	_, procInputs, _ := processor.Definition()
+	_, procInputs, _, _ := processor.Definition()
 	connectorCount := len(procInputs)
 	result := make([]*Connector, connectorCount, connectorCount)
 	for i := 0; i < len(result); i++ {
@@ -29,7 +29,7 @@ func (g *Graph) inputConnectorsForProcessor(processor Processor) []*Connector {
 }
 
 func (g *Graph) outputConnectorsForProcessor(processor Processor) [][]*Connector {
-	_, _, procOutputs := processor.Definition()
+	_, _, procOutputs, _ := processor.Definition()
 	connectorCount := len(procOutputs)
 	result := make([][]*Connector, connectorCount, connectorCount)
 	for i := 0; i < len(result); i++ {
@@ -57,7 +57,7 @@ func loadProcessorGraph(filename string) Graph {
 		ProcessorDefinition{X: 120, Y: 16, Processor: &osc})
 	env := processor.Envelope{}
 	graph.ProcessorList = append(graph.ProcessorList,
-		ProcessorDefinition{X: 120, Y: 72, Processor: &env})
+		ProcessorDefinition{X: 120, Y: 96, Processor: &env})
 	gain := processor.Gain{}
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 224, Y: 16, Processor: &gain})
@@ -65,7 +65,7 @@ func loadProcessorGraph(filename string) Graph {
 	outputTerminal.SetParameters(true, 2)
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 328, Y: 16, Processor: &outputTerminal})
-	scope := processor.Scope{Trigger: true, Skip: 0}
+	scope := processor.Scope{Trigger: true, Skip: 4}
 	graph.ProcessorList = append(graph.ProcessorList,
 		ProcessorDefinition{X: 328, Y: 96, Processor: &scope})
 	scope2 := processor.Scope{Trigger: false, Skip: 200}

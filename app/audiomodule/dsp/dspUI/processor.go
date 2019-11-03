@@ -60,20 +60,46 @@ func (p *Processor) makeConnectorEventHandler(isInput bool, port int) vdom.Handl
 	}
 }
 
+func (p *Processor) makeParameterEventHandler(index int, factor float32) vdom.HandlerFunc {
+	return func(element *vdom.Element, event *vdom.Event) {
+		value := float32(event.Data["OffsetX"].(int)) / factor
+		p.ProcessorDefinition.Processor.SetParameter(index, value)
+	}
+}
+
 // Render displays a processor
 func (p *Processor) Render() vdom.Element {
+	maxConnectors := p.ProcessorDefinition.MaxConnectors()
+	procName := p.ProcessorDefinition.Name
+	procDefName, procInputs, procOutputs, procParameters := p.ProcessorDefinition.Processor.Definition()
+	if len(procName) == 0 {
+		procName = procDefName
+	}
+
 	procWidth := procDefaultWidth
-	procHeight := (p.ProcessorDefinition.MaxConnectors() + 2) * procConnWidth * 2
+	procHeight := (maxConnectors + 2 + len(procParameters)) * procConnWidth * 2
+
 	customRenderDimentions, ok := p.ProcessorDefinition.Processor.(customRenderDimentions)
 	if ok {
 		procWidth, procHeight = customRenderDimentions.CustomRenderDimentions()
 	}
 
-	procName := p.ProcessorDefinition.Name
-	procDefName, procInputs, procOutputs := p.ProcessorDefinition.Processor.Definition()
-	if len(procName) == 0 {
-		procName = procDefName
-	}
+	procNameLabel := vdom.MakeElement("text",
+		"font-family", "sans-serif",
+		"text-anchor", "middle",
+		"alignment-baseline", "hanging",
+		"font-size", 10,
+		"x", p.ProcessorDefinition.X+procWidth/2,
+		"y", p.ProcessorDefinition.Y+4,
+		vdom.MakeTextElement(procName),
+	)
+	procLine := vdom.MakeElement("line",
+		"stroke", "black",
+		"x1", float64(p.ProcessorDefinition.X)+0.5,
+		"y1", float64(p.ProcessorDefinition.Y)+16+0.5,
+		"x2", float64(p.ProcessorDefinition.X)+float64(procWidth)+0.5,
+		"y2", float64(p.ProcessorDefinition.Y)+16+0.5,
+	)
 
 	inConnectors := []vdom.Element{}
 	for i := 0; i < len(procInputs); i++ {
@@ -135,24 +161,50 @@ func (p *Processor) Render() vdom.Element {
 		outConnectors = append(outConnectors, label)
 	}
 
-	procNameLabel := vdom.MakeElement("text",
-		"font-family", "sans-serif",
-		"text-anchor", "middle",
-		"alignment-baseline", "hanging",
-		"font-size", 10,
-		"x", p.ProcessorDefinition.X+procWidth/2,
-		"y", p.ProcessorDefinition.Y+4,
-		vdom.MakeTextElement(procName),
-	)
-	procLine := vdom.MakeElement("line",
-		"stroke", "black",
-		"x1", float64(p.ProcessorDefinition.X)+0.5,
-		"y1", float64(p.ProcessorDefinition.Y)+16+0.5,
-		"x2", float64(p.ProcessorDefinition.X)+float64(procWidth)+0.5,
-		"y2", float64(p.ProcessorDefinition.Y)+16+0.5,
-	)
+	parameters := []vdom.Element{}
+	for i := 0; i < len(procParameters); i++ {
+		_, y := p.GetConnectorPoint(procWidth, true, i+maxConnectors)
 
-	component, _ := p.ProcessorDefinition.Processor.(vdom.Component)
+		width := procWidth - ((procConnWidth + 2) * 2)
+		levelWidth := int(float32(width) * (procParameters[i].Value / procParameters[i].Max))
+		levelFactor := float32(width) / procParameters[i].Max
+
+		level := vdom.MakeElement("rect",
+			"id", procName+":parameter:"+strconv.Itoa(i),
+			"x", p.ProcessorDefinition.X+procConnWidth+2,
+			"y", y-2,
+			"width", levelWidth,
+			"height", procConnWidth+4,
+			"stroke", "none",
+			"fill", "cyan",
+			"pointer-events", "none",
+		)
+		parameters = append(parameters, level)
+
+		bound := vdom.MakeElement("rect",
+			"id", procName+":parameter:"+strconv.Itoa(i),
+			"x", p.ProcessorDefinition.X+procConnWidth+2,
+			"y", y-2,
+			"width", width,
+			"height", procConnWidth+4,
+			"stroke", "black",
+			"fill", "none",
+			"pointer-events", "all",
+			"cursor", "crosshair",
+			vdom.MakeEventHandler(vdom.MouseDown, p.makeParameterEventHandler(i, levelFactor)),
+		)
+		parameters = append(parameters, bound)
+
+		name := vdom.MakeElement("text",
+			"font-family", "sans-serif",
+			"text-anchor", "middle",
+			"alignment-baseline", "hanging",
+			"font-size", 10,
+			"x", p.ProcessorDefinition.X+(procWidth/2),
+			"y", y,
+			vdom.MakeTextElement(procParameters[i].Name))
+		parameters = append(parameters, name)
+	}
 
 	element := vdom.MakeElement("g",
 		vdom.MakeElement("rect",
@@ -172,11 +224,16 @@ func (p *Processor) Render() vdom.Element {
 		procLine,
 		inConnectors,
 		outConnectors,
-		vdom.MakeElement("g",
-			"transform", "translate("+strconv.Itoa(p.ProcessorDefinition.X)+","+strconv.Itoa(p.ProcessorDefinition.Y)+")",
-			component,
-		),
+		parameters,
 	)
+
+	custom, ok := p.ProcessorDefinition.Processor.(vdom.Component)
+	if ok {
+		element.AppendChild(vdom.MakeElement("g",
+			"transform", "translate("+strconv.Itoa(p.ProcessorDefinition.X)+","+strconv.Itoa(p.ProcessorDefinition.Y)+")",
+			custom,
+		))
+	}
 
 	return element
 }

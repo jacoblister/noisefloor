@@ -14,10 +14,10 @@ const (
 
 // Envelope - ADSR envelope generator
 type Envelope struct {
-	Attack  float32 `default:"2" min:"0" max:"10000"`
-	Decay   float32 `default:"100" min:"0" max:"10000"`
-	Sustain float32 `default:"0.5" min:"0" max:"1"`
-	Release float32 `default:"1000" min:"0" max:"10000"`
+	Attack  float32 `default:"2" min:"0" max:"100"`
+	Decay   float32 `default:"100" min:"0" max:"1000"`
+	Sustain float32 `default:"0.75" min:"0" max:"1"`
+	Release float32 `default:"1000" min:"0" max:"1000"`
 
 	sampleRate float32
 	output     float32

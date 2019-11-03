@@ -1,6 +1,10 @@
 package processorbuiltin
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+)
 
 //Terminal is the audio input/output connector to hardware or parent graph
 //it is a special case which is not part of the compiled graph
@@ -33,7 +37,7 @@ func (t *Terminal) SetSamples(samples [][]float32) {
 }
 
 // Definition exports the terminal connectors, given the input/output type and count
-func (t *Terminal) Definition() (name string, inputs []string, outputs []string) {
+func (t *Terminal) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	inputs = []string{}
 	outputs = []string{}
 
@@ -45,7 +49,7 @@ func (t *Terminal) Definition() (name string, inputs []string, outputs []string)
 		}
 	}
 
-	return "Terminal", inputs, outputs
+	return "Terminal", inputs, outputs, []processor.Parameter{}
 }
 
 //ProcessArray calls process with an array of input/output samples
@@ -58,3 +62,6 @@ func (t *Terminal) ProcessArray(in []float32) (output []float32) {
 	t.sampleIndex++
 	return in
 }
+
+//SetParameter set a single processor parameter
+func (t *Terminal) SetParameter(index int, value float32) {}

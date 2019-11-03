@@ -42,6 +42,10 @@ func (o *Oscillator) Start(sampleRate int) {
 		if i < sampleRate/2 {
 			o.waveTable[Square][i] = 1
 		}
+
+		if i < sampleRate/2 {
+			o.waveTable[Triangle][i] = (float32(i) / (float32(sampleRate) / 4)) - 1
+		}
 	}
 }
 
