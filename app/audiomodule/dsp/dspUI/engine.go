@@ -224,11 +224,13 @@ func (e *Engine) connectorCoordinates(
 	connector *dsp.Connector,
 	fromProcessor *Processor,
 	toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, isConnected bool) {
+	procWidth := procDefaultWidth
+
 	if fromProcessor != nil {
-		x1, y1 = fromProcessor.GetConnectorPoint(false, connector.FromPort)
+		x1, y1 = fromProcessor.GetConnectorPoint(procWidth, false, connector.FromPort)
 	}
 	if toProcessor != nil {
-		x2, y2 = toProcessor.GetConnectorPoint(true, connector.ToPort)
+		x2, y2 = toProcessor.GetConnectorPoint(procWidth, true, connector.ToPort)
 	}
 	isConnected = true
 

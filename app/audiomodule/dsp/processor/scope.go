@@ -38,17 +38,22 @@ func (s *Scope) Process(input float32) {
 	s.lastSample = input
 }
 
+// CustomRenderDimentions get the extended dimentions of the scope
+func (s *Scope) CustomRenderDimentions() (width int, height int) {
+	return 200, 100
+}
+
 // Render - render the scope
 func (s *Scope) Render() vdom.Element {
 	path := strings.Builder{}
-	path.WriteString("M0.5," + strconv.Itoa(int(s.samples[0]*50)+100))
+	path.WriteString("M0.5," + strconv.Itoa(int(s.samples[0]*50)+50) + ".5")
 	for i := 1; i < scopeSamples; i++ {
-		path.WriteString(" L" + strconv.Itoa(i) + ".5," + strconv.Itoa(int(s.samples[i]*50)+100) + ".5")
+		path.WriteString(" L" + strconv.Itoa(i*2) + ".5," + strconv.Itoa(int(s.samples[i]*50)+50) + ".5")
 	}
 
 	pathElement := vdom.MakeElement("path",
 		"d", path.String(),
-		"stroke", "black",
+		"stroke", "blue",
 		"fill", "none",
 	)
 

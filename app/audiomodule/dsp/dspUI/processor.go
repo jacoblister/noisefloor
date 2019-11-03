@@ -7,8 +7,8 @@ import (
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
-const procWidth = 80
-const procHeight = 80
+const procDefaultWidth = 80
+const procDefaultHeight = 80
 const procConnWidth = 8
 
 var level int
@@ -25,8 +25,12 @@ func MakeProcessor(processorDefinition *dsp.ProcessorDefinition, handlerFunc vdo
 	return &processor
 }
 
+type customRenderDimentions interface {
+	CustomRenderDimentions() (width int, height int)
+}
+
 //GetConnectorPoint gets the mid point co-ordinates of an input or output connection point
-func (p *Processor) GetConnectorPoint(isInput bool, port int) (x int, y int) {
+func (p *Processor) GetConnectorPoint(procWidth int, isInput bool, port int) (x int, y int) {
 	y = p.ProcessorDefinition.Y + port*(procConnWidth*2) + (procConnWidth * 4)
 
 	if isInput {
@@ -58,10 +62,17 @@ func (p *Processor) makeConnectorEventHandler(isInput bool, port int) vdom.Handl
 
 // Render displays a processor
 func (p *Processor) Render() vdom.Element {
+	procWidth := procDefaultWidth
+	procHeight := (p.ProcessorDefinition.MaxConnectors() + 2) * procConnWidth * 2
+	customRenderDimentions, ok := p.ProcessorDefinition.Processor.(customRenderDimentions)
+	if ok {
+		procWidth, procHeight = customRenderDimentions.CustomRenderDimentions()
+	}
+
 	procName, procInputs, procOutputs := p.ProcessorDefinition.Processor.Definition()
 	inConnectors := []vdom.Element{}
 	for i := 0; i < len(procInputs); i++ {
-		x, y := p.GetConnectorPoint(true, i)
+		x, y := p.GetConnectorPoint(procWidth, true, i)
 		connector := vdom.MakeElement("rect",
 			"id", procName+":inconn:"+strconv.Itoa(i),
 			"x", x-procConnWidth/2,
@@ -91,7 +102,7 @@ func (p *Processor) Render() vdom.Element {
 
 	outConnectors := []vdom.Element{}
 	for i := 0; i < len(procOutputs); i++ {
-		x, y := p.GetConnectorPoint(false, i)
+		x, y := p.GetConnectorPoint(procWidth, false, i)
 		connector := vdom.MakeElement("rect",
 			"id", procName+":outconn:"+strconv.Itoa(i),
 			"x", x-procConnWidth/2,
@@ -132,7 +143,7 @@ func (p *Processor) Render() vdom.Element {
 		"stroke", "black",
 		"x1", float64(p.ProcessorDefinition.X)+0.5,
 		"y1", float64(p.ProcessorDefinition.Y)+16+0.5,
-		"x2", float64(p.ProcessorDefinition.X)+procWidth+0.5,
+		"x2", float64(p.ProcessorDefinition.X)+float64(procWidth)+0.5,
 		"y2", float64(p.ProcessorDefinition.Y)+16+0.5,
 	)
 
@@ -144,7 +155,7 @@ func (p *Processor) Render() vdom.Element {
 			"x", p.ProcessorDefinition.X,
 			"y", p.ProcessorDefinition.Y,
 			"width", procWidth,
-			"height", (p.ProcessorDefinition.MaxConnectors()+2)*procConnWidth*2,
+			"height", procHeight,
 			"stroke", "black",
 			"fill", "white",
 			"cursor", "pointer",
