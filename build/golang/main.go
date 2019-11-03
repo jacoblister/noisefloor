@@ -1,8 +1,6 @@
 package nf
 
 import (
-	"runtime/debug"
-
 	"github.com/jacoblister/noisefloor/app"
 	"github.com/jacoblister/noisefloor/app/audiomodule"
 )
@@ -27,7 +25,7 @@ func (nf *noiseFloor) Stop(hardwareDevices app.HardwareDevices) {
 
 // Main is the application entry point
 func Main() {
-	debug.SetGCPercent(-1)
+	// debug.SetGCPercent(-1)
 
 	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}}
 	// nf := noiseFloor{driverAudio: &driverAudioWASAPI{}, driverMidi: &driverMidiMock{}}

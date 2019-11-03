@@ -27,7 +27,7 @@ func RenderComponentToDom(component Component) {
 	rootComponent = component
 	rootElement := component.Render()
 
-	componentMap = map[Component]*Element{}
+	// componentMap = map[Component]*Element{}
 	updateDomTreeRecursive(&rootElement, []int{})
 	updateDomTreeRecursive(&rootElement, []int{})
 	SetDomRootElement(&rootElement)
@@ -48,9 +48,10 @@ func updateDomTreeRecursive(element *Element, path []int) {
 	element.Path = make([]int, len(path))
 	copy(element.Path, path)
 
-	if element.Component != nil {
-		componentMap[element.Component] = element
-	}
+	// TODO - handle componentmap update
+	// if element.Component != nil {
+	// 	componentMap[element.Component] = element
+	// }
 
 	for i := 0; i < len(element.Children); i++ {
 		childPath := append(path, i)

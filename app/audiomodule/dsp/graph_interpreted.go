@@ -15,12 +15,19 @@ func (g *interpretedEngine) Start(sampleRate int) {
 	for i := 0; i < len(g.graphExecutor.ops); i++ {
 		g.graphExecutor.ops[i].processor.Start(sampleRate)
 	}
-	g.graphExecutor.midiInput.SetMono()
+
+	if g.graphExecutor.midiInput != nil {
+		g.graphExecutor.midiInput.SetMono()
+	}
 }
 
 func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
-	g.graphExecutor.midiInput.ProcessMIDI(midiIn)
-	g.graphExecutor.outputTerm.SetSamples(samplesIn)
+	if g.graphExecutor.midiInput != nil {
+		g.graphExecutor.midiInput.ProcessMIDI(midiIn)
+	}
+	if g.graphExecutor.outputTerm != nil {
+		g.graphExecutor.outputTerm.SetSamples(samplesIn)
+	}
 
 	inArgs := make([]float32, 0, 8)
 	var length = len(samplesIn[0])
@@ -36,7 +43,9 @@ func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) 
 				op.connectorOut[k].Value = outArgs[k]
 			}
 		}
-		g.graphExecutor.midiInput.NextSample()
+		if g.graphExecutor.midiInput != nil {
+			g.graphExecutor.midiInput.NextSample()
+		}
 	}
 
 	return samplesIn, midiIn
