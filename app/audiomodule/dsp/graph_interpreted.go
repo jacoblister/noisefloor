@@ -1,33 +1,25 @@
 package dsp
 
 import (
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
 type interpretedEngine struct {
 	graphExecutor graphExecutor
-	osc           processor.Oscillator
 }
 
 func (g *interpretedEngine) Start(sampleRate int) {
-	g.osc.Start(sampleRate)
 	for i := 0; i < len(g.graphExecutor.ops); i++ {
 		g.graphExecutor.ops[i].processor.Start(sampleRate)
 	}
 
-	if g.graphExecutor.midiInput != nil {
-		g.graphExecutor.midiInput.SetMono()
-	}
+	g.graphExecutor.midiInput.Start(sampleRate)
+	g.graphExecutor.midiInput.SetMono()
 }
 
 func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
-	if g.graphExecutor.midiInput != nil {
-		g.graphExecutor.midiInput.ProcessMIDI(midiIn)
-	}
-	if g.graphExecutor.outputTerm != nil {
-		g.graphExecutor.outputTerm.SetSamples(samplesIn)
-	}
+	g.graphExecutor.midiInput.ProcessMIDI(midiIn)
+	g.graphExecutor.outputTerm.SetSamples(samplesIn)
 
 	inArgs := make([]float32, 0, 8)
 	var length = len(samplesIn[0])

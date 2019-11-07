@@ -38,7 +38,10 @@ type graphExecutor struct {
 }
 
 func compileGraphExecutor(graph Graph) graphExecutor {
+	// init graphExecutor and provide default 'special' processors
 	graphExecutor := graphExecutor{}
+	graphExecutor.midiInput = &processorbuiltin.MIDIInput{}
+	graphExecutor.outputTerm = &processorbuiltin.Terminal{}
 
 	for i := 0; i < len(graph.ProcessorList); i++ {
 		// check for 'special' processors
