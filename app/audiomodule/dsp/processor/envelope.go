@@ -19,10 +19,11 @@ type Envelope struct {
 	Sustain float32 `default:"0.75" min:"0" max:"1"`
 	Release float32 `default:"1000" min:"0" max:"1000"`
 
-	sampleRate float32
-	output     float32
-	phase      Phase
-	delta      float32
+	sampleRate  float32
+	output      float32
+	phase       Phase
+	delta       float32
+	lastTrigger float32
 }
 
 // Start - init envelope generator
@@ -36,7 +37,7 @@ func (e *Envelope) Start(sampleRate int) {
 
 // Process - produce next sample
 func (e *Envelope) Process(gate float32, trigger float32) (output float32) {
-	if trigger > 0 {
+	if trigger > 0 && e.lastTrigger == 0 {
 		e.output = 0
 		e.delta = (1000 / e.Attack) / e.sampleRate
 		e.phase = Attack
@@ -67,6 +68,7 @@ func (e *Envelope) Process(gate float32, trigger float32) (output float32) {
 		}
 	}
 
+	e.lastTrigger = trigger
 	output = e.output
 	return
 }

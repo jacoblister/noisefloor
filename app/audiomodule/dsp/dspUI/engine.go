@@ -241,7 +241,11 @@ func (e *Engine) connectorCoordinates(
 	_, targetCount := e.connectorTargetIndex(connector,
 		e.state.targetPortIsInput, e.state.targetProcessor, e.state.targetPort)
 
-	if *connector == *e.state.selectedConnector {
+	// if *connector == *e.state.selectedConnector {	 - TODO simplify once values are out of connector
+	if connector.FromProcessor == e.state.selectedConnector.FromProcessor &&
+		connector.FromPort == e.state.selectedConnector.FromPort &&
+		connector.ToProcessor == e.state.selectedConnector.ToProcessor &&
+		connector.ToPort == e.state.selectedConnector.ToPort {
 		if e.state.selectedConnectorIsInput {
 			x2 = e.state.mouseOffsetX
 			y2 = e.state.mouseOffsetY

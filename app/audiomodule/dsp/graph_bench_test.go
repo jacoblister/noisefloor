@@ -119,7 +119,27 @@ func BenchmarkCompileIntepreted(b *testing.B) {
 	samples = append(samples, make([]float32, blockSize, blockSize))
 	samples = append(samples, make([]float32, blockSize, blockSize))
 
-	process := interpretedEngine{}
+	graph := loadProcessorGraph("")
+	process := compileProcessorGraph(graph, CompileInterpreted)
+
+	process.Start(44100)
+
+	for i := 0; i < b.N; i++ {
+		process.Process(samples, nil)
+	}
+
+	process.Stop()
+}
+
+func BenchmarkCompileIntepretedSingleSample(b *testing.B) {
+	blockSize := 1024
+	samples := [][]float32{}
+	samples = append(samples, make([]float32, blockSize, blockSize))
+	samples = append(samples, make([]float32, blockSize, blockSize))
+
+	graph := loadProcessorGraph("")
+	process := compileProcessorGraph(graph, CompileInterpretedSingleSample)
+
 	process.Start(44100)
 
 	for i := 0; i < b.N; i++ {

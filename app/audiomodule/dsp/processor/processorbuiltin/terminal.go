@@ -52,14 +52,24 @@ func (t *Terminal) Definition() (name string, inputs []string, outputs []string,
 	return "Terminal", inputs, outputs, []processor.Parameter{}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (t *Terminal) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with an array of input/output samples
+func (t *Terminal) ProcessArgs(in []float32) (output []float32) {
 	//TODO handle input terminal
 
 	for i := 0; i < len(in); i++ {
 		t.samples[i][t.sampleIndex] = in[i]
 	}
 	t.sampleIndex++
+	return in
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (t *Terminal) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	for i := 0; i < len(in); i++ {
+		for j := 0; j < length; j++ {
+			t.samples[i][j] = in[i][j]
+		}
+	}
 	return in
 }
 

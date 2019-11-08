@@ -6,7 +6,8 @@ import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 type Processor interface {
 	Start(sampleRate int)
 	// Stop()
-	ProcessArray([]float32) []float32
+	ProcessArgs([]float32) []float32
+	ProcessSamples([][]float32, int) [][]float32
 	Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter)
 	SetParameter(index int, value float32)
 }

@@ -48,6 +48,11 @@ func (m *MIDIInput) Start(sampleRate int) {
 func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 	monoOffEvent := false
 
+	// Clear all triggers
+	for i := 0; i < MaxChannels; i++ {
+		m.channelData[i][2] = 0
+	}
+
 	len := len(midiIn)
 	for i := 0; i < len; i++ {
 		switch event := midiIn[i].(type) {
@@ -104,7 +109,7 @@ func (m *MIDIInput) ProcessMIDI(midiIn []midi.Event) {
 			if ok {
 				m.channelNotes[noteChannel][1] = 0
 				m.channelData[noteChannel][1] = 0
-				m.channelData[noteChannel][2] = -1
+				m.channelData[noteChannel][2] = 0
 				delete(m.noteChannels, note)
 			}
 
@@ -130,15 +135,15 @@ func (m *MIDIInput) Process(i int) (frequency float32, gate float32, trigger flo
 
 // NextSample - move to next sampleproduce next sample
 func (m *MIDIInput) NextSample() {
-	if m.triggerClear > 0 {
-		m.triggerClear--
-		if m.triggerClear == 0 {
-			// Clear triggers
-			for i := 0; i < MaxChannels; i++ {
-				m.channelData[i][2] = 0
-			}
-		}
-	}
+	// if m.triggerClear > 0 {
+	// 	m.triggerClear--
+	// 	if m.triggerClear == 0 {
+	// 		// Clear triggers
+	// 		for i := 0; i < MaxChannels; i++ {
+	// 			m.channelData[i][2] = 0
+	// 		}
+	// 	}
+	// }
 }
 
 // Definition exports processor definition
@@ -147,10 +152,26 @@ func (m *MIDIInput) Definition() (name string, inputs []string, outputs []string
 		[]processor.Parameter{}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (m *MIDIInput) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with args as an array
+func (m *MIDIInput) ProcessArgs(in []float32) (output []float32) {
 	frequency, gate, trigger, aftertouch, slide, release, channel := m.Process(0)
 	return []float32{frequency, gate, trigger, aftertouch, slide, release, channel}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (m *MIDIInput) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 7)
+	output[0] = make([]float32, length)
+	output[1] = make([]float32, length)
+	output[2] = make([]float32, length)
+	output[3] = make([]float32, length)
+	output[4] = make([]float32, length)
+	output[5] = make([]float32, length)
+	output[6] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		output[0][i], output[1][i], output[2][i], output[3][i], output[4][i], output[5][i], output[6][i] = m.Process(0)
+	}
+	return
 }
 
 //SetParameter set a single processor parameter

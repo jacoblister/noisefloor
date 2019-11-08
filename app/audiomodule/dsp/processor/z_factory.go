@@ -20,10 +20,20 @@ func (e *Envelope) Definition() (name string, inputs []string, outputs []string,
 		}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (e *Envelope) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with an array of input/output samples
+func (e *Envelope) ProcessArgs(in []float32) (output []float32) {
 	out := e.Process(in[0], in[1])
 	return []float32{out}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (e *Envelope) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 1)
+	output[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		output[0][i] = e.Process(in[0][i], in[1][i])
+	}
+	return
 }
 
 //SetParameter set a single processor parameter
@@ -45,10 +55,20 @@ func (g *Gain) Definition() (name string, inputs []string, outputs []string, par
 	return "Gain", []string{"In", "Gai"}, []string{"Out"}, []Parameter{}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (g *Gain) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with with args as an array
+func (g *Gain) ProcessArgs(in []float32) (output []float32) {
 	out := g.Process(in[0], in[1])
 	return []float32{out}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (g *Gain) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 1)
+	output[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		output[0][i] = g.Process(in[0][i], in[1][i])
+	}
+	return
 }
 
 //SetParameter set a single processor parameter
@@ -60,10 +80,20 @@ func (o *Oscillator) Definition() (name string, inputs []string, outputs []strin
 		[]Parameter{Parameter{Name: "Wave", Min: 0, Max: 3, Value: float32(o.Waveform)}}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (o *Oscillator) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with args as an array
+func (o *Oscillator) ProcessArgs(in []float32) (output []float32) {
 	out := o.Process(in[0])
 	return []float32{out}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (o *Oscillator) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 1)
+	output[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		output[0][i] = o.Process(in[0][i])
+	}
+	return
 }
 
 //SetParameter set a single processor parameter
@@ -80,10 +110,23 @@ func (s *Splitter) Definition() (name string, inputs []string, outputs []string,
 	return "Splitter", []string{"In"}, []string{"Out1", "Out2", "Out3", "Out4"}, []Parameter{}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (s *Splitter) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with args as an array
+func (s *Splitter) ProcessArgs(in []float32) (output []float32) {
 	out1, out2, out3, out4 := s.Process(in[0])
 	return []float32{out1, out2, out3, out4}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (s *Splitter) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 4)
+	output[0] = make([]float32, length)
+	output[1] = make([]float32, length)
+	output[2] = make([]float32, length)
+	output[3] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		output[0][i], output[1][i], output[2][i], output[3][i] = s.Process(in[0][i])
+	}
+	return
 }
 
 //SetParameter set a single processor parameter
@@ -94,10 +137,19 @@ func (s *Scope) Definition() (name string, inputs []string, outputs []string, pa
 	return "Scope", []string{"In"}, []string{}, []Parameter{}
 }
 
-//ProcessArray calls process with an array of input/output samples
-func (s *Scope) ProcessArray(in []float32) (output []float32) {
+//ProcessArgs calls process with args as an array
+func (s *Scope) ProcessArgs(in []float32) (output []float32) {
 	s.Process(in[0])
 	return []float32{}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (s *Scope) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 0)
+	for i := 0; i < length; i++ {
+		s.Process(in[0][i])
+	}
+	return
 }
 
 //SetParameter set a single processor parameter

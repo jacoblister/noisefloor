@@ -86,7 +86,7 @@ func (e *Engine) RecompileGraph() {
 	e.compiledGraph = nil
 
 	// TODO - totally wrong place for this - avoid race conditon in engine startup
-	compiledGraph := compileProcessorGraph(e.Graph, CompileInterpreted)
+	compiledGraph := compileProcessorGraph(e.Graph, CompileInterpretedSingleSample)
 	compiledGraph.Start(48000)
 
 	e.compiledGraph = compiledGraph

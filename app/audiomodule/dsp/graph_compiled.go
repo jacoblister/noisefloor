@@ -11,6 +11,7 @@ type CompileTarget int
 // CompileTarget implementation
 const (
 	CompileInterpreted CompileTarget = iota
+	CompileInterpretedSingleSample
 	CompileGolang
 	CompileJavascript
 	CompileWasm
@@ -35,6 +36,7 @@ type graphExecutor struct {
 	inputTerm  *processorbuiltin.Terminal  // 'special' Audio input terminal
 	outputTerm *processorbuiltin.Terminal  // 'special' Audio output terminal
 	ops        []graphOp                   // operations to perform, in order
+	connectors []Connector                 // all connectors in the graph
 }
 
 func compileGraphExecutor(graph Graph) graphExecutor {
@@ -63,6 +65,8 @@ func compileGraphExecutor(graph Graph) graphExecutor {
 		)
 	}
 
+	graphExecutor.connectors = graph.ConnectorList
+
 	return graphExecutor
 }
 
@@ -74,7 +78,9 @@ func compileProcessorGraph(graph Graph, target CompileTarget) compiledGraph {
 	case CompileInterpreted:
 		compiledGraph := interpretedEngine{graphExecutor: graphExecutor}
 		return &compiledGraph
-
+	case CompileInterpretedSingleSample:
+		compiledGraph := interpretedEngineSingleSample{graphExecutor: graphExecutor}
+		return &compiledGraph
 	}
 	panic("unsupported target")
 }

@@ -12,7 +12,7 @@ package nf
 #include <audioclient.h>
 #include <stdio.h>
 
-#define REFTIMES_PER_SEC  1000000
+#define REFTIMES_PER_SEC  0
 #define REFTIMES_PER_MILLISEC  10000
 
 #define EXIT_ON_ERROR(hres)  \
@@ -60,15 +60,16 @@ static inline DWORD WINAPI runWASAPIThread(void* arg) {
 		numFramesAvailable = client.bufferFrameCount - numFramesPadding;
 
 		client.pRenderClient->lpVtbl->GetBuffer(client.pRenderClient, numFramesAvailable, &pData);
-
 		for (int i = 0; i < client.channel_in_count; i++) {
 			memset(client.channel_in_float32[i], 0, numFramesAvailable * sizeof(float));
 		}
 
-		goAudioWASAPICallback(arg, numFramesAvailable,
-			client.channel_in_count, client.channel_in_float32,
-			client.channel_out_count, client.channel_out_float32
-		);
+		if (numFramesAvailable > 0) {
+			goAudioWASAPICallback(arg, numFramesAvailable,
+				client.channel_in_count, client.channel_in_float32,
+				client.channel_out_count, client.channel_out_float32
+			);
+		}
 
 		int channel = 0;
 		int sample  = 0;
