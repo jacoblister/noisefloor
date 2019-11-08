@@ -5,17 +5,18 @@ type EventType string
 
 // HTML/SVG event handler types
 const (
-	Click      EventType = "click"
-	MouseDown            = "mousedown"
-	MouseUp              = "mouseup"
-	MouseEnter           = "mouseenter"
-	MouseLeave           = "mouseleave"
-	MouseMove            = "mousemove"
-	TouchStart           = "touchstart"
-	TouchEnd             = "touchend"
-	KeyDown              = "keydown"
-	KeyUp                = "keyup"
-	Change               = "change"
+	Click       EventType = "click"
+	MouseDown             = "mousedown"
+	MouseUp               = "mouseup"
+	MouseEnter            = "mouseenter"
+	MouseLeave            = "mouseleave"
+	MouseMove             = "mousemove"
+	ContentMenu           = "contextmenu"
+	TouchStart            = "touchstart"
+	TouchEnd              = "touchend"
+	KeyDown               = "keydown"
+	KeyUp                 = "keyup"
+	Change                = "change"
 )
 
 // HandlerFunc is the registered callback method

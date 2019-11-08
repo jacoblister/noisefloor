@@ -5,6 +5,8 @@
 
       function registerEventHandler(svgNamespace, node, type, id) {
         node.addEventListener(type, function(evt) {
+          evt.preventDefault();
+
           let eventData = {};
           switch (type) {
             case "change":
