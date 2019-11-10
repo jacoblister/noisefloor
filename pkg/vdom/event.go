@@ -11,7 +11,7 @@ const (
 	MouseEnter            = "mouseenter"
 	MouseLeave            = "mouseleave"
 	MouseMove             = "mousemove"
-	ContentMenu           = "contextmenu"
+	ContextMenu           = "contextmenu"
 	TouchStart            = "touchstart"
 	TouchEnd              = "touchend"
 	KeyDown               = "keydown"

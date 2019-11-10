@@ -1,7 +1,11 @@
 package dspUI
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
+	"github.com/jacoblister/noisefloor/app/vdomcomp"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
@@ -45,6 +49,8 @@ type EngineState struct {
 	mouseOffsetX             int
 	mouseOffsetY             int
 	mouseIgnore              bool
+
+	contextMenu vdomcomp.ContextMenu
 }
 
 //MakeEngine create an new Engine Edit UI componenet
@@ -121,6 +127,53 @@ func (e *Engine) updateConnector(connector *dsp.Connector,
 	}
 }
 
+// deleteProcessor removes the processor and all its connectors
+func (e *Engine) deleteProcessor(processor dsp.Processor) {
+	for i := len(e.Engine.Graph.ConnectorList) - 1; i >= 0; i-- {
+		if e.Engine.Graph.ConnectorList[i].FromProcessor == processor ||
+			e.Engine.Graph.ConnectorList[i].ToProcessor == processor {
+			e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList[:i], e.Engine.Graph.ConnectorList[i+1:]...)
+		}
+	}
+
+	for i := len(e.Engine.Graph.ProcessorList) - 1; i >= 0; i-- {
+		if e.Engine.Graph.ProcessorList[i].Processor == processor {
+			e.Engine.Graph.ProcessorList = append(e.Engine.Graph.ProcessorList[:i], e.Engine.Graph.ProcessorList[i+1:]...)
+		}
+	}
+}
+
+func getUniqueProcessorName(processorName string, existingNames []string) string {
+	nameUsed := false
+	topIndex := 0
+	for i := 0; i < len(existingNames); i++ {
+		existingName := existingNames[i]
+		if existingName == processorName {
+			nameUsed = true
+		}
+		if strings.HasPrefix(existingName, processorName) && len(existingName) > len(processorName) {
+			topIndex = int(existingName[len(processorName)]) - '0'
+		}
+	}
+
+	if nameUsed {
+		processorName += strconv.Itoa(topIndex + 1)
+	}
+	return processorName
+}
+
+// createProcessor adds a new processor at given screen coordinates
+func (e *Engine) createProcessor(processorName string, x int, y int) {
+	existingNames := []string{}
+	for i := 0; i < len(e.Engine.Graph.ProcessorList); i++ {
+		existingNames = append(existingNames, e.Engine.Graph.ProcessorList[i].GetName())
+	}
+
+	processor := dsp.MakeProcessor(processorName)
+	processorDefiniton := dsp.ProcessorDefinition{X: x, Y: y, Processor: processor, Name: getUniqueProcessorName(processorName, existingNames)}
+	e.Engine.Graph.ProcessorList = append(e.Engine.Graph.ProcessorList, processorDefiniton)
+}
+
 // handleUIEvent processes a User Interface event,
 // based on the current editing state
 func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
@@ -130,14 +183,37 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case ESMain:
 			e.state.mouseOffsetX = event.Data["OffsetX"].(int)
 			e.state.mouseOffsetY = event.Data["OffsetY"].(int)
+			if event.Type == vdom.ContextMenu {
+				// TODO - should not need this, prevent double trigger
+				if e.state.contextMenu.Active() {
+					return
+				}
+
+				x := event.Data["ClientX"].(int)
+				y := event.Data["ClientY"].(int)
+				e.state.contextMenu = vdomcomp.MakeContextMenu(
+					x, y,
+					dsp.ListProcessors(), true, func(processorName string) {
+						e.createProcessor(processorName, x, y)
+						e.Engine.RecompileGraph()
+					})
+			}
 		case ESProcessor:
+			processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
 			switch event.Type {
 			case vdom.MouseDown:
-				processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
 				e.state.selectedProcessor = processor
 				e.state.mouseOffsetX = event.Data["OffsetX"].(int) - processor.X
 				e.state.mouseOffsetY = event.Data["OffsetY"].(int) - processor.Y
 				e.state.editState = moveProcessor
+			case vdom.ContextMenu:
+				e.state.contextMenu = vdomcomp.MakeContextMenu(
+					event.Data["ClientX"].(int),
+					event.Data["ClientY"].(int),
+					[]string{"Delete"}, true, func(item string) {
+						e.deleteProcessor(processor.Processor)
+						e.Engine.RecompileGraph()
+					})
 			}
 		case ESConnector:
 			switch event.Type {
@@ -293,6 +369,7 @@ func (e *Engine) Render() vdom.Element {
 		vdom.MakeEventHandler(vdom.MouseUp, e.mainUIEventHandler),
 		vdom.MakeEventHandler(vdom.MouseDown, e.mainUIEventHandler),
 		vdom.MakeEventHandler(vdom.MouseMove, e.mainUIEventHandler),
+		vdom.MakeEventHandler(vdom.ContextMenu, e.mainUIEventHandler),
 		vdom.MakeElement("rect",
 			"x", 0,
 			"y", 0,
@@ -303,6 +380,7 @@ func (e *Engine) Render() vdom.Element {
 		),
 		processors,
 		connectors,
+		&e.state.contextMenu,
 	)
 
 	return elem

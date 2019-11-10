@@ -219,9 +219,7 @@ func (p *Processor) Render() vdom.Element {
 			vdom.MakeEventHandler(vdom.MouseDown, p.processorEventHandler),
 			vdom.MakeEventHandler(vdom.MouseUp, p.processorEventHandler),
 			vdom.MakeEventHandler(vdom.MouseMove, p.processorEventHandler),
-			vdom.MakeEventHandler(vdom.ContentMenu, func(element *vdom.Element, event *vdom.Event) {
-				println("Context Menu")
-			}),
+			vdom.MakeEventHandler(vdom.ContextMenu, p.processorEventHandler),
 		),
 		procNameLabel,
 		procLine,

@@ -33,3 +33,32 @@ func TestUpdateConnector(t *testing.T) {
 	expected := []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0, ToProcessor: &gainB, ToPort: 0}}
 	assert.Equal(t, expected, engine.Engine.Graph.ConnectorList)
 }
+
+func TestGetUniqueProcessorName(t *testing.T) {
+	// Given ... no existing names
+	existingNames := []string{}
+
+	// When ...
+	result := getUniqueProcessorName("gain", existingNames)
+
+	// Then ... base name
+	assert.Equal(t, "gain", result)
+
+	// Given ... base name used
+	existingNames = []string{"gain"}
+
+	// When ...
+	result = getUniqueProcessorName("gain", existingNames)
+
+	// Then ... allocated 1 index
+	assert.Equal(t, "gain1", result)
+
+	// Given ... base name and index name used
+	existingNames = []string{"gain", "gain2"}
+
+	// When ...
+	result = getUniqueProcessorName("gain", existingNames)
+
+	// Then ... allocated 3 index
+	assert.Equal(t, "gain3", result)
+}

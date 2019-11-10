@@ -29,3 +29,12 @@ func (p *ProcessorDefinition) MaxConnectors() int {
 	}
 	return result
 }
+
+// GetName gets the ProcessorDefinition name, defaulting to the Processor Name if not provided
+func (p *ProcessorDefinition) GetName() string {
+	if len(p.Name) > 0 {
+		return p.Name
+	}
+	procDefName, _, _, _ := p.Processor.Definition()
+	return procDefName
+}

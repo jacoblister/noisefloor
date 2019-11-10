@@ -11,9 +11,10 @@ import (
 )
 
 type modules struct {
-	keyboard  onscreenkeyboard.Keyboard
-	dspEngine dsp.Engine
-	state     struct {
+	contextMenu vdomcomp.ContextMenu
+	keyboard    onscreenkeyboard.Keyboard
+	dspEngine   dsp.Engine
+	state       struct {
 		vDividerPos      int
 		vDividerMoving   bool
 		dspUIEngineState dspUI.EngineState
@@ -21,35 +22,35 @@ type modules struct {
 }
 
 // Start begin the main application audio processing
-func (c *modules) Start(sampleRate int) {
-	c.keyboard.Start(sampleRate)
-	c.dspEngine.Start(sampleRate)
+func (m *modules) Start(sampleRate int) {
+	m.keyboard.Start(sampleRate)
+	m.dspEngine.Start(sampleRate)
 }
 
 // Stop closes the main application audio processing
-func (c *modules) Stop() {
-	c.keyboard.Stop()
-	c.dspEngine.Stop()
+func (m *modules) Stop() {
+	m.keyboard.Stop()
+	m.dspEngine.Stop()
 }
 
 // Process process a block of audio/midi
-func (c *modules) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
+func (m *modules) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
 	samples, midi := samplesIn, midiIn
 
-	samples, midi = c.keyboard.Process(samples, midi)
-	samples, midi = c.dspEngine.Process(samples, midi)
+	samples, midi = m.keyboard.Process(samples, midi)
+	samples, midi = m.dspEngine.Process(samples, midi)
 
 	return samples, midi
 }
 
-func (c *modules) Init() {
-	if c.state.vDividerPos == 0 {
-		c.state.vDividerPos = 500
+func (m *modules) Init() {
+	if m.state.vDividerPos == 0 {
+		m.state.vDividerPos = 500
 	}
 }
 
 // Render returns the main view
-func (c *modules) Render() vdom.Element {
+func (m *modules) Render() vdom.Element {
 	// elem := vdom.MakeElement("svg",
 	// 	"id", "root",
 	// 	"xmlns", "http://www.w3.org/2000/svg",
@@ -67,12 +68,12 @@ func (c *modules) Render() vdom.Element {
 	// 	},
 	// )
 
-	dspUI := dspUI.MakeEngine(&c.dspEngine, &c.state.dspUIEngineState)
-	vSplit := vdomcomp.MakeLayoutHSplit(1024, 768, c.state.vDividerPos, &c.state.vDividerMoving,
-		dspUI, onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
+	dspUI := dspUI.MakeEngine(&m.dspEngine, &m.state.dspUIEngineState)
+	vSplit := vdomcomp.MakeLayoutHSplit(1024, 768, m.state.vDividerPos, &m.state.vDividerMoving,
+		dspUI, onscreenkeyboardUI.MakeKeyboard(&m.keyboard),
 		func(pos int) {
 			if pos > 100 {
-				c.state.vDividerPos = pos
+				m.state.vDividerPos = pos
 			}
 		},
 	)

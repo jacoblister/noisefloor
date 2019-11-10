@@ -26,6 +26,11 @@ func MakeContextMenu(x int, y int, items []string, active bool,
 	return contextMenu
 }
 
+//Active flag getter Method
+func (m *ContextMenu) Active() bool {
+	return m.active
+}
+
 //Render renders the ContextMenu component
 func (m *ContextMenu) Render() vdom.Element {
 	if !m.active {

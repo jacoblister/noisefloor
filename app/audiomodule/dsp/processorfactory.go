@@ -4,7 +4,7 @@ import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
 // ListProcessors returns a list of available processors
 func ListProcessors() []string {
-	return []string{"Envelope", "Gain", "Oscillator"}
+	return []string{"Envelope", "Gain", "Oscillator", "Scope", "Splitter"}
 }
 
 //MakeProcessor generates a new processor by the given processor name
@@ -16,6 +16,10 @@ func MakeProcessor(name string) Processor {
 		return &processor.Gain{}
 	case "Oscillator":
 		return &processor.Oscillator{}
+	case "Scope":
+		return &processor.Scope{}
+	case "Splitter":
+		return &processor.Splitter{}
 	}
 
 	return nil
