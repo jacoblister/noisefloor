@@ -18,6 +18,7 @@
             case "mouseenter":
             case "mouseleave":
             case "mousemove":
+            case "contextmenu":
               eventData = {
                 Buttons: evt.buttons,
                 ClientX: evt.clientX,
@@ -173,7 +174,8 @@
       ws = initWS();
 
       function initWS() {
-        socket = new WebSocket("ws://localhost:8080/client");
+        url = window.location.href.replace(/https|http/, "ws") + "client";
+        socket = new WebSocket(url);
         socket.onopen = function() {
           console.log("socket open");
         };
