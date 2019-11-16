@@ -39,10 +39,6 @@ func (g *interpretedEngineSingleSample) Process(samplesIn [][]float32, midiIn []
 		}
 	}
 
-	if g.graphExecutor.midiInput != nil {
-		g.graphExecutor.midiInput.NextSample()
-	}
-
 	return samplesIn, midiIn
 }
 

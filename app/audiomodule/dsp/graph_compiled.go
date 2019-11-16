@@ -45,27 +45,27 @@ func compileGraphExecutor(graph Graph) graphExecutor {
 	graphExecutor.midiInput = &processorbuiltin.MIDIInput{}
 	graphExecutor.outputTerm = &processorbuiltin.Terminal{}
 
-	for i := 0; i < len(graph.ProcessorList); i++ {
+	for i := 0; i < len(graph.Processors); i++ {
 		// check for 'special' processors
-		midiInput, ok := graph.ProcessorList[i].Processor.(*processorbuiltin.MIDIInput)
+		midiInput, ok := graph.Processors[i].Processor.(*processorbuiltin.MIDIInput)
 		if ok {
 			graphExecutor.midiInput = midiInput
 		}
-		terminal, ok := graph.ProcessorList[i].Processor.(*processorbuiltin.Terminal)
+		terminal, ok := graph.Processors[i].Processor.(*processorbuiltin.Terminal)
 		if ok {
 			graphExecutor.outputTerm = terminal
 		}
 
 		graphExecutor.ops = append(graphExecutor.ops,
 			graphOp{
-				graph.ProcessorList[i].Processor,
-				graph.inputConnectorsForProcessor(graph.ProcessorList[i].Processor),
-				graph.outputConnectorsForProcessor(graph.ProcessorList[i].Processor),
+				graph.Processors[i].Processor,
+				graph.inputConnectorsForProcessor(graph.Processors[i].Processor),
+				graph.outputConnectorsForProcessor(graph.Processors[i].Processor),
 			},
 		)
 	}
 
-	graphExecutor.connectors = graph.ConnectorList
+	graphExecutor.connectors = graph.Connectors
 
 	return graphExecutor
 }

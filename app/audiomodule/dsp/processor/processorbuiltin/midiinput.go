@@ -133,19 +133,6 @@ func (m *MIDIInput) Process(i int) (frequency float32, gate float32, trigger flo
 	return channelData[0], channelData[1], channelData[2], 0.0, 0.0, 0.0, float32(i)
 }
 
-// NextSample - move to next sampleproduce next sample
-func (m *MIDIInput) NextSample() {
-	// if m.triggerClear > 0 {
-	// 	m.triggerClear--
-	// 	if m.triggerClear == 0 {
-	// 		// Clear triggers
-	// 		for i := 0; i < MaxChannels; i++ {
-	// 			m.channelData[i][2] = 0
-	// 		}
-	// 	}
-	// }
-}
-
 // Definition exports processor definition
 func (m *MIDIInput) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "MIDIInput", []string{}, []string{"Frq", "Lvl", "Trg", "Aft", "Sld", "Rel", "Chn"},

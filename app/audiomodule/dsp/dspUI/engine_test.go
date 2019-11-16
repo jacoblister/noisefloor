@@ -13,25 +13,25 @@ func TestUpdateConnector(t *testing.T) {
 	gainA := processor.Gain{}
 	gainB := processor.Gain{}
 	connectorList := []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0}}
-	graph := dsp.Graph{ConnectorList: connectorList}
+	graph := dsp.Graph{Connectors: connectorList}
 	engine := &Engine{Engine: &dsp.Engine{Graph: graph}, state: &EngineState{editState: connectionEdit}}
 
 	// When ... No target processor
-	engine.updateConnector(&engine.Engine.Graph.ConnectorList[0], true, nil, 0)
+	engine.updateConnector(&engine.Engine.Graph.Connectors[0], true, nil, 0)
 
 	// Then ... No connection is made
-	assert.Equal(t, []dsp.Connector{}, engine.Engine.Graph.ConnectorList)
+	assert.Equal(t, []dsp.Connector{}, engine.Engine.Graph.Connectors)
 
 	// Given ...
-	engine.Engine.Graph.ConnectorList = []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0}}
+	engine.Engine.Graph.Connectors = []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0}}
 	engine.state.selectedConnectorIsInput = true
 
 	// When ... Valid target processor
-	engine.updateConnector(&engine.Engine.Graph.ConnectorList[0], true, &gainB, 0)
+	engine.updateConnector(&engine.Engine.Graph.Connectors[0], true, &gainB, 0)
 
 	// Then ... Connection is made
 	expected := []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0, ToProcessor: &gainB, ToPort: 0}}
-	assert.Equal(t, expected, engine.Engine.Graph.ConnectorList)
+	assert.Equal(t, expected, engine.Engine.Graph.Connectors)
 }
 
 func TestGetUniqueProcessorName(t *testing.T) {

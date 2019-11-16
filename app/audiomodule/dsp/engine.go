@@ -1,6 +1,8 @@
 package dsp
 
 import (
+	"os"
+
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/jacoblister/noisefloor/pkg/midi"
@@ -72,7 +74,7 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 	if e.processEventFunc != nil {
 		e.processEventSkip--
 		if e.processEventSkip <= 0 {
-			e.processEventSkip = 1
+			e.processEventSkip = 3
 			e.processEventFunc()
 		}
 	}
@@ -90,6 +92,7 @@ func (e *Engine) RecompileGraph() {
 	compiledGraph.Start(48000)
 
 	e.compiledGraph = compiledGraph
+	e.Save("workspace/example.xml")
 }
 
 // Load loads a graph into the synthengine from file
@@ -97,4 +100,11 @@ func (e *Engine) Load(filename string) {
 	e.Graph = loadProcessorGraph(filename)
 
 	e.RecompileGraph()
+}
+
+// Save saves the graph to the specified file
+func (e *Engine) Save(filename string) {
+	file, _ := os.Create(filename)
+	saveProcessorGraph(e.Graph, file)
+	file.Close()
 }

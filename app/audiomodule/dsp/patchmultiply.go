@@ -24,7 +24,6 @@ func (p *PatchMultiply) Process(midiInput *processorbuiltin.MIDIInput) (output f
 		freq, gate, trigger, _, _, _, _ := midiInput.Process(i)
 		output += p.patch[i].Process(freq, gate, trigger)
 	}
-	midiInput.NextSample()
 
 	output *= p.Gain
 	return

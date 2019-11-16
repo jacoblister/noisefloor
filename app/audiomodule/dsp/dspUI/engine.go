@@ -67,8 +67,8 @@ func (e *Engine) processEvent() {
 
 //connectorForProcessor finds the connector give a target
 func (e *Engine) connectorForProcessor(processor dsp.Processor, isInput bool, port int) *dsp.Connector {
-	for i := 0; i < len(e.Engine.Graph.ConnectorList); i++ {
-		connector := &e.Engine.Graph.ConnectorList[i]
+	for i := 0; i < len(e.Engine.Graph.Connectors); i++ {
+		connector := &e.Engine.Graph.Connectors[i]
 		if connector.Processor(isInput) == processor && connector.Port(isInput) == port {
 			return connector
 		}
@@ -82,7 +82,7 @@ func (e *Engine) connectorTargetIndex(connector *dsp.Connector,
 	targetIsInput bool, targetProcessor dsp.Processor, targetPort int) (index int, count int) {
 	count = 0
 	index = -1
-	list := e.Engine.Graph.ConnectorList
+	list := e.Engine.Graph.Connectors
 	for i := 0; i < len(list); i++ {
 		if &list[i] == connector {
 			index = i
@@ -114,8 +114,8 @@ func (e *Engine) updateConnector(connector *dsp.Connector,
 	if targetProcessor == nil {
 		// only update if not in add
 		if e.state.editState == connectionEdit {
-			list := e.Engine.Graph.ConnectorList
-			e.Engine.Graph.ConnectorList = append(list[:index], list[index+1:]...)
+			list := e.Engine.Graph.Connectors
+			e.Engine.Graph.Connectors = append(list[:index], list[index+1:]...)
 		}
 		return
 	}
@@ -123,22 +123,22 @@ func (e *Engine) updateConnector(connector *dsp.Connector,
 	connector.SetProcessor(targetIsInput, targetProcessor)
 	connector.SetPort(targetIsInput, targetPort)
 	if e.state.editState == connectionAdd {
-		e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList, *connector)
+		e.Engine.Graph.Connectors = append(e.Engine.Graph.Connectors, *connector)
 	}
 }
 
 // deleteProcessor removes the processor and all its connectors
 func (e *Engine) deleteProcessor(processor dsp.Processor) {
-	for i := len(e.Engine.Graph.ConnectorList) - 1; i >= 0; i-- {
-		if e.Engine.Graph.ConnectorList[i].FromProcessor == processor ||
-			e.Engine.Graph.ConnectorList[i].ToProcessor == processor {
-			e.Engine.Graph.ConnectorList = append(e.Engine.Graph.ConnectorList[:i], e.Engine.Graph.ConnectorList[i+1:]...)
+	for i := len(e.Engine.Graph.Connectors) - 1; i >= 0; i-- {
+		if e.Engine.Graph.Connectors[i].FromProcessor == processor ||
+			e.Engine.Graph.Connectors[i].ToProcessor == processor {
+			e.Engine.Graph.Connectors = append(e.Engine.Graph.Connectors[:i], e.Engine.Graph.Connectors[i+1:]...)
 		}
 	}
 
-	for i := len(e.Engine.Graph.ProcessorList) - 1; i >= 0; i-- {
-		if e.Engine.Graph.ProcessorList[i].Processor == processor {
-			e.Engine.Graph.ProcessorList = append(e.Engine.Graph.ProcessorList[:i], e.Engine.Graph.ProcessorList[i+1:]...)
+	for i := len(e.Engine.Graph.Processors) - 1; i >= 0; i-- {
+		if e.Engine.Graph.Processors[i].Processor == processor {
+			e.Engine.Graph.Processors = append(e.Engine.Graph.Processors[:i], e.Engine.Graph.Processors[i+1:]...)
 		}
 	}
 }
@@ -165,13 +165,13 @@ func getUniqueProcessorName(processorName string, existingNames []string) string
 // createProcessor adds a new processor at given screen coordinates
 func (e *Engine) createProcessor(processorName string, x int, y int) {
 	existingNames := []string{}
-	for i := 0; i < len(e.Engine.Graph.ProcessorList); i++ {
-		existingNames = append(existingNames, e.Engine.Graph.ProcessorList[i].GetName())
+	for i := 0; i < len(e.Engine.Graph.Processors); i++ {
+		existingNames = append(existingNames, e.Engine.Graph.Processors[i].GetName())
 	}
 
 	processor := dsp.MakeProcessor(processorName)
 	processorDefiniton := dsp.ProcessorDefinition{X: x, Y: y, Processor: processor, Name: getUniqueProcessorName(processorName, existingNames)}
-	e.Engine.Graph.ProcessorList = append(e.Engine.Graph.ProcessorList, processorDefiniton)
+	e.Engine.Graph.Processors = append(e.Engine.Graph.Processors, processorDefiniton)
 }
 
 // handleUIEvent processes a User Interface event,
@@ -343,15 +343,15 @@ func (e *Engine) Render() vdom.Element {
 	// processors
 	processors := []vdom.Component{}
 	processorMap := map[dsp.Processor]*Processor{}
-	for i := 0; i < len(e.Engine.Graph.ProcessorList); i++ {
-		processorDef := &e.Engine.Graph.ProcessorList[i]
+	for i := 0; i < len(e.Engine.Graph.Processors); i++ {
+		processorDef := &e.Engine.Graph.Processors[i]
 		processor := MakeProcessor(processorDef, e.handleUIEvent)
 		processors = append(processors, processor)
 		processorMap[processorDef.Processor] = processor
 	}
 
 	// connectors
-	connectionList := e.Engine.Graph.ConnectorList
+	connectionList := e.Engine.Graph.Connectors
 	if e.state.editState == connectionAdd {
 		connectionList = append(connectionList, *e.state.selectedConnector)
 	}

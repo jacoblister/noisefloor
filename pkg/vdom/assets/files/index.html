@@ -44,7 +44,7 @@
             ElementId: id,
             Data: eventData
           };
-          console.log(domEvent);
+          // console.log(domEvent);
           socket.send(JSON.stringify(domEvent));
         });
       }
@@ -181,7 +181,7 @@
         };
         socket.onmessage = function(e) {
           patchList = JSON.parse(e.data);
-          console.log("patchList:", patchList);
+          // console.log("patchList:", patchList);
           applyPatchList(patchList);
         };
         socket.onclose = function() {

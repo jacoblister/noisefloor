@@ -50,32 +50,32 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 	// Given ... Simple patch
 	graph := Graph{}
 	midiInput := processorbuiltin.MIDIInput{}
-	graph.ProcessorList = append(graph.ProcessorList,
+	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 80, Y: 80, Processor: &midiInput})
 	osc := processor.Oscillator{}
-	graph.ProcessorList = append(graph.ProcessorList,
+	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 240, Y: 80, Processor: &osc})
 	env := processor.Envelope{}
-	graph.ProcessorList = append(graph.ProcessorList,
+	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 240, Y: 240, Processor: &env})
 	gain := processor.Gain{}
-	graph.ProcessorList = append(graph.ProcessorList,
+	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 400, Y: 80, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
-	graph.ProcessorList = append(graph.ProcessorList,
+	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 560, Y: 80, Processor: &outputTerminal})
-	graph.ConnectorList = append(graph.ConnectorList,
+	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
-	graph.ConnectorList = append(graph.ConnectorList,
+	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0})
-	graph.ConnectorList = append(graph.ConnectorList,
+	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1})
-	graph.ConnectorList = append(graph.ConnectorList,
+	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})
-	graph.ConnectorList = append(graph.ConnectorList,
+	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
-	graph.ConnectorList = append(graph.ConnectorList,
+	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
 
 	// When ...

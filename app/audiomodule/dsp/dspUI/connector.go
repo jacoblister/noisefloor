@@ -46,6 +46,7 @@ func (c *Connector) Render() vdom.Element {
 		}
 
 		rect := vdom.MakeElement("rect",
+			"class", "animated",
 			"x", c.x1-procConnWidth/2,
 			"y", c.y1-procConnWidth/2,
 			"width", procConnWidth,
@@ -57,6 +58,7 @@ func (c *Connector) Render() vdom.Element {
 		elem.AppendChild(rect)
 
 		rect = vdom.MakeElement("rect",
+			"class", "animated",
 			"x", c.x2-procConnWidth/2,
 			"y", c.y2-procConnWidth/2,
 			"width", procConnWidth,
