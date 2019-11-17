@@ -13,10 +13,10 @@ type Parameter struct {
 func (e *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
 	return "Envelope", []string{"Gte", "Trg"}, []string{"Out"},
 		[]Parameter{
-			Parameter{Name: "Attack", Min: 0, Max: 100, Value: e.Attack},
-			Parameter{Name: "Decay", Min: 0, Max: 1000, Value: e.Decay},
-			Parameter{Name: "Sustain", Min: 0, Max: 1.0, Value: e.Sustain},
-			Parameter{Name: "Release", Min: 0, Max: 1000, Value: e.Release},
+			Parameter{Name: "Attack", Min: 0, Max: 100, Default: 2, Value: e.Attack},
+			Parameter{Name: "Decay", Min: 0, Max: 1000, Default: 100, Value: e.Decay},
+			Parameter{Name: "Sustain", Min: 0, Max: 1.0, Default: 0.75, Value: e.Sustain},
+			Parameter{Name: "Release", Min: 0, Max: 1000, Default: 1000, Value: e.Release},
 		}
 }
 

@@ -11,7 +11,6 @@ import (
 )
 
 type modules struct {
-	contextMenu vdomcomp.ContextMenu
 	keyboard    onscreenkeyboard.Keyboard
 	dspEngine   dsp.Engine
 	state       struct {

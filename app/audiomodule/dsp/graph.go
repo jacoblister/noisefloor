@@ -3,6 +3,7 @@ package dsp
 import (
 	"encoding/xml"
 	"io"
+	"io/ioutil"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
@@ -47,6 +48,24 @@ func (g *Graph) outputConnectorsForProcessor(processor Processor) [][]*Connector
 	return result
 }
 
+func (g *Graph) definitonForProcessor(processor Processor) ProcessorDefinition {
+	for i := 0; i < len(g.Processors); i++ {
+		if g.Processors[i].Processor == processor {
+			return g.Processors[i]
+		}
+	}
+	panic("could not find processor definition")
+}
+
+func (g *Graph) getProcessorByName(name string) Processor {
+	for i := 0; i < len(g.Processors); i++ {
+		if g.Processors[i].GetName() == name {
+			return g.Processors[i].Processor
+		}
+	}
+	panic("could not find processor definition")
+}
+
 func exampleGraph() Graph {
 	graph := Graph{}
 
@@ -54,12 +73,15 @@ func exampleGraph() Graph {
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 16, Y: 16, Processor: &midiInput})
 	osc := processor.Oscillator{}
+	setProcessorDefaults(&osc)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 120, Y: 16, Processor: &osc})
 	env := processor.Envelope{}
+	setProcessorDefaults(&env)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 120, Y: 96, Processor: &env})
 	gain := processor.Gain{}
+	setProcessorDefaults(&gain)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 224, Y: 16, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}
@@ -97,16 +119,20 @@ func exampleGraph() Graph {
 }
 
 // loadProcessorGraph loads a procesor graph from file
-func loadProcessorGraph(filename string) Graph {
-	// just sets up a static graph for now
+func loadProcessorGraph(reader io.Reader) (Graph, error) {
+	byteValue, _ := ioutil.ReadAll(reader)
 
-	return exampleGraph()
+	var graph Graph
+	err := xml.Unmarshal(byteValue, &graph)
+
+	return graph, err
+
+	// return exampleGraph(), nil
 }
 
 // saveProcessorGraph saves the graph to the provided writer
 func saveProcessorGraph(graph Graph, writer io.Writer) {
 	xml, _ := xml.MarshalIndent(graph, "", "   ")
+	writer.Write(xml)
 	println(string(xml))
-
-	println("save graph")
 }

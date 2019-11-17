@@ -195,7 +195,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 					x, y,
 					dsp.ListProcessors(), true, func(processorName string) {
 						e.createProcessor(processorName, x, y)
-						e.Engine.RecompileGraph()
+						e.Engine.GraphChange(true)
 					})
 			}
 		case ESProcessor:
@@ -212,7 +212,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 					event.Data["ClientY"].(int),
 					[]string{"Delete"}, true, func(item string) {
 						e.deleteProcessor(processor.Processor)
-						e.Engine.RecompileGraph()
+						e.Engine.GraphChange(true)
 					})
 			}
 		case ESConnector:
@@ -250,6 +250,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			e.state.selectedProcessor.X = x
 			e.state.selectedProcessor.Y = y
 		case vdom.MouseUp:
+			e.Engine.GraphChange(false)
 			e.state.editState = idle
 		}
 	case connectionEdit:
@@ -270,7 +271,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,
 					e.state.targetProcessor, e.state.targetPort)
 				e.state.editState = idle
-				e.Engine.RecompileGraph()
+				e.Engine.GraphChange(true)
 			}
 		case ESConnector:
 			switch event.Type {
@@ -284,7 +285,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				e.updateConnector(e.state.selectedConnector, e.state.targetPortIsInput,
 					e.state.targetProcessor, e.state.targetPort)
 				e.state.editState = idle
-				e.Engine.RecompileGraph()
+				e.Engine.GraphChange(true)
 			}
 		}
 	}

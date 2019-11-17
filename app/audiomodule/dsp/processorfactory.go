@@ -1,33 +1,40 @@
 package dsp
 
-import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+import (
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
+)
 
 // ListProcessors returns a list of available processors
 func ListProcessors() []string {
-	return []string{"Envelope", "Gain", "Oscillator", "Scope", "Splitter"}
+	return []string{"MIDIInput", "Terminal", "Envelope", "Gain", "Oscillator", "Scope", "Splitter"}
 }
 
 //MakeProcessor generates a new processor by the given processor name
 func MakeProcessor(name string) Processor {
+	var proc Processor
+
 	switch name {
+	case "MIDIInput":
+		proc = &processorbuiltin.MIDIInput{}
+	case "Terminal":
+		// TODO - consider alternative terminal parameters
+		terminal := &processorbuiltin.Terminal{}
+		terminal.SetParameters(true, 2)
+		proc = terminal
 	case "Envelope":
-		return &processor.Envelope{}
+		proc = &processor.Envelope{}
 	case "Gain":
-		return &processor.Gain{}
+		proc = &processor.Gain{}
 	case "Oscillator":
-		return &processor.Oscillator{}
+		proc = &processor.Oscillator{}
 	case "Scope":
-		return &processor.Scope{}
+		proc = &processor.Scope{}
 	case "Splitter":
-		return &processor.Splitter{}
+		proc = &processor.Splitter{}
 	}
 
-	return nil
-}
+	setProcessorDefaults(proc)
 
-func getProcessorParameters(p *Processor) []ProcessorParameter {
-	return []ProcessorParameter{}
-}
-
-func setProcessorParameter(p *Processor, name string, value float32) {
+	return proc
 }

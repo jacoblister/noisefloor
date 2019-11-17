@@ -29,10 +29,6 @@ type Envelope struct {
 // Start - init envelope generator
 func (e *Envelope) Start(sampleRate int) {
 	e.sampleRate = float32(sampleRate)
-	e.Attack = 2
-	e.Decay = 100
-	e.Sustain = 0.75
-	e.Release = 1000
 }
 
 // Process - produce next sample

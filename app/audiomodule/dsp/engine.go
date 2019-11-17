@@ -82,8 +82,8 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 	return samplesIn, midiIn
 }
 
-// RecompileGraph recompiles the current graph
-func (e *Engine) RecompileGraph() {
+// recompileGraph recompiles the current graph
+func (e *Engine) recompileGraph() {
 	println("Recompile graph")
 	e.compiledGraph = nil
 
@@ -92,19 +92,34 @@ func (e *Engine) RecompileGraph() {
 	compiledGraph.Start(48000)
 
 	e.compiledGraph = compiledGraph
+}
+
+// GraphChange is called when the graph changes, with indication if recompile is required
+func (e *Engine) GraphChange(recompile bool) {
+	if recompile {
+		e.recompileGraph()
+	}
 	e.Save("workspace/example.xml")
 }
 
 // Load loads a graph into the synthengine from file
 func (e *Engine) Load(filename string) {
-	e.Graph = loadProcessorGraph(filename)
+	// e.Graph = exampleGraph()
 
-	e.RecompileGraph()
+	file, _ := os.Open(filename)
+	graph, err := loadProcessorGraph(file)
+	if err != nil {
+		println("Error loading", filename, ":", err.Error())
+	} else {
+		e.Graph = graph
+	}
+
+	e.recompileGraph()
 }
 
 // Save saves the graph to the specified file
 func (e *Engine) Save(filename string) {
-	file, _ := os.Create(filename)
-	saveProcessorGraph(e.Graph, file)
-	file.Close()
+	// file, _ := os.Create(filename)
+	// saveProcessorGraph(e.Graph, file)
+	// file.Close()
 }
