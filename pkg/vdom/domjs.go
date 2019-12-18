@@ -10,6 +10,8 @@ func addEventHandler(svgNamespace bool, element *Element, domNode js.Value, hand
 	domNode.Call("addEventListener", handler.Type, js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		jsEvent := args[0]
 		eventData := map[string]interface{}{}
+		jsEvent.Call("preventDefault")
+
 		switch handler.Type {
 		case "change":
 			eventData["Value"] = jsEvent.Get("target").Get("value").String()
@@ -18,7 +20,8 @@ func addEventHandler(svgNamespace bool, element *Element, domNode js.Value, hand
 			"mouseup",
 			"mouseenter",
 			"mouseleave",
-			"mousemove":
+			"mousemove",
+			"contextmenu":
 			eventData["Buttons"] = jsEvent.Get("buttons").Int()
 			eventData["ClientX"] = jsEvent.Get("clientX").Int()
 			eventData["ClientY"] = jsEvent.Get("clientY").Int()
