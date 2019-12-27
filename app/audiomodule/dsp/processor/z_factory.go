@@ -9,6 +9,20 @@ type Parameter struct {
 	Value   float32
 }
 
+func boolTofloat32(value bool) float32 {
+	if value {
+		return 1
+	}
+	return 0
+}
+
+func float32toBool(value float32) bool {
+	if value <= 0 {
+		return false
+	}
+	return true
+}
+
 // Definition exports processor definition
 func (e *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
 	return "Envelope", []string{"Gte", "Trg"}, []string{"Out"},
@@ -134,7 +148,10 @@ func (s *Splitter) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
 func (s *Scope) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Scope", []string{"In"}, []string{}, []Parameter{}
+	return "Scope", []string{"In"}, []string{}, []Parameter{
+		Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: boolTofloat32(s.Trigger)},
+		Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(s.Skip)},
+	}
 }
 
 //ProcessArgs calls process with args as an array
@@ -153,4 +170,12 @@ func (s *Scope) ProcessSamples(in [][]float32, length int) (output [][]float32) 
 }
 
 //SetParameter set a single processor parameter
-func (s *Scope) SetParameter(index int, value float32) {}
+func (s *Scope) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		value = value - 0.5
+		s.Trigger = float32toBool(value)
+	case 1:
+		s.Skip = int(value)
+	}
+}
