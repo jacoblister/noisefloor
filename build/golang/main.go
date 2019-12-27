@@ -34,5 +34,5 @@ func Main() {
 	nf := noiseFloor{driverAudio: &driverAudioWASAPI{}, driverMidi: &driverMidiMock{}}
 	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiWDM{}}
 	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}}
-	app.App(&nf)
+	app.App(&nf, fs)
 }

@@ -21,11 +21,9 @@ func GetAudioProcessor() audiomodule.AudioProcessor {
 
 func (nf *noiseFloor) Start(hardwareDevices app.HardwareDevices, audioProcessor audiomodule.AudioProcessor) {
 	nf.audioProcessor = audioProcessor
-	// js.Global.Call("startAudio")
 }
 
 func (nf *noiseFloor) Stop(hardwareDevices app.HardwareDevices) {
-	// js.Global.Call("stopAudio")
 }
 
 // main in the application entry point
@@ -37,7 +35,7 @@ func main() {
 		"GetAudioProcessor": app.GetAudioProcessor,
 	})
 
-	app.App(&nf)
+	app.App(&nf, &fs)
 
 	println("main")
 }

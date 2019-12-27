@@ -8,6 +8,7 @@ import (
 	"github.com/jacoblister/noisefloor/app/assets"
 	"github.com/jacoblister/noisefloor/app/audiomodule"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
+	"github.com/jacoblister/noisefloor/pkg/vfs"
 )
 
 var mods modules
@@ -18,7 +19,8 @@ func GetAudioProcessor() audiomodule.AudioProcessor {
 }
 
 // App is the main entry point for the application
-func App(driver Driver) {
+func App(driver Driver, filesystem vfs.FileSystem) {
+	vfs.SetDefaultFS(filesystem)
 	mods.dspEngine.Load("workspace/example.xml") // Load dsp engine patch
 
 	hardwareDevices := HardwareDevices{}

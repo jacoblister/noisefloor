@@ -8,6 +8,7 @@ import (
 
 // MarshalXML marhalls the graph
 func (g *Graph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	println("marsall")
 	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "graph"}})
 
 	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "processors"}})
@@ -64,6 +65,8 @@ func attrToMap(attr []xml.Attr) map[string]string {
 
 //UnmarshalXML Unmarshals the graph
 func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	println("unmarsall")
+
 	for {
 		token, err := d.Token()
 		if err != nil {

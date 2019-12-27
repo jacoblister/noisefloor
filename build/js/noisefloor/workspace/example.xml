@@ -1,0 +1,22 @@
+<graph>
+   <processors>
+      <processor type="MIDIInput" name="" x="16" y="40"></processor>
+      <processor type="Oscillator" name="" x="120" y="16" Wave="0"></processor>
+      <processor type="Envelope" name="" x="120" y="96" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
+      <processor type="Gain" name="" x="224" y="16"></processor>
+      <processor type="Terminal" name="" x="328" y="16"></processor>
+      <processor type="Scope" name="" x="328" y="96"></processor>
+      <processor type="Scope" name="scope2" x="224" y="208"></processor>
+   </processors>
+   <connectors>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Oscillator" toPort="Frq"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Trg" toProcessor="Envelope" toPort="Trg"></connector>
+      <connector fromProcessor="Oscillator" fromPort="Out" toProcessor="Gain" toPort="In"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="scope2" toPort="In"></connector>
+   </connectors>
+</graph>

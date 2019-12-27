@@ -145,11 +145,12 @@ func componentUpdateListen(c chan Component) {
 		UpdateComponent(component)
 		patch := updateDomEnd()
 		applyPatchToDom(fullDomPatch()) // TODO - improve this, not efficient, should apply new patch, not full patch
-		domUpdateMutex.Unlock()
 
 		for conn := range activeConnections {
 			conn.WriteJSON(patch)
 		}
+
+		domUpdateMutex.Unlock()
 	}
 }
 

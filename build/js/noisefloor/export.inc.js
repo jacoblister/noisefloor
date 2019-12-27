@@ -63,3 +63,10 @@ $global.Process = function(samplesIn, midiIn) {
   //   midiOut[i] = { time: event.Time, data: event.Data.$array };
   // }
 };
+
+$global.FetchFile = function(filename) {
+  const request = new XMLHttpRequest();
+  request.open("GET", filename, false);
+  request.send();
+  return request.responseText;
+};

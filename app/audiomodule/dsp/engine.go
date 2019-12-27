@@ -1,11 +1,10 @@
 package dsp
 
 import (
-	"os"
-
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/jacoblister/noisefloor/pkg/midi"
+	"github.com/jacoblister/noisefloor/pkg/vfs"
 )
 
 // ProcessEventFunc is a callback on update of DSP processing
@@ -106,7 +105,7 @@ func (e *Engine) GraphChange(recompile bool) {
 func (e *Engine) Load(filename string) {
 	// e.Graph = exampleGraph()
 
-	file, _ := os.Open(filename)
+	file, _ := vfs.DefaultFS().Open(filename)
 	graph, err := loadProcessorGraph(file)
 	if err != nil {
 		println("Error loading", filename, ":", err.Error())
@@ -119,7 +118,7 @@ func (e *Engine) Load(filename string) {
 
 // Save saves the graph to the specified file
 func (e *Engine) Save(filename string) {
-	// file, _ := os.Create(filename)
+	// file, _ := os.Create("out.xml")
 	// saveProcessorGraph(e.Graph, file)
 	// file.Close()
 }
