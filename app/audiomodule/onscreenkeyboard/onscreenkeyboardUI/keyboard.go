@@ -131,8 +131,8 @@ func (k *Keyboard) renderOctave(parent *vdom.Element, keyStart int, xStart int) 
 // Render displays the keyboard.
 func (k *Keyboard) Render() vdom.Element {
 	elem := vdom.MakeElement("g")
-	for octave := 0; octave < 3; octave++ {
-		k.renderOctave(&elem, 48+octave*12, (40*7*octave)+1)
+	for octave := 0; octave < 4; octave++ {
+		k.renderOctave(&elem, 36+octave*12, (40*7*octave)+1)
 	}
 
 	return elem

@@ -11,11 +11,13 @@ import (
 )
 
 type modules struct {
-	keyboard    onscreenkeyboard.Keyboard
-	dspEngine   dsp.Engine
-	state       struct {
+	keyboard  onscreenkeyboard.Keyboard
+	dspEngine dsp.Engine
+	state     struct {
 		vDividerPos      int
 		vDividerMoving   bool
+		hDividerPos      int
+		hDividerMoving   bool
 		dspUIEngineState dspUI.EngineState
 	}
 }
@@ -43,36 +45,28 @@ func (m *modules) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOu
 }
 
 func (m *modules) Init() {
-	if m.state.vDividerPos == 0 {
-		m.state.vDividerPos = 500
-	}
+	m.state.hDividerPos = 640
+	m.state.vDividerPos = 200
 }
 
 // Render returns the main view
 func (m *modules) Render() vdom.Element {
-	// elem := vdom.MakeElement("svg",
-	// 	"id", "root",
-	// 	"xmlns", "http://www.w3.org/2000/svg",
-	// 	"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
-	// 	onscreenkeyboardUI.MakeKeyboard(&c.keyboard),
-	// )
-
-	// dspUI := dspUI.MakeEngine(&c.dspEngine, &c.state.dspUIEngineState)
-	// vSplit := vdomcomp.MakeLayoutVSplit(1024, 768, c.state.vDividerPos, &c.state.vDividerMoving,
-	// 	&vdomcomp.Text{Text: "menus"}, dspUI,
-	// 	func(pos int) {
-	// 		if pos > 100 {
-	// 			c.state.vDividerPos = pos
-	// 		}
-	// 	},
-	// )
-
-	dspUI := dspUI.MakeEngine(&m.dspEngine, &m.state.dspUIEngineState)
-	vSplit := vdomcomp.MakeLayoutHSplit(1024, 768, m.state.vDividerPos, &m.state.vDividerMoving,
-		dspUI, onscreenkeyboardUI.MakeKeyboard(&m.keyboard),
+	dspUI := dspUI.MakeEngine(&m.dspEngine, 1200-m.state.vDividerPos-4, m.state.hDividerPos, &m.state.dspUIEngineState)
+	vSplit := vdomcomp.MakeLayoutVSplit(1200, m.state.hDividerPos, m.state.vDividerPos, 4, &m.state.vDividerMoving,
+		&vdomcomp.Text{Text: "Files"}, dspUI,
 		func(pos int) {
 			if pos > 100 {
 				m.state.vDividerPos = pos
+			}
+		},
+	)
+
+	// dspUI := dspUI.MakeEngine(&m.dspEngine, &m.state.dspUIEngineState)
+	hSplit := vdomcomp.MakeLayoutHSplit(1200, 768, m.state.hDividerPos, 4, &m.state.hDividerMoving,
+		vSplit, onscreenkeyboardUI.MakeKeyboard(&m.keyboard),
+		func(pos int) {
+			if pos > 100 {
+				m.state.hDividerPos = pos
 			}
 		},
 	)
@@ -81,7 +75,7 @@ func (m *modules) Render() vdom.Element {
 		"id", "root",
 		"xmlns", "http://www.w3.org/2000/svg",
 		"style", "width:100%;height:100%;position:fixed;top:0;left:0;bottom:0;right:0;",
-		vSplit,
+		hSplit,
 	)
 
 	return elem

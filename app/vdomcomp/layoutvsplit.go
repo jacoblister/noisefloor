@@ -13,6 +13,7 @@ type LayoutVSplit struct {
 	width          int
 	height         int
 	divider        int
+	dividerSize    int
 	moving         *bool
 	leftComponent  vdom.Component
 	rightComponent vdom.Component
@@ -20,10 +21,10 @@ type LayoutVSplit struct {
 }
 
 //MakeLayoutVSplit create a new Layout horizontal split componenet
-func MakeLayoutVSplit(width int, height int, divider int, moving *bool,
+func MakeLayoutVSplit(width int, height int, divider int, dividerSize int, moving *bool,
 	leftComponent vdom.Component, rightComponent vdom.Component,
 	dividerSetFunc dividerSetFunc) *LayoutVSplit {
-	layoutVSplit := LayoutVSplit{width, height, divider, moving,
+	layoutVSplit := LayoutVSplit{width, height, divider, dividerSize, moving,
 		leftComponent, rightComponent,
 		dividerSetFunc}
 	return &layoutVSplit
@@ -40,7 +41,7 @@ func (l *LayoutVSplit) Render() vdom.Element {
 		vdom.MakeElement("rect",
 			"id", "v-divider",
 			"stroke", "none",
-			"fill", "white",
+			"fill", "rgba(0,0,0,0)",
 			"x", 1,
 			"y", 1,
 			"width", l.width-1,
@@ -63,13 +64,14 @@ func (l *LayoutVSplit) Render() vdom.Element {
 				}
 			}),
 		),
-		vdom.MakeElement("line",
+		vdom.MakeElement("rect",
 			"id", "v-dividerline",
 			"stroke", "gray",
-			"x1", l.divider,
-			"y1", 0,
-			"x2", l.divider,
-			"y2", l.height,
+			"fill", "gray",
+			"x", l.divider,
+			"y", 0,
+			"width", l.dividerSize,
+			"height", l.height,
 			"cursor", "ew-resize",
 			disablePointerIfMoving,
 			vdom.MakeEventHandler(vdom.MouseDown, func(element *vdom.Element, event *vdom.Event) {
@@ -81,7 +83,7 @@ func (l *LayoutVSplit) Render() vdom.Element {
 			disablePointerIfMoving,
 		),
 		vdom.MakeElement("g",
-			"transform", "translate("+strconv.Itoa(l.divider)+",0)",
+			"transform", "translate("+strconv.Itoa(l.divider+l.dividerSize)+",0)",
 			disablePointerIfMoving,
 			l.rightComponent,
 		),

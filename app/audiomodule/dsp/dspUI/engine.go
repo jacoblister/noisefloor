@@ -34,6 +34,8 @@ const (
 // Engine is the dsp engine UI
 type Engine struct {
 	Engine *dsp.Engine
+	width  int
+	height int
 	state  *EngineState
 }
 
@@ -54,8 +56,8 @@ type EngineState struct {
 }
 
 //MakeEngine create an new Engine Edit UI componenet
-func MakeEngine(engine *dsp.Engine, engineState *EngineState) *Engine {
-	engineUI := Engine{Engine: engine, state: engineState}
+func MakeEngine(engine *dsp.Engine, width int, height int, engineState *EngineState) *Engine {
+	engineUI := Engine{Engine: engine, width: width, height: height, state: engineState}
 	engine.SetProcessEventFunc(engineUI.processEvent)
 
 	return &engineUI
@@ -189,11 +191,12 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 					return
 				}
 
-				x := event.Data["ClientX"].(int)
-				y := event.Data["ClientY"].(int)
+				x := event.Data["OffsetX"].(int)
+				y := event.Data["OffsetY"].(int)
 				e.state.contextMenu = vdomcomp.MakeContextMenu(
 					x, y,
 					dsp.ListProcessors(), true, func(processorName string) {
+						e.state.contextMenu.SetActive(false)
 						e.createProcessor(processorName, x, y)
 						e.Engine.GraphChange(true)
 					})
@@ -208,9 +211,10 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				e.state.editState = moveProcessor
 			case vdom.ContextMenu:
 				e.state.contextMenu = vdomcomp.MakeContextMenu(
-					event.Data["ClientX"].(int),
-					event.Data["ClientY"].(int),
+					event.Data["OffsetX"].(int),
+					event.Data["OffsetY"].(int),
 					[]string{"Delete"}, true, func(item string) {
+						e.state.contextMenu.SetActive(false)
 						e.deleteProcessor(processor.Processor)
 						e.Engine.GraphChange(true)
 					})
@@ -374,8 +378,8 @@ func (e *Engine) Render() vdom.Element {
 		vdom.MakeElement("rect",
 			"x", 0,
 			"y", 0,
-			"width", 800,
-			"height", 600,
+			"width", e.width,
+			"height", e.height,
 			"stroke", "black",
 			"fill", "white",
 		),

@@ -15,7 +15,7 @@ type App struct {
 
 //Render renders the App component
 func (a *App) Render() vdom.Element {
-	hSplit := vdomcomp.MakeLayoutHSplit(640-a.vDividerPos, 480, a.hDividerPos, &a.hDividerMoving,
+	hSplit := vdomcomp.MakeLayoutHSplit(640-a.vDividerPos, 480, a.hDividerPos, 4, &a.hDividerMoving,
 		&vdomcomp.Text{Text: "top"}, &vdomcomp.Text{Text: "bottom"},
 		func(pos int) {
 			if pos > 100 {
@@ -24,7 +24,7 @@ func (a *App) Render() vdom.Element {
 		},
 	)
 
-	vSplit := vdomcomp.MakeLayoutVSplit(640, 480, a.vDividerPos, &a.vDividerMoving,
+	vSplit := vdomcomp.MakeLayoutVSplit(640, 480, a.vDividerPos, 4, &a.vDividerMoving,
 		&vdomcomp.Text{Text: "left"}, hSplit,
 		func(pos int) {
 			if pos > 100 {
