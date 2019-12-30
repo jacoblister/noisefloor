@@ -1,0 +1,7 @@
+<graph>
+   <processors>
+      <processor type="Oscillator" name="" x="120" y="16" Wave="0"></processor>
+   </processors>
+   <connectors>
+   </connectors>
+</graph>

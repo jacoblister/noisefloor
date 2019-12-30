@@ -7,6 +7,8 @@ import (
 	"github.com/jacoblister/noisefloor/pkg/vfs"
 )
 
+const workdir = "workspace"
+
 // ProcessEventFunc is a callback on update of DSP processing
 type ProcessEventFunc func()
 
@@ -19,6 +21,7 @@ type Engine struct {
 	compiledGraph    compiledGraph
 	processEventSkip int
 	processEventFunc ProcessEventFunc
+	filename         string
 }
 
 // SetProcessEventFunc sets a notify callback when a process update occurs
@@ -98,19 +101,41 @@ func (e *Engine) GraphChange(recompile bool) {
 	if recompile {
 		e.recompileGraph()
 	}
-	e.Save("workspace/example.xml")
+	e.Save(workdir + "/" + e.filename)
+}
+
+// Filename returns the filename of the currently loaded graph
+func (e *Engine) Filename() string {
+	return e.filename
+}
+
+// Files returns a list of files in the working directory
+func (e *Engine) Files() []string {
+	result := []string{}
+
+	dir, _ := vfs.DefaultFS().Open(workdir)
+	fileInfo, _ := dir.Readdir(-1)
+
+	for i := 0; i < len(fileInfo); i++ {
+		result = append(result, fileInfo[i].Name())
+	}
+
+	return result
 }
 
 // Load loads a graph into the synthengine from file
 func (e *Engine) Load(filename string) {
 	// e.Graph = exampleGraph()
 
-	file, _ := vfs.DefaultFS().Open(filename)
+	fullname := workdir + "/" + filename
+
+	file, _ := vfs.DefaultFS().Open(fullname)
 	graph, err := loadProcessorGraph(file)
 	if err != nil {
-		println("Error loading", filename, ":", err.Error())
+		println("Error loading", fullname, ":", err.Error())
 	} else {
 		e.Graph = graph
+		e.filename = filename
 	}
 
 	e.recompileGraph()

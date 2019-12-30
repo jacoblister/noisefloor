@@ -17,7 +17,7 @@ var fs FS
 func (fs FS) Open(name string) (vfs.File, error) {
 	content := js.Global().Call("FetchFile", name)
 
-	file := File{reader: strings.NewReader(content.String())}
+	file := File{name: name, reader: strings.NewReader(content.String())}
 
 	return file, nil
 }
@@ -29,6 +29,7 @@ func (fs FS) Create(name string) (vfs.File, error) {
 
 // File is the Javascript filesystem file (stored as a string)
 type File struct {
+	name   string
 	reader *strings.Reader
 }
 
@@ -39,7 +40,6 @@ func (f File) Close() error {
 
 // Read reads from an in memory file
 func (f File) Read(p []byte) (n int, err error) {
-	println("Read:", p)
 	return f.reader.Read(p)
 }
 
@@ -55,7 +55,17 @@ func (f File) Seek(offset int64, whence int) (int64, error) {
 
 // Readdir reads the directory contents
 func (f File) Readdir(count int) ([]os.FileInfo, error) {
-	return []os.FileInfo{}, nil
+	files := []os.FileInfo{}
+
+	content := js.Global().Call("FetchFile", f.name+"/$")
+	lines := strings.Split(content.String(), "\n")
+	for i := 0; i < len(lines); i++ {
+		if len(lines[i]) > 0 {
+			files = append(files, FileInfo{name: lines[i]})
+		}
+	}
+
+	return files, nil
 }
 
 // Stat gets the status of an in memory file

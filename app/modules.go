@@ -14,11 +14,12 @@ type modules struct {
 	keyboard  onscreenkeyboard.Keyboard
 	dspEngine dsp.Engine
 	state     struct {
-		vDividerPos      int
-		vDividerMoving   bool
-		hDividerPos      int
-		hDividerMoving   bool
-		dspUIEngineState dspUI.EngineState
+		vDividerPos          int
+		vDividerMoving       bool
+		hDividerPos          int
+		hDividerMoving       bool
+		dspUIEngineState     dspUI.EngineState
+		dspUIFilePickerState dspUI.FilePickerState
 	}
 }
 
@@ -51,9 +52,11 @@ func (m *modules) Init() {
 
 // Render returns the main view
 func (m *modules) Render() vdom.Element {
-	dspUI := dspUI.MakeEngine(&m.dspEngine, 1200-m.state.vDividerPos-4, m.state.hDividerPos, &m.state.dspUIEngineState)
+	engineUI := dspUI.MakeEngine(&m.dspEngine, 1200-m.state.vDividerPos-4, m.state.hDividerPos, &m.state.dspUIEngineState)
+	filePickerUI := dspUI.MakeFilePicker(&m.dspEngine, m.state.vDividerPos, m.state.hDividerPos, &m.state.dspUIFilePickerState)
 	vSplit := vdomcomp.MakeLayoutVSplit(1200, m.state.hDividerPos, m.state.vDividerPos, 4, &m.state.vDividerMoving,
-		&vdomcomp.Text{Text: "Files"}, dspUI,
+		filePickerUI,
+		engineUI,
 		func(pos int) {
 			if pos > 100 {
 				m.state.vDividerPos = pos
@@ -61,7 +64,6 @@ func (m *modules) Render() vdom.Element {
 		},
 	)
 
-	// dspUI := dspUI.MakeEngine(&m.dspEngine, &m.state.dspUIEngineState)
 	hSplit := vdomcomp.MakeLayoutHSplit(1200, 768, m.state.hDividerPos, 4, &m.state.hDividerMoving,
 		vSplit, onscreenkeyboardUI.MakeKeyboard(&m.keyboard),
 		func(pos int) {
