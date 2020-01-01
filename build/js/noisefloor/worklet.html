@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <!--
+      Load script into head (after body exists)
+      so it doesn't interfer with DOM operations.
+    -->
+    <!--
+    <script>
+      var script = document.createElement("script");
+      script.src = "noisefloor.js";
+      document.head.appendChild(script);
+    </script>
+-->
+
+    <script>
+      // audio context setup - todo move to export.inc.js
+      window.onload = function() {
+        let worker = new Worker("noisefloor.js");
+        //   // The code in the main global scope.
+        //   class NoisefloorNode extends AudioWorkletNode {
+        //     constructor(context) {
+        //       super(context, "noisefloor-worklet-processor");
+        //     }
+        //   }
+        //
+        //   var audioContext = new AudioContext();
+        //
+        //   // One-liner to resume playback when user interacted with the page.
+        //   document.getElementById("root").addEventListener("click", function() {
+        //     audioContext.resume().then(() => {
+        //       console.log("Playback resumed successfully");
+        //     });
+        //   });
+        //
+        //   console.log("starting");
+        //   audioContext.audioWorklet.addModule("process.js").then(() => {
+        //     console.log("loaded");
+        //     let node = new NoisefloorNode(audioContext);
+        //     node.connect(audioContext.destination);
+        //   });
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root">Click me</div>
+  </body>
+</html>

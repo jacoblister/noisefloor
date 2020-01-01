@@ -34,9 +34,9 @@ func (e *Engine) Start(sampleRate int) {
 	println("do DSP start, sample rate:", sampleRate)
 	// e.compiledGraph.Start(sampleRate)
 
+	e.osc.Start(sampleRate)
 	e.midiinput.Start(sampleRate)
 	e.patch.Start(sampleRate)
-	e.osc.Start(sampleRate)
 	e.osc.Waveform = processor.Sin
 }
 
@@ -68,9 +68,9 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 	// 	samplesIn[1][i] = sample
 	// }
 
-	if e.compiledGraph != nil {
-		samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
-	}
+	// if e.compiledGraph != nil {
+	// 	samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
+	// }
 
 	// notify front end if registered
 	if e.processEventFunc != nil {
@@ -79,6 +79,13 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 			e.processEventSkip = 3
 			e.processEventFunc()
 		}
+	}
+
+	len := len(samplesIn[0])
+	for i := 0; i < len; i++ {
+		sample := e.osc.Process(440)
+		samplesIn[0][i] = sample
+		samplesIn[1][i] = sample
 	}
 
 	return samplesIn, midiIn

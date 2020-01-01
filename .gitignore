@@ -4,5 +4,6 @@
 *.js
 *.js.map
 !*.inc.js
+!process.js
 *.exe
 *.wasm

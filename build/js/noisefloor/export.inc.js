@@ -64,6 +64,10 @@ $global.Process = function(samplesIn, midiIn) {
   // }
 };
 
+$global.SayHello = function() {
+  console.log("hello noisefloor");
+};
+
 $global.FetchFile = function(filename) {
   const request = new XMLHttpRequest();
   request.open("GET", filename, false);
