@@ -21,7 +21,7 @@ func (g *Graph) inputConnectorsForProcessor(processor Processor) []*Connector {
 	connectorCount := len(procInputs)
 	result := make([]*Connector, connectorCount, connectorCount)
 	for i := 0; i < len(result); i++ {
-		result[i] = &Connector{}
+		result[i] = &Connector{Samples: make([]float32, 4096, 4096)}
 	}
 
 	for i := 0; i < len(g.Connectors); i++ {

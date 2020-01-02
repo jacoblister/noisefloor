@@ -1,7 +1,33 @@
 <graph>
    <processors>
-      <processor type="Oscillator" name="" x="120" y="16" Wave="0"></processor>
+      <processor type="MIDIInput" name="MIDIInput" x="32" y="408"></processor>
+      <processor type="Constant" name="Constant" x="176" y="88" Value="1"></processor>
+      <processor type="Constant" name="Constant1" x="176" y="168" Value="2"></processor>
+      <processor type="Multiply" name="Multiply" x="288" y="88"></processor>
+      <processor type="Multiply" name="Multiply1" x="288" y="168"></processor>
+      <processor type="Oscillator" name="Oscillator" x="392" y="88" Wave="0"></processor>
+      <processor type="Oscillator" name="Oscillator1" x="392" y="168" Wave="0"></processor>
+      <processor type="Terminal" name="Terminal" x="760" y="72"></processor>
+      <processor type="Splitter" name="Sum" x="520" y="152"></processor>
+      <processor type="Scope" name="Scope" x="760" y="152" Trigger="1" Skip="4"></processor>
+      <processor type="Envelope" name="Envelope" x="552" y="424" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
+      <processor type="Gain" name="Gain" x="640" y="152"></processor>
    </processors>
    <connectors>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Multiply" toPort="y"></connector>
+      <connector fromProcessor="Constant" fromPort="Out" toProcessor="Multiply" toPort="x"></connector>
+      <connector fromProcessor="Multiply" fromPort="Out" toProcessor="Oscillator" toPort="Frq"></connector>
+      <connector fromProcessor="Constant1" fromPort="Out" toProcessor="Multiply1" toPort="x"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Multiply1" toPort="y"></connector>
+      <connector fromProcessor="Multiply1" fromPort="Out" toProcessor="Oscillator1" toPort="Frq"></connector>
+      <connector fromProcessor="Oscillator" fromPort="Out" toProcessor="Sum" toPort="In1"></connector>
+      <connector fromProcessor="Oscillator1" fromPort="Out" toProcessor="Sum" toPort="In2"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Trg" toProcessor="Envelope" toPort="Trg"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
+      <connector fromProcessor="Sum" fromPort="Out" toProcessor="Gain" toPort="In"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
    </connectors>
 </graph>

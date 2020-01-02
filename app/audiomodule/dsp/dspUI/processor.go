@@ -166,6 +166,7 @@ func (p *Processor) Render() vdom.Element {
 		_, y := p.GetConnectorPoint(procWidth, true, i+maxConnectors)
 
 		width := procWidth - ((procConnWidth + 2) * 2)
+		levelValue := strconv.FormatFloat(float64(procParameters[i].Value), 'f', -1, 32)
 		levelWidth := int(float32(width) * (procParameters[i].Value / procParameters[i].Max))
 		levelFactor := float32(width) / procParameters[i].Max
 
@@ -192,6 +193,7 @@ func (p *Processor) Render() vdom.Element {
 			"pointer-events", "all",
 			"cursor", "crosshair",
 			vdom.MakeEventHandler(vdom.MouseDown, p.makeParameterEventHandler(i, levelFactor)),
+			vdom.MakeElement("title", vdom.MakeTextElement(levelValue)),
 		)
 		parameters = append(parameters, bound)
 

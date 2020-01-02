@@ -1,7 +1,9 @@
 package processor
 
 // Splitter - split signal to multiple outputs
-type Splitter struct{}
+type Splitter struct {
+	Dummy int
+}
 
 // Start - init splitter
 func (s *Splitter) Start(sampleRate int) {}
