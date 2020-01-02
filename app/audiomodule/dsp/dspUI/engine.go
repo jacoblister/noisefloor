@@ -361,11 +361,14 @@ func (e *Engine) Render() vdom.Element {
 		connectionList = append(connectionList, *e.state.selectedConnector)
 	}
 	connectors := []vdom.Component{}
+	connectorPlugs := []vdom.Component{}
 	for i := 0; i < len(connectionList); i++ {
 		connector := &connectionList[i]
 		x1, y1, x2, y2, isConnected := e.connectorCoordinates(connector, processorMap[connector.FromProcessor], processorMap[connector.ToProcessor])
 		connectorLine := &Connector{x1: x1, y1: y1, x2: x2, y2: y2, isConnected: isConnected, value: connector.Value}
+		connectorPlug := &ConnectorPlug{x1: x1, y1: y1, x2: x2, y2: y2, isConnected: isConnected, value: connector.Value}
 		connectors = append(connectors, connectorLine)
+		connectorPlugs = append(connectorPlugs, connectorPlug)
 	}
 
 	// main view
@@ -383,8 +386,9 @@ func (e *Engine) Render() vdom.Element {
 			"stroke", "black",
 			"fill", "white",
 		),
-		processors,
 		connectors,
+		processors,
+		connectorPlugs,
 		&e.state.contextMenu,
 	)
 

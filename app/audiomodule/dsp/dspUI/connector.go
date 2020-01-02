@@ -34,41 +34,8 @@ func (c *Connector) Render() vdom.Element {
 		"stroke", stroke,
 		"fill", "none",
 	)
-	elem := vdom.MakeElement("g", []vdom.Element{pathElement})
-	if c.isConnected {
-		fill := "black"
-		if c.value >= -1 && c.value < 0 {
-			level := int(-c.value * 255)
-			fill = "rgb(" + strconv.Itoa(level) + ",0,0)"
-		} else if c.value >= 0 && c.value <= 1 {
-			level := int(c.value * 255)
-			fill = "rgb(0," + strconv.Itoa(level) + ",0)"
-		}
-
-		rect := vdom.MakeElement("rect",
-			"class", "animated",
-			"x", c.x1-procConnWidth/2,
-			"y", c.y1-procConnWidth/2,
-			"width", procConnWidth,
-			"height", procConnWidth,
-			"stroke", "black",
-			"fill", fill,
-			"pointer-events", "none",
-		)
-		elem.AppendChild(rect)
-
-		rect = vdom.MakeElement("rect",
-			"class", "animated",
-			"x", c.x2-procConnWidth/2,
-			"y", c.y2-procConnWidth/2,
-			"width", procConnWidth,
-			"height", procConnWidth,
-			"stroke", "black",
-			"fill", fill,
-			"pointer-events", "none",
-		)
-		elem.AppendChild(rect)
-	}
-
-	return elem
+	return pathElement
+	// elem := vdom.MakeElement("g", []vdom.Element{pathElement})
+	//
+	// return elem
 }

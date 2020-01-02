@@ -55,6 +55,31 @@ func (c *Constant) SetParameter(index int, value float32) {
 	}
 }
 
+// Definition exports the constant definition
+func (d *Divide) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
+	return "Divide", []string{"x", "y"}, []string{"Out"},
+		[]Parameter{}
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (d *Divide) ProcessArgs(in []float32) (output []float32) {
+	out := d.Process(in[0], in[1])
+	return []float32{out}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (d *Divide) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+	output = make([][]float32, 1)
+	output[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		output[0][i] = d.Process(in[0][i], in[0][i])
+	}
+	return
+}
+
+//SetParameter set a single processor parameter
+func (d *Divide) SetParameter(index int, value float32) {}
+
 // Definition exports processor definition
 func (e *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
 	return "Envelope", []string{"Gte", "Trg"}, []string{"Out"},
@@ -98,7 +123,9 @@ func (e *Envelope) SetParameter(index int, value float32) {
 
 // Definition exports processor definition
 func (g *Gain) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Gain", []string{"In", "Gai"}, []string{"Out"}, []Parameter{}
+	return "Gain", []string{"In", "Gai"}, []string{"Out"}, []Parameter{
+		Parameter{Name: "Level", Min: 0, Max: 2, Default: 1, Value: g.Level},
+	}
 }
 
 //ProcessArgs calls process with with args as an array
@@ -118,7 +145,12 @@ func (g *Gain) ProcessSamples(in [][]float32, length int) (output [][]float32) {
 }
 
 //SetParameter set a single processor parameter
-func (g *Gain) SetParameter(index int, value float32) {}
+func (g *Gain) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		g.Level = value
+	}
+}
 
 // Definition exports the constant definition
 func (m *Multiply) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
@@ -205,7 +237,7 @@ func (s *Splitter) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
 func (s *Sum) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Splitter", []string{"In1", "In2", "In3", "In4"}, []string{"Out"}, []Parameter{}
+	return "Sum", []string{"In1", "In2", "In3", "In4"}, []string{"Out"}, []Parameter{}
 }
 
 //ProcessArgs calls process with args as an array

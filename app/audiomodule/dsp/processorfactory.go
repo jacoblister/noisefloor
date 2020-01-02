@@ -7,7 +7,7 @@ import (
 
 // ListProcessors returns a list of available processors
 func ListProcessors() []string {
-	return []string{"MIDIInput", "Terminal", "Constant", "Envelope", "Gain", "Multiply", "Oscillator", "Scope", "Splitter", "Sum"}
+	return []string{"MIDIInput", "Terminal", "Constant", "Divide", "Envelope", "Gain", "Multiply", "Oscillator", "Scope", "Splitter", "Sum"}
 }
 
 //MakeProcessor generates a new processor by the given processor name
@@ -24,6 +24,8 @@ func MakeProcessor(name string) Processor {
 		proc = terminal
 	case "Constant":
 		proc = &processor.Constant{}
+	case "Divide":
+		proc = &processor.Divide{}
 	case "Envelope":
 		proc = &processor.Envelope{}
 	case "Gain":
