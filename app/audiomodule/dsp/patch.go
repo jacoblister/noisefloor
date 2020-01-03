@@ -1,18 +1,20 @@
 package dsp
 
-import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+import (
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
+)
 
 // Patch is a simple minimal example patch
 type Patch struct {
-	oscillator processor.Oscillator
-	envelope   processor.Envelope
-	gain       processor.Gain
+	oscillator processorbasic.Oscillator
+	envelope   processorbasic.Envelope
+	gain       processorbasic.Gain
 }
 
 // Start - init patch
 func (p *Patch) Start(sampleRate int) {
 	p.oscillator.Start(sampleRate)
-	p.oscillator.Waveform = processor.Square
+	p.oscillator.Waveform = processorbasic.Square
 
 	p.envelope.Start(sampleRate)
 	p.gain.Start(sampleRate)

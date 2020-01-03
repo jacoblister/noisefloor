@@ -1,10 +1,12 @@
 package dsp
 
+import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+
 //Connector specifies a connection between two Processors
 type Connector struct {
-	FromProcessor Processor
+	FromProcessor processor.Processor
 	FromPort      int
-	ToProcessor   Processor
+	ToProcessor   processor.Processor
 	ToPort        int
 
 	Value   float32   // current sample value
@@ -12,7 +14,7 @@ type Connector struct {
 }
 
 //Processor is the getter for the Connector Processor
-func (c *Connector) Processor(isInput bool) Processor {
+func (c *Connector) Processor(isInput bool) processor.Processor {
 	if isInput {
 		return c.ToProcessor
 	}
@@ -28,7 +30,7 @@ func (c *Connector) Port(isInput bool) int {
 }
 
 //SetProcessor is the setter for the Connector Processor
-func (c *Connector) SetProcessor(isInput bool, processor Processor) {
+func (c *Connector) SetProcessor(isInput bool, processor processor.Processor) {
 	if isInput {
 		c.ToProcessor = processor
 		return

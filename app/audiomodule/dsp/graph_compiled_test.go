@@ -3,7 +3,7 @@ package dsp
 import (
 	"testing"
 
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/stretchr/testify/assert"
 )
@@ -52,13 +52,13 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 	midiInput := processorbuiltin.MIDIInput{}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 80, Y: 80, Processor: &midiInput})
-	osc := processor.Oscillator{}
+	osc := processorbasic.Oscillator{}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 240, Y: 80, Processor: &osc})
-	env := processor.Envelope{}
+	env := processorbasic.Envelope{}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 240, Y: 240, Processor: &env})
-	gain := processor.Gain{}
+	gain := processorbasic.Gain{}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 400, Y: 80, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}

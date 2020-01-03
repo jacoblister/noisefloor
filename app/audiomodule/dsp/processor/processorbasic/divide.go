@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Divide - divide x by y
 type Divide struct {

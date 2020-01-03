@@ -1,13 +1,6 @@
-package processor
+package processorbasic
 
-//Parameter is a single paramter with a range and default
-type Parameter struct {
-	Name    string
-	Default float32
-	Min     float32
-	Max     float32
-	Value   float32
-}
+import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
 func boolTofloat32(value bool) float32 {
 	if value {
@@ -24,10 +17,10 @@ func float32toBool(value float32) bool {
 }
 
 // Definition exports the constant definition
-func (c *Constant) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
+func (c *Constant) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Constant", []string{}, []string{"Out"},
-		[]Parameter{
-			Parameter{Name: "Value", Min: 0, Max: 10, Default: 1, Value: c.Value},
+		[]processor.Parameter{
+			processor.Parameter{Name: "Value", Min: 0, Max: 10, Default: 1, Value: c.Value},
 		}
 }
 
@@ -56,9 +49,9 @@ func (c *Constant) SetParameter(index int, value float32) {
 }
 
 // Definition exports the constant definition
-func (d *Divide) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
+func (d *Divide) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Divide", []string{"x", "y"}, []string{"Out"},
-		[]Parameter{}
+		[]processor.Parameter{}
 }
 
 //ProcessArgs calls process with an array of input/output samples
@@ -81,13 +74,13 @@ func (d *Divide) ProcessSamples(in [][]float32, length int) (output [][]float32)
 func (d *Divide) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
-func (e *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
+func (e *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Envelope", []string{"Gte", "Trg"}, []string{"Out"},
-		[]Parameter{
-			Parameter{Name: "Attack", Min: 0, Max: 100, Default: 2, Value: e.Attack},
-			Parameter{Name: "Decay", Min: 0, Max: 1000, Default: 100, Value: e.Decay},
-			Parameter{Name: "Sustain", Min: 0, Max: 1.0, Default: 0.75, Value: e.Sustain},
-			Parameter{Name: "Release", Min: 0, Max: 1000, Default: 1000, Value: e.Release},
+		[]processor.Parameter{
+			processor.Parameter{Name: "Attack", Min: 0, Max: 100, Default: 2, Value: e.Attack},
+			processor.Parameter{Name: "Decay", Min: 0, Max: 1000, Default: 100, Value: e.Decay},
+			processor.Parameter{Name: "Sustain", Min: 0, Max: 1.0, Default: 0.75, Value: e.Sustain},
+			processor.Parameter{Name: "Release", Min: 0, Max: 1000, Default: 1000, Value: e.Release},
 		}
 }
 
@@ -122,9 +115,9 @@ func (e *Envelope) SetParameter(index int, value float32) {
 }
 
 // Definition exports processor definition
-func (g *Gain) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Gain", []string{"In", "Gai"}, []string{"Out"}, []Parameter{
-		Parameter{Name: "Level", Min: 0, Max: 2, Default: 1, Value: g.Level},
+func (g *Gain) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Gain", []string{"In", "Gai"}, []string{"Out"}, []processor.Parameter{
+		processor.Parameter{Name: "Level", Min: 0, Max: 2, Default: 1, Value: g.Level},
 	}
 }
 
@@ -153,9 +146,9 @@ func (g *Gain) SetParameter(index int, value float32) {
 }
 
 // Definition exports the constant definition
-func (m *Multiply) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
+func (m *Multiply) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Multiply", []string{"x", "y"}, []string{"Out"},
-		[]Parameter{}
+		[]processor.Parameter{}
 }
 
 //ProcessArgs calls process with an array of input/output samples
@@ -178,9 +171,9 @@ func (m *Multiply) ProcessSamples(in [][]float32, length int) (output [][]float3
 func (m *Multiply) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
-func (o *Oscillator) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
+func (o *Oscillator) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Oscillator", []string{"Frq"}, []string{"Out"},
-		[]Parameter{Parameter{Name: "Wave", Min: 0, Max: 3, Value: float32(o.Waveform)}}
+		[]processor.Parameter{processor.Parameter{Name: "Wave", Min: 0, Max: 3, Value: float32(o.Waveform)}}
 }
 
 //ProcessArgs calls process with args as an array
@@ -209,8 +202,8 @@ func (o *Oscillator) SetParameter(index int, value float32) {
 }
 
 // Definition exports processor definition
-func (s *Splitter) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Splitter", []string{"In"}, []string{"Out1", "Out2", "Out3", "Out4"}, []Parameter{}
+func (s *Splitter) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Splitter", []string{"In"}, []string{"Out1", "Out2", "Out3", "Out4"}, []processor.Parameter{}
 }
 
 //ProcessArgs calls process with args as an array
@@ -236,8 +229,8 @@ func (s *Splitter) ProcessSamples(in [][]float32, length int) (output [][]float3
 func (s *Splitter) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
-func (s *Sum) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Sum", []string{"In1", "In2", "In3", "In4"}, []string{"Out"}, []Parameter{}
+func (s *Sum) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Sum", []string{"In1", "In2", "In3", "In4"}, []string{"Out"}, []processor.Parameter{}
 }
 
 //ProcessArgs calls process with args as an array
@@ -260,10 +253,10 @@ func (s *Sum) ProcessSamples(in [][]float32, length int) (output [][]float32) {
 func (s *Sum) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
-func (s *Scope) Definition() (name string, inputs []string, outputs []string, parameters []Parameter) {
-	return "Scope", []string{"In"}, []string{}, []Parameter{
-		Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: boolTofloat32(s.Trigger)},
-		Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(s.Skip)},
+func (s *Scope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Scope", []string{"In"}, []string{}, []processor.Parameter{
+		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: boolTofloat32(s.Trigger)},
+		processor.Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(s.Skip)},
 	}
 }
 

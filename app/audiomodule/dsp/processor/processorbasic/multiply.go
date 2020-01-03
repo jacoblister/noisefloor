@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Multiply - multiply two values
 type Multiply struct {

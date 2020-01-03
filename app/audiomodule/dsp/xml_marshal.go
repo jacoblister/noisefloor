@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"strconv"
+
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 )
 
 // MarshalXML marhalls the graph
@@ -84,23 +86,23 @@ func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			case "processor":
 				x, _ := strconv.Atoi(attr["x"])
 				y, _ := strconv.Atoi(attr["y"])
-				processor := MakeProcessor(attr["type"])
+				proc := MakeProcessor(attr["type"])
 				for name, value := range attr {
 					floatValue, _ := strconv.ParseFloat(value, 32)
-					i, err := getProcessorParameterIndex(processor, name)
+					i, err := processor.GetProcessorParameterIndex(proc, name)
 					if err == nil {
 						println(i, float32(floatValue))
-						processor.SetParameter(i, float32(floatValue))
+						proc.SetParameter(i, float32(floatValue))
 					}
 				}
 
-				procDef := ProcessorDefinition{Name: attr["name"], X: x, Y: y, Processor: processor}
+				procDef := ProcessorDefinition{Name: attr["name"], X: x, Y: y, Processor: proc}
 				g.Processors = append(g.Processors, procDef)
 			case "connector":
 				fromProcessor := g.getProcessorByName(attr["fromProcessor"])
-				fromPort, _ := getProcessorOutputIndex(fromProcessor, attr["fromPort"])
+				fromPort, _ := processor.GetProcessorOutputIndex(fromProcessor, attr["fromPort"])
 				toProcessor := g.getProcessorByName(attr["toProcessor"])
-				toPort, _ := getProcessorInputIndex(toProcessor, attr["toPort"])
+				toPort, _ := processor.GetProcessorInputIndex(toProcessor, attr["toPort"])
 
 				connector := Connector{
 					FromProcessor: fromProcessor, FromPort: fromPort,

@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Sum - add inputs
 type Sum struct {

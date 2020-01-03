@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
 
@@ -25,7 +25,7 @@ func BenchmarkMapLookup(b *testing.B) {
 }
 
 func BenchmarkSingleCall(b *testing.B) {
-	gain := processor.Gain{}
+	gain := processorbasic.Gain{}
 
 	for i := 0; i < b.N; i++ {
 		gain.Process(1, 1)
@@ -33,10 +33,10 @@ func BenchmarkSingleCall(b *testing.B) {
 }
 
 func BenchmarkSingleCallWithArray(b *testing.B) {
-	gain := processor.Gain{}
+	gain := processorbasic.Gain{}
 	params := []float32{0, 0}
 
-	callGain := func(gain *processor.Gain, in []float32) []float32 {
+	callGain := func(gain *processorbasic.Gain, in []float32) []float32 {
 		in[0] = gain.Process(in[0], in[1])
 		return in
 	}
@@ -49,7 +49,7 @@ func BenchmarkSingleCallWithArray(b *testing.B) {
 }
 
 func BenchmarkSingleCallWithMethodValues(b *testing.B) {
-	gain := processor.Gain{}
+	gain := processorbasic.Gain{}
 	callGain := gain.Process
 
 	for i := 0; i < b.N; i++ {
@@ -58,7 +58,7 @@ func BenchmarkSingleCallWithMethodValues(b *testing.B) {
 }
 
 func BenchmarkSingleCallWithReflection(b *testing.B) {
-	gain := processor.Gain{}
+	gain := processorbasic.Gain{}
 	processMethod := reflect.ValueOf(&gain).MethodByName("Process")
 	values := []reflect.Value{reflect.ValueOf(float32(1.0)), reflect.ValueOf(float32(1.0))}
 
@@ -68,9 +68,9 @@ func BenchmarkSingleCallWithReflection(b *testing.B) {
 }
 
 type golangEngine struct {
-	osc  processor.Oscillator
-	env  processor.Envelope
-	gain processor.Gain
+	osc  processorbasic.Oscillator
+	env  processorbasic.Envelope
+	gain processorbasic.Gain
 }
 
 func (g *golangEngine) Start(sampleRate int) {

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/vdomcomp"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -45,7 +46,7 @@ type EngineState struct {
 	selectedProcessor        *dsp.ProcessorDefinition
 	selectedConnector        *dsp.Connector
 	selectedConnectorIsInput bool
-	targetProcessor          dsp.Processor
+	targetProcessor          processor.Processor
 	targetPort               int
 	targetPortIsInput        bool
 	mouseOffsetX             int
@@ -68,7 +69,7 @@ func (e *Engine) processEvent() {
 }
 
 //connectorForProcessor finds the connector give a target
-func (e *Engine) connectorForProcessor(processor dsp.Processor, isInput bool, port int) *dsp.Connector {
+func (e *Engine) connectorForProcessor(processor processor.Processor, isInput bool, port int) *dsp.Connector {
 	for i := 0; i < len(e.Engine.Graph.Connectors); i++ {
 		connector := &e.Engine.Graph.Connectors[i]
 		if connector.Processor(isInput) == processor && connector.Port(isInput) == port {
@@ -81,7 +82,7 @@ func (e *Engine) connectorForProcessor(processor dsp.Processor, isInput bool, po
 // connectorTargetIndex iterates the connector list,
 // and gets the index and count of current connections at target
 func (e *Engine) connectorTargetIndex(connector *dsp.Connector,
-	targetIsInput bool, targetProcessor dsp.Processor, targetPort int) (index int, count int) {
+	targetIsInput bool, targetProcessor processor.Processor, targetPort int) (index int, count int) {
 	count = 0
 	index = -1
 	list := e.Engine.Graph.Connectors
@@ -101,7 +102,7 @@ func (e *Engine) connectorTargetIndex(connector *dsp.Connector,
 
 // updateConnector updates the connector list after change (create, modify, delete)
 func (e *Engine) updateConnector(connector *dsp.Connector,
-	targetIsInput bool, targetProcessor dsp.Processor, targetPort int) {
+	targetIsInput bool, targetProcessor processor.Processor, targetPort int) {
 
 	index, targetCount := e.connectorTargetIndex(connector, targetIsInput, targetProcessor, targetPort)
 
@@ -130,7 +131,7 @@ func (e *Engine) updateConnector(connector *dsp.Connector,
 }
 
 // deleteProcessor removes the processor and all its connectors
-func (e *Engine) deleteProcessor(processor dsp.Processor) {
+func (e *Engine) deleteProcessor(processor processor.Processor) {
 	for i := len(e.Engine.Graph.Connectors) - 1; i >= 0; i-- {
 		if e.Engine.Graph.Connectors[i].FromProcessor == processor ||
 			e.Engine.Graph.Connectors[i].ToProcessor == processor {
@@ -347,7 +348,7 @@ func (e *Engine) connectorCoordinates(
 func (e *Engine) Render() vdom.Element {
 	// processors
 	processors := []vdom.Component{}
-	processorMap := map[dsp.Processor]*Processor{}
+	processorMap := map[processor.Processor]*Processor{}
 	for i := 0; i < len(e.Engine.Graph.Processors); i++ {
 		processorDef := &e.Engine.Graph.Processors[i]
 		processor := MakeProcessor(processorDef, e.handleUIEvent)

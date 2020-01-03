@@ -1,6 +1,7 @@
 package dsp
 
 import (
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 )
@@ -26,7 +27,7 @@ type compiledGraph interface {
 }
 
 type graphOp struct {
-	processor    Processor
+	processor    processor.Processor
 	connectorIn  []*Connector
 	connectorOut [][]*Connector
 }

@@ -4,14 +4,14 @@ import (
 	"testing"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateConnector(t *testing.T) {
 	// Given ... Two processors, no existing connections
-	gainA := processor.Gain{}
-	gainB := processor.Gain{}
+	gainA := processorbasic.Gain{}
+	gainB := processorbasic.Gain{}
 	connectorList := []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0}}
 	graph := dsp.Graph{Connectors: connectorList}
 	engine := &Engine{Engine: &dsp.Engine{Graph: graph}, state: &EngineState{editState: connectionEdit}}

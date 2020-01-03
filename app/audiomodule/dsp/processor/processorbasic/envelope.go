@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Phase enumerated type
 type Phase int

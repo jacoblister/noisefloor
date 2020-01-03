@@ -3,7 +3,7 @@ package dsp
 import (
 	"os"
 
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/jacoblister/noisefloor/pkg/midi"
 	"github.com/jacoblister/noisefloor/pkg/vfs"
@@ -18,7 +18,7 @@ type ProcessEventFunc func()
 type Engine struct {
 	midiinput        processorbuiltin.MIDIInput
 	patch            PatchMultiply
-	osc              processor.Oscillator
+	osc              processorbasic.Oscillator
 	Graph            Graph
 	compiledGraph    compiledGraph
 	processEventSkip int
@@ -39,7 +39,7 @@ func (e *Engine) Start(sampleRate int) {
 	e.midiinput.Start(sampleRate)
 	e.patch.Start(sampleRate)
 	e.osc.Start(sampleRate)
-	e.osc.Waveform = processor.Sin
+	e.osc.Waveform = processorbasic.Sin
 }
 
 // Stop suspends the engine

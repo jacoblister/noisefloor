@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 )
 
@@ -16,7 +17,7 @@ type Graph struct {
 	Connectors []Connector
 }
 
-func (g *Graph) inputConnectorsForProcessor(processor Processor) []*Connector {
+func (g *Graph) inputConnectorsForProcessor(processor processor.Processor) []*Connector {
 	_, procInputs, _, _ := processor.Definition()
 	connectorCount := len(procInputs)
 	result := make([]*Connector, connectorCount, connectorCount)
@@ -32,7 +33,7 @@ func (g *Graph) inputConnectorsForProcessor(processor Processor) []*Connector {
 	return result
 }
 
-func (g *Graph) outputConnectorsForProcessor(processor Processor) [][]*Connector {
+func (g *Graph) outputConnectorsForProcessor(processor processor.Processor) [][]*Connector {
 	_, _, procOutputs, _ := processor.Definition()
 	connectorCount := len(procOutputs)
 	result := make([][]*Connector, connectorCount, connectorCount)
@@ -48,7 +49,7 @@ func (g *Graph) outputConnectorsForProcessor(processor Processor) [][]*Connector
 	return result
 }
 
-func (g *Graph) definitonForProcessor(processor Processor) ProcessorDefinition {
+func (g *Graph) definitonForProcessor(processor processor.Processor) ProcessorDefinition {
 	for i := 0; i < len(g.Processors); i++ {
 		if g.Processors[i].Processor == processor {
 			return g.Processors[i]
@@ -57,7 +58,7 @@ func (g *Graph) definitonForProcessor(processor Processor) ProcessorDefinition {
 	panic("could not find processor definition")
 }
 
-func (g *Graph) getProcessorByName(name string) Processor {
+func (g *Graph) getProcessorByName(name string) processor.Processor {
 	for i := 0; i < len(g.Processors); i++ {
 		if g.Processors[i].GetName() == name {
 			return g.Processors[i].Processor
@@ -72,26 +73,26 @@ func exampleGraph() Graph {
 	midiInput := processorbuiltin.MIDIInput{}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 16, Y: 16, Processor: &midiInput})
-	osc := processor.Oscillator{}
-	setProcessorDefaults(&osc)
+	osc := processorbasic.Oscillator{}
+	processor.SetProcessorDefaults(&osc)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 120, Y: 16, Processor: &osc})
-	env := processor.Envelope{}
-	setProcessorDefaults(&env)
+	env := processorbasic.Envelope{}
+	processor.SetProcessorDefaults(&env)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 120, Y: 96, Processor: &env})
-	gain := processor.Gain{}
-	setProcessorDefaults(&gain)
+	gain := processorbasic.Gain{}
+	processor.SetProcessorDefaults(&gain)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 224, Y: 16, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 328, Y: 16, Processor: &outputTerminal})
-	scope := processor.Scope{Trigger: true, Skip: 4}
+	scope := processorbasic.Scope{Trigger: true, Skip: 4}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 328, Y: 96, Processor: &scope})
-	scope2 := processor.Scope{Trigger: false, Skip: 200}
+	scope2 := processorbasic.Scope{Trigger: false, Skip: 200}
 	graph.Processors = append(graph.Processors,
 		ProcessorDefinition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
 

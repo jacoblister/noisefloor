@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Splitter - split signal to multiple outputs
 type Splitter struct {

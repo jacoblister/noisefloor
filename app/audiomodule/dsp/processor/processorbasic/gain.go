@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Gain - linear of exponential gain
 type Gain struct {

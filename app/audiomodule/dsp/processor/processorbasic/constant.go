@@ -1,4 +1,4 @@
-package processor
+package processorbasic
 
 // Constant - single specified value
 type Constant struct {
