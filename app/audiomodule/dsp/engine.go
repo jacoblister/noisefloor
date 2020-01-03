@@ -92,7 +92,7 @@ func (e *Engine) recompileGraph() {
 	e.compiledGraph = nil
 
 	// TODO - totally wrong place for this - avoid race conditon in engine startup
-	compiledGraph := compileProcessorGraph(e.Graph, CompileInterpretedSingleSample)
+	compiledGraph := compileProcessorGraph(e.Graph, CompileInterpreted)
 	compiledGraph.Start(48000)
 
 	e.compiledGraph = compiledGraph
@@ -145,7 +145,7 @@ func (e *Engine) Load(filename string) {
 
 // Save saves the graph to the specified file
 func (e *Engine) Save(filename string) {
-	if filename == "workspace/additive.xml" {
+	if filename == "workspace/example.xml" {
 		file, _ := os.Create(filename)
 		saveProcessorGraph(e.Graph, file)
 		file.Close()

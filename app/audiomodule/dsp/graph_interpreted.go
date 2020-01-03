@@ -8,9 +8,17 @@ type interpretedEngine struct {
 	graphExecutor graphExecutor
 }
 
+const frameLength = 4096
+
 func (g *interpretedEngine) Start(sampleRate int) {
 	for i := 0; i < len(g.graphExecutor.ops); i++ {
-		g.graphExecutor.ops[i].processor.Start(sampleRate)
+		op := &g.graphExecutor.ops[i]
+		op.processor.Start(sampleRate)
+		for j := 0; j < len(op.connectorIn); j++ {
+			if op.connectorIn[j].Samples == nil {
+				op.connectorIn[j].Samples = make([]float32, frameLength, frameLength)
+			}
+		}
 	}
 
 	g.graphExecutor.midiInput.Start(sampleRate)

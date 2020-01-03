@@ -21,7 +21,7 @@ func GetAudioProcessor() audiomodule.AudioProcessor {
 // App is the main entry point for the application
 func App(driver Driver, filesystem vfs.FileSystem) {
 	vfs.SetDefaultFS(filesystem)
-	mods.dspEngine.Load("example.xml") // Load dsp engine patch
+	mods.dspEngine.Load("debug.xml") // Load dsp engine patch
 
 	hardwareDevices := HardwareDevices{}
 	driver.Start(hardwareDevices, &mods)

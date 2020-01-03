@@ -72,7 +72,7 @@ func (d *Divide) ProcessSamples(in [][]float32, length int) (output [][]float32)
 	output = make([][]float32, 1)
 	output[0] = make([]float32, length)
 	for i := 0; i < length; i++ {
-		output[0][i] = d.Process(in[0][i], in[0][i])
+		output[0][i] = d.Process(in[0][i], in[1][i])
 	}
 	return
 }
@@ -169,7 +169,7 @@ func (m *Multiply) ProcessSamples(in [][]float32, length int) (output [][]float3
 	output = make([][]float32, 1)
 	output[0] = make([]float32, length)
 	for i := 0; i < length; i++ {
-		output[0][i] = m.Process(in[0][i], in[0][i])
+		output[0][i] = m.Process(in[0][i], in[1][i])
 	}
 	return
 }
@@ -249,6 +249,7 @@ func (s *Sum) ProcessArgs(in []float32) (output []float32) {
 //ProcessSamples calls process with an array of input/output samples
 func (s *Sum) ProcessSamples(in [][]float32, length int) (output [][]float32) {
 	output = make([][]float32, 1)
+	output[0] = make([]float32, length)
 	for i := 0; i < length; i++ {
 		output[0][i] = s.Process(in[0][i], in[1][i], in[2][i], in[3][i])
 	}

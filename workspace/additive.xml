@@ -53,5 +53,7 @@
       <connector fromProcessor="Oscillator3" fromPort="Out" toProcessor="Divide3" toPort="x"></connector>
       <connector fromProcessor="Constant3" fromPort="Out" toProcessor="Divide3" toPort="y"></connector>
       <connector fromProcessor="Divide2" fromPort="Out" toProcessor="Sum" toPort="In3"></connector>
+      <connector fromProcessor="Divide1" fromPort="Out" toProcessor="Sum" toPort="In2"></connector>
+      <connector fromProcessor="Divide3" fromPort="Out" toProcessor="Sum" toPort="In4"></connector>
    </connectors>
 </graph>
