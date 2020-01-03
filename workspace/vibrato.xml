@@ -1,0 +1,23 @@
+<graph>
+   <processors>
+      <processor type="MIDIInput" name="" x="120" y="216"></processor>
+      <processor type="Oscillator" name="" x="344" y="152" Wave="0"></processor>
+      <processor type="Envelope" name="" x="344" y="232" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
+      <processor type="Gain" name="" x="464" y="152" Level="1"></processor>
+      <processor type="Terminal" name="" x="624" y="152"></processor>
+      <processor type="Scope" name="" x="624" y="304" Trigger="1" Skip="4"></processor>
+      <processor type="Constant" name="Constant" x="24" y="24" Value="0.8333333"></processor>
+      <processor type="Oscillator" name="Oscillator1" x="120" y="24" Wave="0"></processor>
+      <processor type="Constant" name="Constant1" x="24" y="112" Value="1"></processor>
+   </processors>
+   <connectors>
+      <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Trg" toProcessor="Envelope" toPort="Trg"></connector>
+      <connector fromProcessor="Oscillator" fromPort="Out" toProcessor="Gain" toPort="In"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
+      <connector fromProcessor="Constant" fromPort="Out" toProcessor="Oscillator1" toPort="Frq"></connector>
+   </connectors>
+</graph>

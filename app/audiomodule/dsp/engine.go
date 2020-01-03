@@ -145,7 +145,7 @@ func (e *Engine) Load(filename string) {
 
 // Save saves the graph to the specified file
 func (e *Engine) Save(filename string) {
-	if filename == "workspace/example.xml" {
+	if filename == "workspace/vibrato.xml" {
 		file, _ := os.Create(filename)
 		saveProcessorGraph(e.Graph, file)
 		file.Close()

@@ -8,7 +8,7 @@ type Connector struct {
 	ToPort        int
 
 	Value   float32   // current sample value
-	Samples []float32 // current samples
+	samples []float32 // current samples
 }
 
 //Processor is the getter for the Connector Processor
