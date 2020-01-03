@@ -14,35 +14,35 @@ import (
 type Graph struct {
 	Name       string
 	Processors []processor.Definition
-	Connectors []Connector
+	Connectors []processor.Connector
 }
 
-func (g *Graph) inputConnectorsForProcessor(processor processor.Processor) []*Connector {
-	_, procInputs, _, _ := processor.Definition()
+func (g *Graph) inputConnectorsForProcessor(proc processor.Processor) []*processor.Connector {
+	_, procInputs, _, _ := proc.Definition()
 	connectorCount := len(procInputs)
-	result := make([]*Connector, connectorCount, connectorCount)
+	result := make([]*processor.Connector, connectorCount, connectorCount)
 	for i := 0; i < len(result); i++ {
-		result[i] = &Connector{}
+		result[i] = &processor.Connector{}
 	}
 
 	for i := 0; i < len(g.Connectors); i++ {
-		if g.Connectors[i].ToProcessor == processor {
+		if g.Connectors[i].ToProcessor == proc {
 			result[g.Connectors[i].ToPort] = &g.Connectors[i]
 		}
 	}
 	return result
 }
 
-func (g *Graph) outputConnectorsForProcessor(processor processor.Processor) [][]*Connector {
-	_, _, procOutputs, _ := processor.Definition()
+func (g *Graph) outputConnectorsForProcessor(proc processor.Processor) [][]*processor.Connector {
+	_, _, procOutputs, _ := proc.Definition()
 	connectorCount := len(procOutputs)
-	result := make([][]*Connector, connectorCount, connectorCount)
+	result := make([][]*processor.Connector, connectorCount, connectorCount)
 	for i := 0; i < len(result); i++ {
-		result[i] = make([]*Connector, 0, 0)
+		result[i] = make([]*processor.Connector, 0, 0)
 	}
 
 	for i := 0; i < len(g.Connectors); i++ {
-		if g.Connectors[i].FromProcessor == processor {
+		if g.Connectors[i].FromProcessor == proc {
 			result[g.Connectors[i].FromPort] = append(result[g.Connectors[i].FromPort], &g.Connectors[i])
 		}
 	}
@@ -97,24 +97,24 @@ func exampleGraph() Graph {
 		processor.Definition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
 
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
+		processor.Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0})
+		processor.Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1})
+		processor.Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1})
 
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})
+		processor.Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
+		processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
+		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
+		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &scope, ToPort: 0})
+		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &scope, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &scope2, ToPort: 0})
+		processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &scope2, ToPort: 0})
 
 	return graph
 }

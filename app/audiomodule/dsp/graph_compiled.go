@@ -28,8 +28,8 @@ type compiledGraph interface {
 
 type graphOp struct {
 	processor    processor.Processor
-	connectorIn  []*Connector
-	connectorOut [][]*Connector
+	connectorIn  []*processor.Connector
+	connectorOut [][]*processor.Connector
 }
 
 type graphExecutor struct {
@@ -37,7 +37,7 @@ type graphExecutor struct {
 	inputTerm  *processorbuiltin.Terminal  // 'special' Audio input terminal
 	outputTerm *processorbuiltin.Terminal  // 'special' Audio output terminal
 	ops        []graphOp                   // operations to perform, in order
-	connectors []Connector                 // all connectors in the graph
+	connectors []processor.Connector       // all connectors in the graph
 }
 
 func compileGraphExecutor(graph Graph) graphExecutor {

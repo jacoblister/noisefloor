@@ -15,8 +15,8 @@ func (g *interpretedEngine) Start(sampleRate int) {
 		op := &g.graphExecutor.ops[i]
 		op.processor.Start(sampleRate)
 		for j := 0; j < len(op.connectorIn); j++ {
-			if op.connectorIn[j].samples == nil {
-				op.connectorIn[j].samples = make([]float32, frameLength, frameLength)
+			if op.connectorIn[j].Samples() == nil {
+				op.connectorIn[j].SetSamples(make([]float32, frameLength, frameLength))
 			}
 		}
 	}
@@ -35,12 +35,12 @@ func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) 
 		op := g.graphExecutor.ops[j]
 		inArgs := inArgs[:len(op.connectorIn)]
 		for k := 0; k < len(op.connectorIn); k++ {
-			inArgs[k] = op.connectorIn[k].samples
+			inArgs[k] = op.connectorIn[k].Samples()
 		}
 		outArgs := g.graphExecutor.ops[j].processor.ProcessSamples(inArgs, length)
 		for k := 0; k < len(op.connectorOut); k++ {
 			for l := 0; l < len(op.connectorOut[k]); l++ {
-				op.connectorOut[k][l].samples = outArgs[k]
+				op.connectorOut[k][l].SetSamples(outArgs[k])
 				op.connectorOut[k][l].Value = outArgs[k][0]
 			}
 		}

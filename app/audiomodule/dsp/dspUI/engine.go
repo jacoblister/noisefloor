@@ -45,7 +45,7 @@ type Engine struct {
 type EngineState struct {
 	editState                editState
 	selectedProcessor        *processor.Definition
-	selectedConnector        *dsp.Connector
+	selectedConnector        *processor.Connector
 	selectedConnectorIsInput bool
 	targetProcessor          processor.Processor
 	targetPort               int
@@ -70,7 +70,7 @@ func (e *Engine) processEvent() {
 }
 
 //connectorForProcessor finds the connector give a target
-func (e *Engine) connectorForProcessor(processor processor.Processor, isInput bool, port int) *dsp.Connector {
+func (e *Engine) connectorForProcessor(processor processor.Processor, isInput bool, port int) *processor.Connector {
 	for i := 0; i < len(e.Engine.Graph.Connectors); i++ {
 		connector := &e.Engine.Graph.Connectors[i]
 		if connector.Processor(isInput) == processor && connector.Port(isInput) == port {
@@ -82,7 +82,7 @@ func (e *Engine) connectorForProcessor(processor processor.Processor, isInput bo
 
 // connectorTargetIndex iterates the connector list,
 // and gets the index and count of current connections at target
-func (e *Engine) connectorTargetIndex(connector *dsp.Connector,
+func (e *Engine) connectorTargetIndex(connector *processor.Connector,
 	targetIsInput bool, targetProcessor processor.Processor, targetPort int) (index int, count int) {
 	count = 0
 	index = -1
@@ -102,7 +102,7 @@ func (e *Engine) connectorTargetIndex(connector *dsp.Connector,
 }
 
 // updateConnector updates the connector list after change (create, modify, delete)
-func (e *Engine) updateConnector(connector *dsp.Connector,
+func (e *Engine) updateConnector(connector *processor.Connector,
 	targetIsInput bool, targetProcessor processor.Processor, targetPort int) {
 
 	index, targetCount := e.connectorTargetIndex(connector, targetIsInput, targetProcessor, targetPort)
@@ -226,14 +226,14 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			case vdom.MouseDown:
 				isInput := event.Data["IsInput"].(bool)
 				port := event.Data["Port"].(int)
-				processor := event.Data["Processor"].(*processor.Definition)
-				connector := e.connectorForProcessor(processor.Processor, isInput, port)
+				proc := event.Data["Processor"].(*processor.Definition)
+				connector := e.connectorForProcessor(proc.Processor, isInput, port)
 
 				e.state.selectedConnectorIsInput = isInput
 				if connector == nil {
 					// new connector
-					connector = &dsp.Connector{}
-					connector.SetProcessor(isInput, processor.Processor)
+					connector = &processor.Connector{}
+					connector.SetProcessor(isInput, proc.Processor)
 					connector.SetPort(isInput, port)
 					e.state.selectedConnectorIsInput = !isInput
 					e.state.editState = connectionAdd
@@ -241,7 +241,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 					// existing connector
 					e.state.editState = connectionEdit
 				}
-				e.state.selectedProcessor = processor
+				e.state.selectedProcessor = proc
 				e.state.selectedConnector = connector
 			}
 		}
@@ -304,7 +304,7 @@ func (e *Engine) mainUIEventHandler(element *vdom.Element, event *vdom.Event) {
 
 // connectorCoordinates returns the coordinates for the connector, which may be being edited
 func (e *Engine) connectorCoordinates(
-	connector *dsp.Connector,
+	connector *processor.Connector,
 	fromProcessor *Processor,
 	toProcessor *Processor) (x1 int, y1 int, x2 int, y2 int, isConnected bool) {
 	procWidth := procDefaultWidth

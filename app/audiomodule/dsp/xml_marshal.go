@@ -105,7 +105,7 @@ func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				toProcessor := g.getProcessorByName(attr["toProcessor"])
 				toPort, _ := processor.GetProcessorInputIndex(toProcessor, attr["toPort"])
 
-				connector := Connector{
+				connector := processor.Connector{
 					FromProcessor: fromProcessor, FromPort: fromPort,
 					ToProcessor: toProcessor, ToPort: toPort,
 				}

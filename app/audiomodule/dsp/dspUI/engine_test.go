@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +13,7 @@ func TestUpdateConnector(t *testing.T) {
 	// Given ... Two processors, no existing connections
 	gainA := processorbasic.Gain{}
 	gainB := processorbasic.Gain{}
-	connectorList := []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0}}
+	connectorList := []processor.Connector{processor.Connector{FromProcessor: &gainA, FromPort: 0}}
 	graph := dsp.Graph{Connectors: connectorList}
 	engine := &Engine{Engine: &dsp.Engine{Graph: graph}, state: &EngineState{editState: connectionEdit}}
 
@@ -20,17 +21,17 @@ func TestUpdateConnector(t *testing.T) {
 	engine.updateConnector(&engine.Engine.Graph.Connectors[0], true, nil, 0)
 
 	// Then ... No connection is made
-	assert.Equal(t, []dsp.Connector{}, engine.Engine.Graph.Connectors)
+	assert.Equal(t, []processor.Connector{}, engine.Engine.Graph.Connectors)
 
 	// Given ...
-	engine.Engine.Graph.Connectors = []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0}}
+	engine.Engine.Graph.Connectors = []processor.Connector{processor.Connector{FromProcessor: &gainA, FromPort: 0}}
 	engine.state.selectedConnectorIsInput = true
 
 	// When ... Valid target processor
 	engine.updateConnector(&engine.Engine.Graph.Connectors[0], true, &gainB, 0)
 
 	// Then ... Connection is made
-	expected := []dsp.Connector{dsp.Connector{FromProcessor: &gainA, FromPort: 0, ToProcessor: &gainB, ToPort: 0}}
+	expected := []processor.Connector{processor.Connector{FromProcessor: &gainA, FromPort: 0, ToProcessor: &gainB, ToPort: 0}}
 	assert.Equal(t, expected, engine.Engine.Graph.Connectors)
 }
 

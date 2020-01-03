@@ -67,17 +67,17 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 	graph.Processors = append(graph.Processors,
 		processor.Definition{X: 560, Y: 80, Processor: &outputTerminal})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
+		processor.Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0})
+		processor.Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1})
+		processor.Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})
+		processor.Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
+		processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1})
 	graph.Connectors = append(graph.Connectors,
-		Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
+		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
 
 	// When ...
 	result := compileGraphExecutor(graph)
@@ -87,54 +87,54 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 	assert.Equal(t, &outputTerminal, result.outputTerm)
 
 	assert.Equal(t, &midiInput, result.ops[0].processor)
-	assert.Equal(t, []*Connector{}, result.ops[0].connectorIn)
+	assert.Equal(t, []*processor.Connector{}, result.ops[0].connectorIn)
 	assert.Equal(t,
-		[][]*Connector{
-			{&Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0}},
-			{&Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0}},
-			{&Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1}},
+		[][]*processor.Connector{
+			{&processor.Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0}},
+			{&processor.Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0}},
+			{&processor.Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1}},
 			{}, {}, {}, {},
 		},
 		result.ops[0].connectorOut)
 	assert.Equal(t, &osc, result.ops[1].processor)
 	assert.Equal(t,
-		[]*Connector{
-			&Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0},
+		[]*processor.Connector{
+			&processor.Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0},
 		}, result.ops[1].connectorIn)
 	assert.Equal(t,
-		[][]*Connector{{
-			&Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0},
+		[][]*processor.Connector{{
+			&processor.Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0},
 		}}, result.ops[1].connectorOut)
 	assert.Equal(t, &env, result.ops[2].processor)
 	assert.Equal(t,
-		[]*Connector{
-			&Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0},
-			&Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1},
+		[]*processor.Connector{
+			&processor.Connector{FromProcessor: &midiInput, FromPort: 1, ToProcessor: &env, ToPort: 0},
+			&processor.Connector{FromProcessor: &midiInput, FromPort: 2, ToProcessor: &env, ToPort: 1},
 		},
 		result.ops[2].connectorIn)
 	assert.Equal(t,
-		[][]*Connector{{
-			&Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1},
+		[][]*processor.Connector{{
+			&processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1},
 		}},
 		result.ops[2].connectorOut)
 	assert.Equal(t, &gain, result.ops[3].processor)
 	assert.Equal(t,
-		[]*Connector{
-			&Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0},
-			&Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1},
+		[]*processor.Connector{
+			&processor.Connector{FromProcessor: &osc, FromPort: 0, ToProcessor: &gain, ToPort: 0},
+			&processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &gain, ToPort: 1},
 		},
 		result.ops[3].connectorIn)
 	assert.Equal(t,
-		[][]*Connector{{
-			&Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0},
+		[][]*processor.Connector{{
+			&processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0},
 		}},
 		result.ops[3].connectorOut)
 	assert.Equal(t, &outputTerminal, result.ops[4].processor)
 	assert.Equal(t,
-		[]*Connector{
-			&Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0},
-			&Connector{},
+		[]*processor.Connector{
+			&processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0},
+			&processor.Connector{},
 		},
 		result.ops[4].connectorIn)
-	assert.Equal(t, [][]*Connector{}, result.ops[4].connectorOut)
+	assert.Equal(t, [][]*processor.Connector{}, result.ops[4].connectorOut)
 }
