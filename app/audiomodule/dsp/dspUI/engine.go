@@ -6,6 +6,7 @@ import (
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorfactory"
 	"github.com/jacoblister/noisefloor/app/vdomcomp"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -43,7 +44,7 @@ type Engine struct {
 // EngineState is the dsp engine UI stateful store
 type EngineState struct {
 	editState                editState
-	selectedProcessor        *dsp.ProcessorDefinition
+	selectedProcessor        *processor.Definition
 	selectedConnector        *dsp.Connector
 	selectedConnectorIsInput bool
 	targetProcessor          processor.Processor
@@ -172,8 +173,8 @@ func (e *Engine) createProcessor(processorName string, x int, y int) {
 		existingNames = append(existingNames, e.Engine.Graph.Processors[i].GetName())
 	}
 
-	processor := dsp.MakeProcessor(processorName)
-	processorDefiniton := dsp.ProcessorDefinition{X: x, Y: y, Processor: processor, Name: getUniqueProcessorName(processorName, existingNames)}
+	proc := processorfactory.MakeProcessor(processorName)
+	processorDefiniton := processor.Definition{X: x, Y: y, Processor: proc, Name: getUniqueProcessorName(processorName, existingNames)}
 	e.Engine.Graph.Processors = append(e.Engine.Graph.Processors, processorDefiniton)
 }
 
@@ -196,14 +197,14 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 				y := event.Data["OffsetY"].(int)
 				e.state.contextMenu = vdomcomp.MakeContextMenu(
 					x, y,
-					dsp.ListProcessors(), true, func(processorName string) {
+					processorfactory.ListProcessors(), true, func(processorName string) {
 						e.state.contextMenu.SetActive(false)
 						e.createProcessor(processorName, x, y)
 						e.Engine.GraphChange(true)
 					})
 			}
 		case ESProcessor:
-			processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
+			processor := event.Data["Processor"].(*processor.Definition)
 			switch event.Type {
 			case vdom.MouseDown:
 				e.state.selectedProcessor = processor
@@ -225,7 +226,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 			case vdom.MouseDown:
 				isInput := event.Data["IsInput"].(bool)
 				port := event.Data["Port"].(int)
-				processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
+				processor := event.Data["Processor"].(*processor.Definition)
 				connector := e.connectorForProcessor(processor.Processor, isInput, port)
 
 				e.state.selectedConnectorIsInput = isInput
@@ -281,7 +282,7 @@ func (e *Engine) handleUIEvent(element *vdom.Element, event *vdom.Event) {
 		case ESConnector:
 			switch event.Type {
 			case vdom.MouseMove:
-				processor := event.Data["Processor"].(*dsp.ProcessorDefinition)
+				processor := event.Data["Processor"].(*processor.Definition)
 				e.state.targetPortIsInput = event.Data["IsInput"].(bool)
 				e.state.targetProcessor = processor.Processor
 				e.state.targetPort = event.Data["Port"].(int)

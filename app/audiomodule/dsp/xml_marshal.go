@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorfactory"
 )
 
 // MarshalXML marhalls the graph
@@ -86,7 +87,7 @@ func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 			case "processor":
 				x, _ := strconv.Atoi(attr["x"])
 				y, _ := strconv.Atoi(attr["y"])
-				proc := MakeProcessor(attr["type"])
+				proc := processorfactory.MakeProcessor(attr["type"])
 				for name, value := range attr {
 					floatValue, _ := strconv.ParseFloat(value, 32)
 					i, err := processor.GetProcessorParameterIndex(proc, name)
@@ -96,7 +97,7 @@ func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					}
 				}
 
-				procDef := ProcessorDefinition{Name: attr["name"], X: x, Y: y, Processor: proc}
+				procDef := processor.Definition{Name: attr["name"], X: x, Y: y, Processor: proc}
 				g.Processors = append(g.Processors, procDef)
 			case "connector":
 				fromProcessor := g.getProcessorByName(attr["fromProcessor"])

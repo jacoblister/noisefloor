@@ -1,7 +1,7 @@
 package processorfactory
 
 import (
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 )
@@ -12,8 +12,8 @@ func ListProcessors() []string {
 }
 
 //MakeProcessor generates a new processor by the given processor name
-func MakeProcessor(name string) dsp.Processor {
-	var proc dsp.Processor
+func MakeProcessor(name string) processor.Processor {
+	var proc processor.Processor
 
 	switch name {
 	case "MIDIInput":
@@ -43,7 +43,7 @@ func MakeProcessor(name string) dsp.Processor {
 		proc = &processorbasic.Sum{}
 	}
 
-	setProcessorDefaults(proc)
+	processor.SetProcessorDefaults(proc)
 
 	return proc
 }

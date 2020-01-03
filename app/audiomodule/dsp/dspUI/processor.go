@@ -3,7 +3,7 @@ package dspUI
 import (
 	"strconv"
 
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
 
@@ -15,12 +15,12 @@ var level int
 
 // Processor is a dsp processor block (with inputs and outputs displayed)
 type Processor struct {
-	ProcessorDefinition *dsp.ProcessorDefinition
+	ProcessorDefinition *processor.Definition
 	handlerFunc         vdom.HandlerFunc
 }
 
 //MakeProcessor create an new Processor UI componenet
-func MakeProcessor(processorDefinition *dsp.ProcessorDefinition, handlerFunc vdom.HandlerFunc) *Processor {
+func MakeProcessor(processorDefinition *processor.Definition, handlerFunc vdom.HandlerFunc) *Processor {
 	processor := Processor{ProcessorDefinition: processorDefinition, handlerFunc: handlerFunc}
 	return &processor
 }

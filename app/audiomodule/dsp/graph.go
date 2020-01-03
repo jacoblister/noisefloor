@@ -13,7 +13,7 @@ import (
 // Graph is a graph of processors and connectors, plus exported parameter map
 type Graph struct {
 	Name       string
-	Processors []ProcessorDefinition
+	Processors []processor.Definition
 	Connectors []Connector
 }
 
@@ -49,7 +49,7 @@ func (g *Graph) outputConnectorsForProcessor(processor processor.Processor) [][]
 	return result
 }
 
-func (g *Graph) definitonForProcessor(processor processor.Processor) ProcessorDefinition {
+func (g *Graph) definitonForProcessor(processor processor.Processor) processor.Definition {
 	for i := 0; i < len(g.Processors); i++ {
 		if g.Processors[i].Processor == processor {
 			return g.Processors[i]
@@ -72,29 +72,29 @@ func exampleGraph() Graph {
 
 	midiInput := processorbuiltin.MIDIInput{}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 16, Y: 16, Processor: &midiInput})
+		processor.Definition{X: 16, Y: 16, Processor: &midiInput})
 	osc := processorbasic.Oscillator{}
 	processor.SetProcessorDefaults(&osc)
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 120, Y: 16, Processor: &osc})
+		processor.Definition{X: 120, Y: 16, Processor: &osc})
 	env := processorbasic.Envelope{}
 	processor.SetProcessorDefaults(&env)
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 120, Y: 96, Processor: &env})
+		processor.Definition{X: 120, Y: 96, Processor: &env})
 	gain := processorbasic.Gain{}
 	processor.SetProcessorDefaults(&gain)
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 224, Y: 16, Processor: &gain})
+		processor.Definition{X: 224, Y: 16, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 328, Y: 16, Processor: &outputTerminal})
+		processor.Definition{X: 328, Y: 16, Processor: &outputTerminal})
 	scope := processorbasic.Scope{Trigger: true, Skip: 4}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 328, Y: 96, Processor: &scope})
+		processor.Definition{X: 328, Y: 96, Processor: &scope})
 	scope2 := processorbasic.Scope{Trigger: false, Skip: 200}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
+		processor.Definition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
 
 	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})

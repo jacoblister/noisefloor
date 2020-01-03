@@ -3,6 +3,7 @@ package dsp
 import (
 	"testing"
 
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
 	"github.com/stretchr/testify/assert"
@@ -51,20 +52,20 @@ func TestCompileGraphExecutor_SimplePatch(t *testing.T) {
 	graph := Graph{}
 	midiInput := processorbuiltin.MIDIInput{}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 80, Y: 80, Processor: &midiInput})
+		processor.Definition{X: 80, Y: 80, Processor: &midiInput})
 	osc := processorbasic.Oscillator{}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 240, Y: 80, Processor: &osc})
+		processor.Definition{X: 240, Y: 80, Processor: &osc})
 	env := processorbasic.Envelope{}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 240, Y: 240, Processor: &env})
+		processor.Definition{X: 240, Y: 240, Processor: &env})
 	gain := processorbasic.Gain{}
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 400, Y: 80, Processor: &gain})
+		processor.Definition{X: 400, Y: 80, Processor: &gain})
 	outputTerminal := processorbuiltin.Terminal{}
 	outputTerminal.SetParameters(true, 2)
 	graph.Processors = append(graph.Processors,
-		ProcessorDefinition{X: 560, Y: 80, Processor: &outputTerminal})
+		processor.Definition{X: 560, Y: 80, Processor: &outputTerminal})
 	graph.Connectors = append(graph.Connectors,
 		Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
