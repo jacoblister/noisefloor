@@ -52,7 +52,7 @@ func (m *modules) Init() {
 
 // Render returns the main view
 func (m *modules) Render() vdom.Element {
-	engineUI := dspUI.MakeEngine(&m.dspEngine, 1200-m.state.vDividerPos-4, m.state.hDividerPos, &m.state.dspUIEngineState)
+	engineUI := dspUI.MakeEngine(&m.dspEngine, 1400-m.state.vDividerPos-4, m.state.hDividerPos, &m.state.dspUIEngineState)
 	filePickerUI := dspUI.MakeFilePicker(&m.dspEngine, m.state.vDividerPos, m.state.hDividerPos, &m.state.dspUIFilePickerState)
 	vSplit := vdomcomp.MakeLayoutVSplit(1200, m.state.hDividerPos, m.state.vDividerPos, 4, &m.state.vDividerMoving,
 		filePickerUI,
@@ -64,7 +64,7 @@ func (m *modules) Render() vdom.Element {
 		},
 	)
 
-	hSplit := vdomcomp.MakeLayoutHSplit(1200, 768, m.state.hDividerPos, 4, &m.state.hDividerMoving,
+	hSplit := vdomcomp.MakeLayoutHSplit(1400, 800, m.state.hDividerPos, 4, &m.state.hDividerMoving,
 		vSplit, onscreenkeyboardUI.MakeKeyboard(&m.keyboard),
 		func(pos int) {
 			if pos > 100 {

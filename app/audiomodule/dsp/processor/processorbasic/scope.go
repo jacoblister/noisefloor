@@ -26,7 +26,9 @@ func (s *Scope) Start(sampleRate int) {
 }
 
 // Process - proccess next sample
-func (s *Scope) Process(input float32) {
+func (s *Scope) Process(input float32) (output float32) {
+	output = input
+
 	s.skipCount--
 	if s.skipCount >= 0 {
 		return
@@ -53,6 +55,8 @@ func (s *Scope) Process(input float32) {
 		}
 	}
 	s.lastSample = input
+
+	return
 }
 
 // CustomRenderDimentions get the extended dimentions of the scope

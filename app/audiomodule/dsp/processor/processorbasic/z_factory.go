@@ -254,7 +254,7 @@ func (s *Sum) SetParameter(index int, value float32) {}
 
 // Definition exports processor definition
 func (s *Scope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Scope", []string{"In"}, []string{}, []processor.Parameter{
+	return "Scope", []string{"In"}, []string{"Out"}, []processor.Parameter{
 		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: boolTofloat32(s.Trigger)},
 		processor.Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(s.Skip)},
 	}
@@ -262,15 +262,16 @@ func (s *Scope) Definition() (name string, inputs []string, outputs []string, pa
 
 //ProcessArgs calls process with args as an array
 func (s *Scope) ProcessArgs(in []float32) (output []float32) {
-	s.Process(in[0])
-	return []float32{}
+	out := s.Process(in[0])
+	return []float32{out}
 }
 
 //ProcessSamples calls process with an array of input/output samples
 func (s *Scope) ProcessSamples(in [][]float32, length int) (output [][]float32) {
-	output = make([][]float32, 0)
+	output = make([][]float32, 1)
+	output[0] = make([]float32, length)
 	for i := 0; i < length; i++ {
-		s.Process(in[0][i])
+		output[0][i] = s.Process(in[0][i])
 	}
 	return
 }

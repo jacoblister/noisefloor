@@ -310,6 +310,11 @@ func (e *Engine) connectorCoordinates(
 	procWidth := procDefaultWidth
 
 	if fromProcessor != nil {
+		customRenderDimentions, ok := fromProcessor.ProcessorDefinition.Processor.(customRenderDimentions)
+		if ok {
+			procWidth, _ = customRenderDimentions.CustomRenderDimentions()
+		}
+
 		x1, y1 = fromProcessor.GetConnectorPoint(procWidth, false, connector.FromPort)
 	}
 	if toProcessor != nil {

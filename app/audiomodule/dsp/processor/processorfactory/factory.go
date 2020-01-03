@@ -19,10 +19,7 @@ func MakeProcessor(name string) processor.Processor {
 	case "MIDIInput":
 		proc = &processorbuiltin.MIDIInput{}
 	case "Terminal":
-		// TODO - consider alternative terminal parameters
-		terminal := &processorbuiltin.Terminal{}
-		terminal.SetParameters(true, 2)
-		proc = terminal
+		proc = &processorbuiltin.Terminal{}
 	case "Constant":
 		proc = &processorbasic.Constant{}
 	case "Divide":

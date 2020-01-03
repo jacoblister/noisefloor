@@ -16,7 +16,7 @@ type Terminal struct {
 	sampleIndex int
 }
 
-// Start - init envelope generator
+// Start - init processor
 func (t *Terminal) Start(sampleRate int) {}
 
 // Process - produce next sample
@@ -38,6 +38,11 @@ func (t *Terminal) SetSamples(samples [][]float32) {
 
 // Definition exports the terminal connectors, given the input/output type and count
 func (t *Terminal) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	if t.connectors == 0 {
+		t.isInput = true
+		t.connectors = 2
+	}
+
 	inputs = []string{}
 	outputs = []string{}
 
