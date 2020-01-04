@@ -98,10 +98,9 @@ func (o *Oscillator) Definition() (name string, inputs []string, outputs []strin
 
 //SetParameter set a single processor parameter
 func (o *Oscillator) SetParameter(index int, value float32) {
-	value = value * 4 / 3
 	switch index {
 	case 0:
-		o.Waveform = Waveform(value)
+		o.Waveform = Waveform(value + 0.5)
 	}
 }
 
@@ -133,8 +132,7 @@ func (s *Scope) Definition() (name string, inputs []string, outputs []string, pa
 func (s *Scope) SetParameter(index int, value float32) {
 	switch index {
 	case 0:
-		value = value - 0.5
-		s.Trigger = int(value)
+		s.Trigger = int(value + 0.5)
 	case 1:
 		s.Skip = int(value)
 	}

@@ -9,6 +9,6 @@ type Sum struct {
 func (s *Sum) Start(sampleRate int) {}
 
 // Process - produce next sample
-func (s *Sum) Process(in1 float32, in2 float32, in3 float32, in4 float32) (out float32) {
-	return in1 + in2 + in3 + in4
+func (s *Sum) Process(In1 float32, In2 float32, In3 float32, In4 float32) (Out float32) {
+	return In1 + In2 + In3 + In4
 }

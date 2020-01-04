@@ -26,8 +26,8 @@ func (s *Scope) Start(sampleRate int) {
 }
 
 // Process - proccess next sample
-func (s *Scope) Process(input float32) (output float32) {
-	output = input
+func (s *Scope) Process(In float32) (Out float32) {
+	Out = In
 
 	s.skipCount--
 	if s.skipCount >= 0 {
@@ -37,24 +37,24 @@ func (s *Scope) Process(input float32) (output float32) {
 
 	if s.Trigger > 0 && s.index == 0 {
 		// wait for zero crossing
-		if s.lastSample > 0 || input < 0 {
-			s.lastSample = input
+		if s.lastSample > 0 || In < 0 {
+			s.lastSample = In
 			return
 		}
 	}
 
 	if s.index < scopeSamples {
-		s.samples[s.index] = input
+		s.samples[s.index] = In
 		s.index++
 	} else {
 		if s.Trigger > 0 {
 			s.index = 0
 		} else {
 			s.samples = s.samples[1:]
-			s.samples = append(s.samples, input)
+			s.samples = append(s.samples, In)
 		}
 	}
-	s.lastSample = input
+	s.lastSample = In
 
 	return
 }

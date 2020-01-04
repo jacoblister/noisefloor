@@ -10,7 +10,7 @@ type Gain struct {
 func (g *Gain) Start(sampleRate int) {}
 
 // Process - produce next sample
-func (g *Gain) Process(input float32, gain float32) (output float32) {
-	output = input * gain * g.Level
+func (g *Gain) Process(In float32, Gai float32) (Out float32) {
+	Out = In * Gai * g.Level
 	return
 }

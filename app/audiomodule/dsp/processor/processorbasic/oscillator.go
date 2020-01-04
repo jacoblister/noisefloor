@@ -53,10 +53,10 @@ func (o *Oscillator) Start(sampleRate int) {
 func (o *Oscillator) Stop() {}
 
 // Process - produce next sample
-func (o *Oscillator) Process(freq float32) (output float32) {
-	output = o.waveTable[o.Waveform][int(o.currentSample)]
+func (o *Oscillator) Process(Frq float32) (Out float32) {
+	Out = o.waveTable[o.Waveform][int(o.currentSample)]
 
-	o.currentSample += freq
+	o.currentSample += Frq
 	if o.currentSample >= o.sampleRate {
 		o.currentSample -= o.sampleRate
 	}

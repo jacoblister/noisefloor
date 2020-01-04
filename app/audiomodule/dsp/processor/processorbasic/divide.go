@@ -9,10 +9,10 @@ type Divide struct {
 func (d *Divide) Start(sampleRate int) {}
 
 // Process - produce next sample
-func (d *Divide) Process(x float32, y float32) (output float32) {
+func (d *Divide) Process(x float32, y float32) (Out float32) {
 	if y == 0 {
 		return 0
 	}
-	output = x / y
+	Out = x / y
 	return
 }

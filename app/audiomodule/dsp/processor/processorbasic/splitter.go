@@ -9,6 +9,6 @@ type Splitter struct {
 func (s *Splitter) Start(sampleRate int) {}
 
 // Process - produce next sample
-func (s *Splitter) Process(input float32) (out1 float32, out2 float32, out3 float32, out4 float32) {
-	return input, input, input, input
+func (s *Splitter) Process(In float32) (Out1 float32, Out2 float32, Out3 float32, Out4 float32) {
+	return In, In, In, In
 }

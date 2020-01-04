@@ -32,8 +32,8 @@ func (e *Envelope) Start(sampleRate int) {
 }
 
 // Process - produce next sample
-func (e *Envelope) Process(gate float32, trigger float32) (output float32) {
-	if trigger > 0 && e.lastTrigger == 0 {
+func (e *Envelope) Process(Gte float32, Trg float32) (Out float32) {
+	if Trg > 0 && e.lastTrigger == 0 {
 		e.output = 0
 		e.delta = (1000 / e.Attack) / e.sampleRate
 		e.phase = Attack
@@ -52,7 +52,7 @@ func (e *Envelope) Process(gate float32, trigger float32) (output float32) {
 			e.phase = Sustain
 		}
 	case Sustain:
-		if gate == 0 {
+		if Gte == 0 {
 			e.delta = (1000 / e.Release) / e.sampleRate
 			e.phase = Release
 		}
@@ -64,7 +64,7 @@ func (e *Envelope) Process(gate float32, trigger float32) (output float32) {
 		}
 	}
 
-	e.lastTrigger = trigger
-	output = e.output
+	e.lastTrigger = Trg
+	Out = e.output
 	return
 }
