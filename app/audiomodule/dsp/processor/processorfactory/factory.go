@@ -2,16 +2,16 @@ package processorfactory
 
 import (
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
-	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbuiltin"
+	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor/processorbasic"
 )
 
 // ListProcessors returns a list of available processors
 func ListProcessors() []string {
-	return []string{"MIDIInput", "Terminal", "Constant", "Divide", "Envelope", "Gain", "Multiply", "Oscillator", "Scope", "Splitter", "Sum"}
+	return []string {"MIDIInput","Terminal","Constant","Divide","Envelope","Gain","Multiply","Oscillator","Scope","Splitter","Sum"}
 }
 
-//MakeProcessor generates a new processor by the given processor name
+// MakeProcessor generates a new processor by the given processor name
 func MakeProcessor(name string) processor.Processor {
 	var proc processor.Processor
 
