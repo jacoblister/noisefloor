@@ -3,6 +3,41 @@ package processorbasic
 import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
 // Start - init module
+func (r *Add) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Add) Stop() {}
+
+// Definition exports the constant definition
+func (r *Add) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Add", []string{"x","y"}, []string{"Out"},
+	[]processor.Parameter{
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Add) SetParameter(index int, value float32) {
+	switch index {
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Add) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Add) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i])
+	}
+	return
+}
+
+// Start - init module
 func (r *Constant) Start(sampleRate int) {}
 
 // Stop - release module
