@@ -89,10 +89,10 @@ func exampleGraph() Graph {
 	outputTerminal.SetParameters(true, 2)
 	graph.Processors = append(graph.Processors,
 		processor.Definition{X: 328, Y: 16, Processor: &outputTerminal})
-	scope := processorbasic.Scope{Trigger: true, Skip: 4}
+	scope := processorbasic.Scope{Trigger: 1, Skip: 4}
 	graph.Processors = append(graph.Processors,
 		processor.Definition{X: 328, Y: 96, Processor: &scope})
-	scope2 := processorbasic.Scope{Trigger: false, Skip: 200}
+	scope2 := processorbasic.Scope{Trigger: 0, Skip: 200}
 	graph.Processors = append(graph.Processors,
 		processor.Definition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
 

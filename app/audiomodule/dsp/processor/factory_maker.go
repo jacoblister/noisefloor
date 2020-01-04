@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -59,8 +60,22 @@ func readProcessor(packageName string, filename string) Processor {
 				}
 			}
 		}
+
+		st, ok := n.(*ast.StructType)
+		if ok {
+			for i := 0; i < st.Fields.NumFields(); i++ {
+				if st.Fields.List[i].Tag != nil {
+					parameter := Parameter{}
+					parameter.name = st.Fields.List[i].Names[0].String()
+					processor.parameters = append(processor.parameters, parameter)
+				}
+			}
+		}
+
 		return true
 	})
+
+	fmt.Println(processor.name, processor.parameters)
 
 	return processor
 }

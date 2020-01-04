@@ -11,8 +11,8 @@ const scopeSamples = 100
 
 // Scope - display signal
 type Scope struct {
-	Trigger bool
-	Skip    int
+	Trigger int `default:"1" min:"0" max:"1"`
+	Skip    int `default:"4" min:"0" max:"200"`
 
 	skipCount  int
 	index      int
@@ -35,7 +35,7 @@ func (s *Scope) Process(input float32) (output float32) {
 	}
 	s.skipCount = s.Skip
 
-	if s.Trigger && s.index == 0 {
+	if s.Trigger > 0 && s.index == 0 {
 		// wait for zero crossing
 		if s.lastSample > 0 || input < 0 {
 			s.lastSample = input
@@ -47,7 +47,7 @@ func (s *Scope) Process(input float32) (output float32) {
 		s.samples[s.index] = input
 		s.index++
 	} else {
-		if s.Trigger {
+		if s.Trigger > 0 {
 			s.index = 0
 		} else {
 			s.samples = s.samples[1:]

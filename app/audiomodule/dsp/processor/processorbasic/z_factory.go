@@ -124,7 +124,7 @@ func (s *Sum) SetParameter(index int, value float32) {}
 // Definition exports processor definition
 func (s *Scope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Scope", []string{"In"}, []string{"Out"}, []processor.Parameter{
-		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: boolTofloat32(s.Trigger)},
+		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: float32(s.Trigger)},
 		processor.Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(s.Skip)},
 	}
 }
@@ -134,7 +134,7 @@ func (s *Scope) SetParameter(index int, value float32) {
 	switch index {
 	case 0:
 		value = value - 0.5
-		s.Trigger = float32toBool(value)
+		s.Trigger = int(value)
 	case 1:
 		s.Skip = int(value)
 	}
