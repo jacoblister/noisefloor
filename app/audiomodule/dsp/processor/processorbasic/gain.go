@@ -6,9 +6,6 @@ type Gain struct {
 	Exponential bool
 }
 
-// Start - init envelope generator
-func (g *Gain) Start(sampleRate int) {}
-
 // Process - produce next sample
 func (g *Gain) Process(In float32, Gai float32) (Out float32) {
 	Out = In * Gai * g.Level

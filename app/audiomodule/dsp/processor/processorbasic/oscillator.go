@@ -20,7 +20,7 @@ const maxSamples = 48000
 
 // Oscillator - basic wave function generator
 type Oscillator struct {
-	Waveform Waveform `default:"Sin"`
+	Waveform Waveform `default:"0" min:"0" max:"3"`
 
 	sampleRate    float32
 	currentSample float32
@@ -48,9 +48,6 @@ func (o *Oscillator) Start(sampleRate int) {
 		}
 	}
 }
-
-// Stop - deallocate oscialltor
-func (o *Oscillator) Stop() {}
 
 // Process - produce next sample
 func (o *Oscillator) Process(Frq float32) (Out float32) {

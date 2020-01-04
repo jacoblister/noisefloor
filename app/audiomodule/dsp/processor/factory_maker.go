@@ -3,17 +3,17 @@
 package main
 
 import (
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 )
 
-const packageName = "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
+const basePackageName = "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
 type Parameter struct {
 	name         string
@@ -67,6 +67,19 @@ func readProcessor(packageName string, filename string) Processor {
 				if st.Fields.List[i].Tag != nil {
 					parameter := Parameter{}
 					parameter.name = st.Fields.List[i].Names[0].String()
+					parameter.dataType = st.Fields.List[i].Type.(*ast.Ident).Name
+
+					var tag reflect.StructTag
+					tagValue := st.Fields.List[i].Tag.Value
+					tag = reflect.StructTag(st.Fields.List[i].Tag.Value[1:len(tagValue)])
+
+					fval, _ := strconv.ParseFloat(tag.Get("default"), 32)
+					parameter.valueDefault = float32(fval)
+					fval, _ = strconv.ParseFloat(tag.Get("min"), 32)
+					parameter.min = float32(fval)
+					fval, _ = strconv.ParseFloat(tag.Get("max"), 32)
+					parameter.max = float32(fval)
+
 					processor.parameters = append(processor.parameters, parameter)
 				}
 			}
@@ -74,8 +87,6 @@ func readProcessor(packageName string, filename string) Processor {
 
 		return true
 	})
-
-	fmt.Println(processor.name, processor.parameters)
 
 	return processor
 }
@@ -106,11 +117,40 @@ func writeMethodStart(f *os.File, processor Processor) {
 	f.WriteString("func (r *" + processor.name + ") Start(sampleRate int) {}\n\n")
 }
 
+func writeMethodStop(f *os.File, processor Processor) {
+	f.WriteString("// Stop - release module\n")
+	f.WriteString("func (r *" + processor.name + ") Stop() {}\n\n")
+}
+
+func writeMethodDefinition(f *os.File, processor Processor) {
+	f.WriteString("// Definition exports the constant definition\n")
+	f.WriteString("func (r *" + processor.name + ") Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {\n")
+	inputs := []string{}
+	outputs := []string{}
+	for _, input := range processor.inputs {
+		inputs = append(inputs, "\""+input+"\"")
+	}
+	for _, output := range processor.outputs {
+		outputs = append(outputs, "\""+output+"\"")
+	}
+	f.WriteString("\treturn \"" + processor.name + "\", []string{" + strings.Join(inputs, ",") + "}, []string{" + strings.Join(outputs, ",") + "},\n")
+	f.WriteString("\t[]processor.Parameter{\n")
+	for _, parameter := range processor.parameters {
+		min := strconv.FormatFloat(float64(parameter.min), 'f', -1, 32)
+		max := strconv.FormatFloat(float64(parameter.max), 'f', -1, 32)
+		valueDefault := strconv.FormatFloat(float64(parameter.valueDefault), 'f', -1, 32)
+		f.WriteString("\t\tprocessor.Parameter{Name: \"" + parameter.name + "\", Min: " + min + ", Max: " + max + ", Default: " + valueDefault + ", Value: float32(r." + parameter.name + ")},\n")
+	}
+	f.WriteString("\t}\n")
+
+	f.WriteString("}\n\n")
+}
+
 func writeMethodProcessArgs(f *os.File, processor Processor) {
 	f.WriteString("//ProcessArgs calls process with an array of input/output samples\n")
 	f.WriteString("func (r *" + processor.name + ") ProcessArgs(in []float32) (output []float32) {\n")
-	outputs := []string{}
 	inputs := []string{}
+	outputs := []string{}
 	for i := 0; i < len(processor.inputs); i++ {
 		inputs = append(inputs, "in["+strconv.Itoa(i)+"]")
 	}
@@ -149,16 +189,53 @@ func writeMethodProcessSamples(f *os.File, processor Processor) {
 	f.WriteString("}\n\n")
 }
 
+func writeMethodSetParameter(f *os.File, processor Processor) {
+	f.WriteString("//SetParameter set a single processor parameter\n")
+	f.WriteString("func (r *" + processor.name + ") SetParameter(index int, value float32) {\n")
+	f.WriteString("\tswitch index {\n")
+	for i, parameter := range processor.parameters {
+		f.WriteString("\tcase " + strconv.Itoa(i) + ":\n")
+		f.WriteString("\t\tr." + parameter.name + " = ")
+		if parameter.dataType == "float32" {
+			f.WriteString("value\n")
+		} else {
+			f.WriteString(parameter.dataType + "(value + 0.5)\n")
+		}
+	}
+
+	f.WriteString("\t} \n")
+	f.WriteString("}\n\n")
+}
+
 func writeMethods(packageName string, processors []Processor) {
-	f, err := os.Create(packageName + "/z_auto.go")
+	f, err := os.Create(packageName + "/z_factory.go")
 	if err != nil {
-		panic("Could not open factory file: " + packageName + "/z_auto.go")
+		panic("Could not open factory file: " + packageName + "/z_factory.go")
 	}
 	f.WriteString("package " + packageName + "\n\n")
+
+	needImport := false
+	for _, processor := range processors {
+		if _, ok := processor.methods["Definition"]; !ok {
+			needImport = true
+		}
+	}
+	if needImport {
+		f.WriteString("import \"" + basePackageName + "\"\n\n")
+	}
 
 	for _, processor := range processors {
 		if _, ok := processor.methods["Start"]; !ok {
 			writeMethodStart(f, processor)
+		}
+		if _, ok := processor.methods["Stop"]; !ok {
+			writeMethodStop(f, processor)
+		}
+		if _, ok := processor.methods["Definition"]; !ok {
+			writeMethodDefinition(f, processor)
+		}
+		if _, ok := processor.methods["SetParameter"]; !ok {
+			writeMethodSetParameter(f, processor)
 		}
 		if _, ok := processor.methods["ProcessArgs"]; !ok {
 			writeMethodProcessArgs(f, processor)
@@ -182,9 +259,9 @@ func writeFactory(dirs []string, processors []Processor) {
 	}
 	f.WriteString("package processorfactory\n\n")
 	f.WriteString("import (\n")
-	f.WriteString("\t\"" + packageName + "\"\n")
+	f.WriteString("\t\"" + basePackageName + "\"\n")
 	for _, dir := range dirs {
-		f.WriteString("\t\"" + packageName + "/" + dir + "\"\n")
+		f.WriteString("\t\"" + basePackageName + "/" + dir + "\"\n")
 	}
 	f.WriteString(")\n\n")
 

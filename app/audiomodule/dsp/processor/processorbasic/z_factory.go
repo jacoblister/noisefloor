@@ -2,138 +2,339 @@ package processorbasic
 
 import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
-func boolTofloat32(value bool) float32 {
-	if value {
-		return 1
-	}
-	return 0
-}
+// Start - init module
+func (r *Constant) Start(sampleRate int) {}
 
-func float32toBool(value float32) bool {
-	if value <= 0 {
-		return false
-	}
-	return true
-}
+// Stop - release module
+func (r *Constant) Stop() {}
 
 // Definition exports the constant definition
-func (c *Constant) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+func (r *Constant) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Constant", []string{}, []string{"Out"},
-		[]processor.Parameter{
-			processor.Parameter{Name: "Value", Min: 0, Max: 10, Default: 1, Value: c.Value},
-		}
-}
-
-//SetParameter set a single processor parameter
-func (c *Constant) SetParameter(index int, value float32) {
-	switch index {
-	case 0:
-		c.Value = value
+	[]processor.Parameter{
+		processor.Parameter{Name: "Value", Min: 0, Max: 10, Default: 1, Value: float32(r.Value)},
 	}
 }
 
-// Definition exports the constant definition
-func (d *Divide) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Divide", []string{"x", "y"}, []string{"Out"},
-		[]processor.Parameter{}
-}
-
 //SetParameter set a single processor parameter
-func (d *Divide) SetParameter(index int, value float32) {}
-
-// Definition exports processor definition
-func (e *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Envelope", []string{"Gte", "Trg"}, []string{"Out"},
-		[]processor.Parameter{
-			processor.Parameter{Name: "Attack", Min: 0, Max: 100, Default: 2, Value: e.Attack},
-			processor.Parameter{Name: "Decay", Min: 0, Max: 1000, Default: 100, Value: e.Decay},
-			processor.Parameter{Name: "Sustain", Min: 0, Max: 1.0, Default: 0.75, Value: e.Sustain},
-			processor.Parameter{Name: "Release", Min: 0, Max: 1000, Default: 1000, Value: e.Release},
-		}
-}
-
-//SetParameter set a single processor parameter
-func (e *Envelope) SetParameter(index int, value float32) {
+func (r *Constant) SetParameter(index int, value float32) {
 	switch index {
 	case 0:
-		e.Attack = value
+		r.Value = value
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Constant) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process()
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Constant) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process()
+	}
+	return
+}
+
+// Start - init module
+func (r *Divide) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Divide) Stop() {}
+
+// Definition exports the constant definition
+func (r *Divide) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Divide", []string{"x","y"}, []string{"Out"},
+	[]processor.Parameter{
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Divide) SetParameter(index int, value float32) {
+	switch index {
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Divide) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Divide) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i])
+	}
+	return
+}
+
+// Stop - release module
+func (r *Envelope) Stop() {}
+
+// Definition exports the constant definition
+func (r *Envelope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Envelope", []string{"Gte","Trg"}, []string{"Out"},
+	[]processor.Parameter{
+		processor.Parameter{Name: "Attack", Min: 0, Max: 100, Default: 2, Value: float32(r.Attack)},
+		processor.Parameter{Name: "Decay", Min: 0, Max: 1000, Default: 100, Value: float32(r.Decay)},
+		processor.Parameter{Name: "Sustain", Min: 0, Max: 1, Default: 0.75, Value: float32(r.Sustain)},
+		processor.Parameter{Name: "Release", Min: 0, Max: 1000, Default: 1000, Value: float32(r.Release)},
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Envelope) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		r.Attack = value
 	case 1:
-		e.Decay = value
+		r.Decay = value
 	case 2:
-		e.Sustain = value
+		r.Sustain = value
 	case 3:
-		e.Release = value
-	}
+		r.Release = value
+	} 
 }
 
-// Definition exports processor definition
-func (g *Gain) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Gain", []string{"In", "Gai"}, []string{"Out"}, []processor.Parameter{
-		processor.Parameter{Name: "Level", Min: 0, Max: 2, Default: 1, Value: g.Level},
-	}
+//ProcessArgs calls process with an array of input/output samples
+func (r *Envelope) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1])
+	return []float32{out0}
 }
 
-//SetParameter set a single processor parameter
-func (g *Gain) SetParameter(index int, value float32) {
-	switch index {
-	case 0:
-		g.Level = value
+//ProcessSamples calls process with an array of input/output samples
+func (r *Envelope) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
+	return
 }
+
+// Start - init module
+func (r *Gain) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Gain) Stop() {}
 
 // Definition exports the constant definition
-func (m *Multiply) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Multiply", []string{"x", "y"}, []string{"Out"},
-		[]processor.Parameter{}
+func (r *Gain) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Gain", []string{"In","Gai"}, []string{"Out"},
+	[]processor.Parameter{
+		processor.Parameter{Name: "Level", Min: 0, Max: 2, Default: 1, Value: float32(r.Level)},
+	}
 }
 
 //SetParameter set a single processor parameter
-func (m *Multiply) SetParameter(index int, value float32) {}
+func (r *Gain) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		r.Level = value
+	} 
+}
 
-// Definition exports processor definition
-func (o *Oscillator) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+//ProcessArgs calls process with an array of input/output samples
+func (r *Gain) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Gain) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i])
+	}
+	return
+}
+
+// Start - init module
+func (r *Multiply) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Multiply) Stop() {}
+
+// Definition exports the constant definition
+func (r *Multiply) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Multiply", []string{"x","y"}, []string{"Out"},
+	[]processor.Parameter{
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Multiply) SetParameter(index int, value float32) {
+	switch index {
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Multiply) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Multiply) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i])
+	}
+	return
+}
+
+// Stop - release module
+func (r *Oscillator) Stop() {}
+
+// Definition exports the constant definition
+func (r *Oscillator) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Oscillator", []string{"Frq"}, []string{"Out"},
-		[]processor.Parameter{processor.Parameter{Name: "Wave", Min: 0, Max: 3, Value: float32(o.Waveform)}}
-}
-
-//SetParameter set a single processor parameter
-func (o *Oscillator) SetParameter(index int, value float32) {
-	switch index {
-	case 0:
-		o.Waveform = Waveform(value + 0.5)
-	}
-}
-
-// Definition exports processor definition
-func (s *Splitter) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Splitter", []string{"In"}, []string{"Out1", "Out2", "Out3", "Out4"}, []processor.Parameter{}
-}
-
-//SetParameter set a single processor parameter
-func (s *Splitter) SetParameter(index int, value float32) {}
-
-// Definition exports processor definition
-func (s *Sum) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Sum", []string{"In1", "In2", "In3", "In4"}, []string{"Out"}, []processor.Parameter{}
-}
-
-//SetParameter set a single processor parameter
-func (s *Sum) SetParameter(index int, value float32) {}
-
-// Definition exports processor definition
-func (s *Scope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Scope", []string{"In"}, []string{"Out"}, []processor.Parameter{
-		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: float32(s.Trigger)},
-		processor.Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(s.Skip)},
+	[]processor.Parameter{
+		processor.Parameter{Name: "Waveform", Min: 0, Max: 3, Default: 0, Value: float32(r.Waveform)},
 	}
 }
 
 //SetParameter set a single processor parameter
-func (s *Scope) SetParameter(index int, value float32) {
+func (r *Oscillator) SetParameter(index int, value float32) {
 	switch index {
 	case 0:
-		s.Trigger = int(value + 0.5)
+		r.Waveform = Waveform(value + 0.5)
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Oscillator) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Oscillator) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i])
+	}
+	return
+}
+
+// Stop - release module
+func (r *Scope) Stop() {}
+
+// Definition exports the constant definition
+func (r *Scope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Scope", []string{"In"}, []string{"Out"},
+	[]processor.Parameter{
+		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: float32(r.Trigger)},
+		processor.Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(r.Skip)},
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Scope) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		r.Trigger = int(value + 0.5)
 	case 1:
-		s.Skip = int(value)
+		r.Skip = int(value + 0.5)
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Scope) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Scope) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i])
+	}
+	return
+}
+
+// Start - init module
+func (r *Splitter) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Splitter) Stop() {}
+
+// Definition exports the constant definition
+func (r *Splitter) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Splitter", []string{"In"}, []string{"Out1","Out2","Out3","Out4"},
+	[]processor.Parameter{
 	}
 }
+
+//SetParameter set a single processor parameter
+func (r *Splitter) SetParameter(index int, value float32) {
+	switch index {
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Splitter) ProcessArgs(in []float32) (output []float32) {
+	out0,out1,out2,out3 := r.Process(in[0])
+	return []float32{out0,out1,out2,out3}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Splitter) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 4)
+	out[0] = make([]float32, length)
+	out[1] = make([]float32, length)
+	out[2] = make([]float32, length)
+	out[3] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i], out[1][i], out[2][i], out[3][i] = r.Process(in[0][i])
+	}
+	return
+}
+
+// Start - init module
+func (r *Sum) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Sum) Stop() {}
+
+// Definition exports the constant definition
+func (r *Sum) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Sum", []string{"In1","In2","In3","In4"}, []string{"Out"},
+	[]processor.Parameter{
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Sum) SetParameter(index int, value float32) {
+	switch index {
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Sum) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1],in[2],in[3])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Sum) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i], in[2][i], in[3][i])
+	}
+	return
+}
+
