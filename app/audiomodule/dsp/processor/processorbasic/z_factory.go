@@ -301,6 +301,44 @@ func (r *Scope) ProcessSamples(in [][]float32, length int) (out [][]float32) {
 }
 
 // Start - init module
+func (r *Select) Start(sampleRate int) {}
+
+// Stop - release module
+func (r *Select) Stop() {}
+
+// Definition exports the constant definition
+func (r *Select) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "Select", []string{"a","b"}, []string{"Out"},
+	[]processor.Parameter{
+		processor.Parameter{Name: "Input", Min: 0, Max: 1, Default: 0, Value: float32(r.Input)},
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *Select) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		r.Input = int(value + 0.5)
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *Select) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *Select) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i])
+	}
+	return
+}
+
+// Start - init module
 func (r *Splitter) Start(sampleRate int) {}
 
 // Stop - release module
