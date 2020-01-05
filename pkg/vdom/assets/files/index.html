@@ -165,7 +165,11 @@
               target.value = patch.Attr.Value;
               break;
             case TextSet:
-              target.innerText = patch.Attr.Value;
+              if (patchList.SVGNamespace) {
+                target.textContent = patch.Attr.Value;
+              } else {
+                target.innerText = patch.Attr.Value;
+              }
               break;
           }
         }

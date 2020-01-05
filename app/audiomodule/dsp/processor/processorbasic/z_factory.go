@@ -47,7 +47,7 @@ func (r *Constant) Stop() {}
 func (r *Constant) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
 	return "Constant", []string{}, []string{"Out"},
 	[]processor.Parameter{
-		processor.Parameter{Name: "Value", Min: 0, Max: 10, Default: 1, Value: float32(r.Value)},
+		processor.Parameter{Name: "Value", Min: 0, Max: 100, Default: 1, Value: float32(r.Value)},
 	}
 }
 

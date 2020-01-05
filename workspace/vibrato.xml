@@ -1,14 +1,18 @@
 <graph>
    <processors>
-      <processor type="MIDIInput" name="" x="120" y="216"></processor>
-      <processor type="Oscillator" name="" x="344" y="152" Wave="0"></processor>
-      <processor type="Envelope" name="" x="344" y="232" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
-      <processor type="Gain" name="" x="464" y="152" Level="1"></processor>
-      <processor type="Terminal" name="" x="624" y="152"></processor>
-      <processor type="Scope" name="" x="624" y="304" Trigger="1" Skip="4"></processor>
-      <processor type="Constant" name="Constant" x="24" y="24" Value="0.8333333"></processor>
-      <processor type="Oscillator" name="Oscillator1" x="120" y="24" Wave="0"></processor>
-      <processor type="Constant" name="Constant1" x="24" y="112" Value="1"></processor>
+      <processor type="MIDIInput" name="" x="424" y="264"></processor>
+      <processor type="Constant" name="Constant" x="24" y="24" Value="3.3333333"></processor>
+      <processor type="Oscillator" name="Oscillator1" x="120" y="24" Waveform="0"></processor>
+      <processor type="Constant" name="Constant1" x="120" y="112" Value="73.33333"></processor>
+      <processor type="Divide" name="Divide" x="232" y="24"></processor>
+      <processor type="Add" name="Add" x="352" y="24"></processor>
+      <processor type="Constant" name="Constant2" x="232" y="112" Value="1"></processor>
+      <processor type="Multiply" name="Multiply" x="520" y="176"></processor>
+      <processor type="Oscillator" name="" x="616" y="176" Waveform="0"></processor>
+      <processor type="Envelope" name="" x="616" y="280" Attack="2" Decay="100" Sustain="0.7" Release="533.3334"></processor>
+      <processor type="Gain" name="" x="720" y="176" Level="1.2"></processor>
+      <processor type="Terminal" name="" x="824" y="160"></processor>
+      <processor type="Scope" name="Scope" x="824" y="232" Trigger="1" Skip="4"></processor>
    </processors>
    <connectors>
       <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
@@ -17,7 +21,14 @@
       <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
       <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
       <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
-      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
       <connector fromProcessor="Constant" fromPort="Out" toProcessor="Oscillator1" toPort="Frq"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Multiply" toPort="y"></connector>
+      <connector fromProcessor="Multiply" fromPort="Out" toProcessor="Oscillator" toPort="Frq"></connector>
+      <connector fromProcessor="Constant1" fromPort="Out" toProcessor="Divide" toPort="y"></connector>
+      <connector fromProcessor="Oscillator1" fromPort="Out" toProcessor="Divide" toPort="x"></connector>
+      <connector fromProcessor="Constant2" fromPort="Out" toProcessor="Add" toPort="y"></connector>
+      <connector fromProcessor="Divide" fromPort="Out" toProcessor="Add" toPort="x"></connector>
+      <connector fromProcessor="Add" fromPort="Out" toProcessor="Multiply" toPort="x"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
    </connectors>
 </graph>

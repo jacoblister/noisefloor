@@ -2,7 +2,7 @@ package processorbasic
 
 // Constant - single specified value
 type Constant struct {
-	Value float32 `default:"1" min:"0" max:"10"`
+	Value float32 `default:"1" min:"0" max:"100"`
 }
 
 // Process - produce next sample
