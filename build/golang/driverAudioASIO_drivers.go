@@ -102,7 +102,6 @@ func ListDrivers() (drivers map[string]*ASIODriver, err error) {
 					break
 				}
 			}
-			fmt.Println(err)
 			return
 		}
 

@@ -88,7 +88,6 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 
 // recompileGraph recompiles the current graph
 func (e *Engine) recompileGraph() {
-	println("Recompile graph")
 	e.compiledGraph = nil
 
 	// TODO - totally wrong place for this - avoid race conditon in engine startup

@@ -36,6 +36,4 @@ func main() {
 	})
 
 	app.App(&nf, &fs)
-
-	println("main")
 }

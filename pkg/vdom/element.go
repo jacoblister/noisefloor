@@ -1,7 +1,5 @@
 package vdom
 
-import "fmt"
-
 // ElementType enumerated type
 type ElementType int
 
@@ -69,7 +67,7 @@ func MakeElement(name string, args ...interface{}) Element {
 			}
 		case nil:
 		default:
-			fmt.Println("Unsuppoerted: ", arg)
+			println("Unsuppoerted: ", arg)
 			panic("its over")
 		}
 	}

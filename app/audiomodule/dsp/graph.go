@@ -135,5 +135,4 @@ func loadProcessorGraph(reader io.Reader) (Graph, error) {
 func saveProcessorGraph(graph Graph, writer io.Writer) {
 	xml, _ := xml.MarshalIndent(&graph, "", "   ")
 	writer.Write(xml)
-	println(string(xml))
 }

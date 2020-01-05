@@ -2,7 +2,6 @@ package dsp
 
 import (
 	"encoding/xml"
-	"fmt"
 	"strconv"
 
 	"github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
@@ -11,7 +10,6 @@ import (
 
 // MarshalXML marhalls the graph
 func (g *Graph) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	println("marsall")
 	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "graph"}})
 
 	e.EncodeToken(xml.StartElement{Name: xml.Name{Local: "processors"}})
@@ -68,13 +66,9 @@ func attrToMap(attr []xml.Attr) map[string]string {
 
 //UnmarshalXML Unmarshals the graph
 func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	println("unmarsall")
-
 	for {
 		token, err := d.Token()
 		if err != nil {
-			fmt.Println(g)
-
 			// At End of File
 			return nil
 		}
@@ -92,7 +86,6 @@ func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 					floatValue, _ := strconv.ParseFloat(value, 32)
 					i, err := processor.GetProcessorParameterIndex(proc, name)
 					if err == nil {
-						println(i, float32(floatValue))
 						proc.SetParameter(i, float32(floatValue))
 					}
 				}

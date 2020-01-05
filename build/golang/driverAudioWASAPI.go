@@ -16,7 +16,7 @@ package nf
 #define REFTIMES_PER_MILLISEC  10000
 
 #define EXIT_ON_ERROR(hres)  \
-              printf("result %d\n", hr); if (FAILED(hres)) { goto Exit; }
+              if (FAILED(hres)) { goto Exit; }
 #define SAFE_RELEASE(punk)  \
               if ((punk) != NULL)  \
                 { (punk)->lpVtbl->Release(punk); (punk) = NULL; }
@@ -50,8 +50,6 @@ static inline DWORD WINAPI runWASAPIThread(void* arg) {
 	HRESULT hr;
     UINT32 bufferFrameCount;
     DWORD flags = 0;
-
-	printf("start thread\n");
 
 	while (1) {
 		// See how much buffer space is available.
@@ -98,26 +96,21 @@ static inline wasapi_c_client* gowasapi_client_open(uintptr_t arg) {
 
 	CoInitialize(NULL);
 
-	printf("CoCreateInstance\n");
 	hr = CoCreateInstance(
 	   	&CLSID_MMDeviceEnumerator, NULL,
 	   	CLSCTX_ALL, &IID_IMMDeviceEnumerator,
 	   	(void**)&pEnumerator);
-		// printf("result %d\n", hr);
 	EXIT_ON_ERROR(hr)
 
-	printf("GetDefaultAudioEndpoint\n");
 	hr = pEnumerator->lpVtbl->GetDefaultAudioEndpoint(pEnumerator,
 					eRender, eConsole, &pDevice);
 	EXIT_ON_ERROR(hr)
 
-	printf("Activate\n");
 	hr = pDevice->lpVtbl->Activate(pDevice,
 				&IID_IAudioClient, CLSCTX_ALL,
 				NULL, (void**)&client.pAudioClient);
 	EXIT_ON_ERROR(hr)
 
-	printf("GetMixFormat\n");
 	hr = client.pAudioClient->lpVtbl->GetMixFormat(client.pAudioClient, &pwfx);
 	client.channel_in_count  = pwfx->nChannels;
 	client.channel_out_count = pwfx->nChannels;
