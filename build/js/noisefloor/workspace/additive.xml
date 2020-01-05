@@ -1,27 +1,31 @@
 <graph>
    <processors>
-      <processor type="MIDIInput" name="MIDIInput" x="24" y="448"></processor>
-      <processor type="Constant" name="Constant" x="160" y="88" Value="1"></processor>
-      <processor type="Constant" name="Constant1" x="160" y="168" Value="2"></processor>
-      <processor type="Constant" name="Constant2" x="160" y="248" Value="3"></processor>
-      <processor type="Constant" name="Constant3" x="160" y="328" Value="4"></processor>
-      <processor type="Multiply" name="Multiply" x="264" y="88"></processor>
-      <processor type="Multiply" name="Multiply1" x="264" y="168"></processor>
-      <processor type="Multiply" name="Multiply2" x="264" y="248"></processor>
-      <processor type="Multiply" name="Multiply3" x="264" y="328"></processor>
-      <processor type="Oscillator" name="Oscillator" x="368" y="88" Wave="0"></processor>
-      <processor type="Oscillator" name="Oscillator1" x="368" y="168" Wave="0"></processor>
-      <processor type="Oscillator" name="Oscillator2" x="368" y="248" Wave="0"></processor>
-      <processor type="Oscillator" name="Oscillator3" x="368" y="328" Wave="0"></processor>
-      <processor type="Divide" name="Divide" x="472" y="88"></processor>
-      <processor type="Divide" name="Divide1" x="472" y="168"></processor>
-      <processor type="Divide" name="Divide2" x="472" y="248"></processor>
-      <processor type="Divide" name="Divide3" x="472" y="328"></processor>
-      <processor type="Sum" name="Sum" x="592" y="152"></processor>
-      <processor type="Envelope" name="Envelope" x="544" y="464" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
-      <processor type="Gain" name="Gain" x="688" y="208" Level="0.56666666"></processor>
-      <processor type="Terminal" name="Terminal" x="792" y="208"></processor>
-      <processor type="Scope" name="Scope" x="784" y="336" Trigger="1" Skip="4"></processor>
+      <processor type="MIDIInput" name="MIDIInput" x="16" y="448"></processor>
+      <processor type="Constant" name="Constant" x="136" y="16" Value="1"></processor>
+      <processor type="Constant" name="Constant1" x="136" y="128" Value="2"></processor>
+      <processor type="Constant" name="Constant2" x="136" y="240" Value="3"></processor>
+      <processor type="Constant" name="Constant3" x="136" y="352" Value="4"></processor>
+      <processor type="Multiply" name="Multiply" x="232" y="16"></processor>
+      <processor type="Multiply" name="Multiply1" x="232" y="128"></processor>
+      <processor type="Multiply" name="Multiply2" x="232" y="240"></processor>
+      <processor type="Multiply" name="Multiply3" x="232" y="352"></processor>
+      <processor type="Oscillator" name="Oscillator" x="328" y="16" Wave="0"></processor>
+      <processor type="Oscillator" name="Oscillator1" x="328" y="128" Wave="0"></processor>
+      <processor type="Oscillator" name="Oscillator2" x="328" y="240" Wave="0"></processor>
+      <processor type="Oscillator" name="Oscillator3" x="328" y="352" Wave="0"></processor>
+      <processor type="Divide" name="Divide" x="424" y="16"></processor>
+      <processor type="Divide" name="Divide1" x="424" y="128"></processor>
+      <processor type="Divide" name="Divide2" x="424" y="240"></processor>
+      <processor type="Divide" name="Divide3" x="424" y="352"></processor>
+      <processor type="Scope" name="Scope" x="968" y="280" Trigger="1" Skip="4"></processor>
+      <processor type="Scope" name="Scope1" x="520" y="16" Trigger="1" Skip="4"></processor>
+      <processor type="Scope" name="Scope2" x="520" y="128" Trigger="1" Skip="4"></processor>
+      <processor type="Scope" name="Scope3" x="520" y="240" Trigger="1" Skip="4"></processor>
+      <processor type="Scope" name="Scope4" x="520" y="352" Trigger="1" Skip="4"></processor>
+      <processor type="Sum" name="Sum" x="768" y="208"></processor>
+      <processor type="Envelope" name="Envelope" x="760" y="464" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
+      <processor type="Gain" name="Gain" x="864" y="208" Level="0.56666666"></processor>
+      <processor type="Terminal" name="Terminal" x="968" y="208"></processor>
    </processors>
    <connectors>
       <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Multiply" toPort="y"></connector>
@@ -44,7 +48,6 @@
       <connector fromProcessor="Sum" fromPort="Out" toProcessor="Gain" toPort="In"></connector>
       <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
       <connector fromProcessor="Oscillator" fromPort="Out" toProcessor="Divide" toPort="x"></connector>
-      <connector fromProcessor="Divide" fromPort="Out" toProcessor="Sum" toPort="In1"></connector>
       <connector fromProcessor="Constant" fromPort="Out" toProcessor="Divide" toPort="y"></connector>
       <connector fromProcessor="Oscillator1" fromPort="Out" toProcessor="Divide1" toPort="x"></connector>
       <connector fromProcessor="Constant1" fromPort="Out" toProcessor="Divide1" toPort="y"></connector>
@@ -52,8 +55,13 @@
       <connector fromProcessor="Constant2" fromPort="Out" toProcessor="Divide2" toPort="y"></connector>
       <connector fromProcessor="Oscillator3" fromPort="Out" toProcessor="Divide3" toPort="x"></connector>
       <connector fromProcessor="Constant3" fromPort="Out" toProcessor="Divide3" toPort="y"></connector>
-      <connector fromProcessor="Divide2" fromPort="Out" toProcessor="Sum" toPort="In3"></connector>
-      <connector fromProcessor="Divide1" fromPort="Out" toProcessor="Sum" toPort="In2"></connector>
-      <connector fromProcessor="Divide3" fromPort="Out" toProcessor="Sum" toPort="In4"></connector>
+      <connector fromProcessor="Divide" fromPort="Out" toProcessor="Scope1" toPort="In"></connector>
+      <connector fromProcessor="Scope1" fromPort="Out" toProcessor="Sum" toPort="In1"></connector>
+      <connector fromProcessor="Scope3" fromPort="Out" toProcessor="Sum" toPort="In3"></connector>
+      <connector fromProcessor="Divide2" fromPort="Out" toProcessor="Scope3" toPort="In"></connector>
+      <connector fromProcessor="Scope4" fromPort="Out" toProcessor="Sum" toPort="In4"></connector>
+      <connector fromProcessor="Scope2" fromPort="Out" toProcessor="Sum" toPort="In2"></connector>
+      <connector fromProcessor="Divide1" fromPort="Out" toProcessor="Scope2" toPort="In"></connector>
+      <connector fromProcessor="Divide3" fromPort="Out" toProcessor="Scope4" toPort="In"></connector>
    </connectors>
 </graph>
