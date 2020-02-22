@@ -40,7 +40,7 @@ func (m *MIDIInput) SetMono() {
 }
 
 // Start - init midi input
-func (m *MIDIInput) Start(sampleRate int) {
+func (m *MIDIInput) Start(sampleRate int, connectedMask int) {
 	m.noteChannels = make(map[int]int)
 }
 

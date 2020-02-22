@@ -74,9 +74,9 @@ type golangEngine struct {
 }
 
 func (g *golangEngine) Start(sampleRate int) {
-	g.osc.Start(sampleRate)
-	g.env.Start(sampleRate)
-	g.gain.Start(sampleRate)
+	g.osc.Start(sampleRate, 0)
+	g.env.Start(sampleRate, 0)
+	g.gain.Start(sampleRate, 0)
 }
 
 func (g *golangEngine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {

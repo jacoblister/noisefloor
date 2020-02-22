@@ -94,15 +94,19 @@ func (g *Graph) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 				g.Processors = append(g.Processors, procDef)
 			case "connector":
 				fromProcessor := g.getProcessorByName(attr["fromProcessor"])
-				fromPort, _ := processor.GetProcessorOutputIndex(fromProcessor, attr["fromPort"])
+				fromPort, fromPortErr := processor.GetProcessorOutputIndex(fromProcessor, attr["fromPort"])
 				toProcessor := g.getProcessorByName(attr["toProcessor"])
-				toPort, _ := processor.GetProcessorInputIndex(toProcessor, attr["toPort"])
+				toPort, toPortErr := processor.GetProcessorInputIndex(toProcessor, attr["toPort"])
 
-				connector := processor.Connector{
-					FromProcessor: fromProcessor, FromPort: fromPort,
-					ToProcessor: toProcessor, ToPort: toPort,
+				if fromPortErr == nil && toPortErr == nil {
+					connector := processor.Connector{
+						FromProcessor: fromProcessor, FromPort: fromPort,
+						ToProcessor: toProcessor, ToPort: toPort,
+					}
+					g.Connectors = append(g.Connectors, connector)
+				} else {
+					println("warning, connector dropped:", attr["fromProcessor"], attr["fromPort"], attr["toProcessor"], attr["toPort"])
 				}
-				g.Connectors = append(g.Connectors, connector)
 			}
 		}
 	}

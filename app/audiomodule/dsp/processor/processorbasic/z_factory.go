@@ -3,7 +3,7 @@ package processorbasic
 import "github.com/jacoblister/noisefloor/app/audiomodule/dsp/processor"
 
 // Start - init module
-func (r *Add) Start(sampleRate int) {}
+func (r *Add) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Add) Stop() {}
@@ -38,7 +38,7 @@ func (r *Add) ProcessSamples(in [][]float32, length int) (out [][]float32) {
 }
 
 // Start - init module
-func (r *Constant) Start(sampleRate int) {}
+func (r *Constant) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Constant) Stop() {}
@@ -76,7 +76,7 @@ func (r *Constant) ProcessSamples(in [][]float32, length int) (out [][]float32) 
 }
 
 // Start - init module
-func (r *Divide) Start(sampleRate int) {}
+func (r *Divide) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Divide) Stop() {}
@@ -155,7 +155,7 @@ func (r *Envelope) ProcessSamples(in [][]float32, length int) (out [][]float32) 
 }
 
 // Start - init module
-func (r *Gain) Start(sampleRate int) {}
+func (r *Gain) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Gain) Stop() {}
@@ -193,7 +193,7 @@ func (r *Gain) ProcessSamples(in [][]float32, length int) (out [][]float32) {
 }
 
 // Start - init module
-func (r *Multiply) Start(sampleRate int) {}
+func (r *Multiply) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Multiply) Stop() {}
@@ -267,7 +267,7 @@ func (r *Scope) Stop() {}
 
 // Definition exports the constant definition
 func (r *Scope) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Scope", []string{"In"}, []string{"Out"},
+	return "Scope", []string{"InA","InB"}, []string{"OutA","OutB"},
 	[]processor.Parameter{
 		processor.Parameter{Name: "Trigger", Min: 0, Max: 1, Default: 1, Value: float32(r.Trigger)},
 		processor.Parameter{Name: "Skip", Min: 0, Max: 200, Default: 4, Value: float32(r.Skip)},
@@ -286,22 +286,23 @@ func (r *Scope) SetParameter(index int, value float32) {
 
 //ProcessArgs calls process with an array of input/output samples
 func (r *Scope) ProcessArgs(in []float32) (output []float32) {
-	out0 := r.Process(in[0])
-	return []float32{out0}
+	out0,out1 := r.Process(in[0],in[1])
+	return []float32{out0,out1}
 }
 
 //ProcessSamples calls process with an array of input/output samples
 func (r *Scope) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
+	out = make([][]float32, 2)
 	out[0] = make([]float32, length)
+	out[1] = make([]float32, length)
 	for i := 0; i < length; i++ {
-		out[0][i] = r.Process(in[0][i])
+		out[0][i], out[1][i] = r.Process(in[0][i], in[1][i])
 	}
 	return
 }
 
 // Start - init module
-func (r *Select) Start(sampleRate int) {}
+func (r *Select) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Select) Stop() {}
@@ -339,14 +340,14 @@ func (r *Select) ProcessSamples(in [][]float32, length int) (out [][]float32) {
 }
 
 // Start - init module
-func (r *Splitter) Start(sampleRate int) {}
+func (r *Splitter) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Splitter) Stop() {}
 
 // Definition exports the constant definition
 func (r *Splitter) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Splitter", []string{"In"}, []string{"Out1","Out2","Out3","Out4"},
+	return "Splitter", []string{"In"}, []string{"Out0","Out1","Out2","Out3"},
 	[]processor.Parameter{
 	}
 }
@@ -377,14 +378,14 @@ func (r *Splitter) ProcessSamples(in [][]float32, length int) (out [][]float32) 
 }
 
 // Start - init module
-func (r *Sum) Start(sampleRate int) {}
+func (r *Sum) Start(sampleRate int, connectedMask int) {}
 
 // Stop - release module
 func (r *Sum) Stop() {}
 
 // Definition exports the constant definition
 func (r *Sum) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
-	return "Sum", []string{"In1","In2","In3","In4"}, []string{"Out"},
+	return "Sum", []string{"In0","In1","In2","In3"}, []string{"Out"},
 	[]processor.Parameter{
 	}
 }

@@ -36,9 +36,9 @@ func (e *Engine) Start(sampleRate int) {
 	println("do DSP start, sample rate:", sampleRate)
 	// e.compiledGraph.Start(sampleRate)
 
-	e.midiinput.Start(sampleRate)
+	e.midiinput.Start(sampleRate, 0)
 	e.patch.Start(sampleRate)
-	e.osc.Start(sampleRate)
+	e.osc.Start(sampleRate, 0)
 	e.osc.Waveform = processorbasic.Sin
 }
 

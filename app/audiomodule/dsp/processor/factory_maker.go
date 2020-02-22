@@ -114,7 +114,7 @@ func readProcessors(directory string) []Processor {
 
 func writeMethodStart(f *os.File, processor Processor) {
 	f.WriteString("// Start - init module\n")
-	f.WriteString("func (r *" + processor.name + ") Start(sampleRate int) {}\n\n")
+	f.WriteString("func (r *" + processor.name + ") Start(sampleRate int, connectedMask int) {}\n\n")
 }
 
 func writeMethodStop(f *os.File, processor Processor) {

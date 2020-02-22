@@ -17,7 +17,7 @@ type Terminal struct {
 }
 
 // Start - init processor
-func (t *Terminal) Start(sampleRate int) {}
+func (t *Terminal) Start(sampleRate int, connectedMask int) {}
 
 // Process - produce next sample
 func (t *Terminal) Process() {

@@ -15,7 +15,7 @@ type Parameter struct {
 
 //Processor interface
 type Processor interface {
-	Start(sampleRate int)
+	Start(sampleRate int, connectedMask int)
 	Stop()
 	ProcessArgs([]float32) []float32
 	ProcessSamples([][]float32, int) [][]float32

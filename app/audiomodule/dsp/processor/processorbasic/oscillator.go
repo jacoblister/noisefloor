@@ -28,7 +28,7 @@ type Oscillator struct {
 }
 
 // Start - init oscillaor waveforms
-func (o *Oscillator) Start(sampleRate int) {
+func (o *Oscillator) Start(sampleRate int, connectedMask int) {
 	if sampleRate > maxSamples {
 		panic("sample rate is out of range")
 	}

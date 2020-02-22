@@ -13,11 +13,11 @@ type Patch struct {
 
 // Start - init patch
 func (p *Patch) Start(sampleRate int) {
-	p.oscillator.Start(sampleRate)
+	p.oscillator.Start(sampleRate, 0)
 	p.oscillator.Waveform = processorbasic.Square
 
-	p.envelope.Start(sampleRate)
-	p.gain.Start(sampleRate)
+	p.envelope.Start(sampleRate, 0)
+	p.gain.Start(sampleRate, 0)
 }
 
 // Process - produce next sample

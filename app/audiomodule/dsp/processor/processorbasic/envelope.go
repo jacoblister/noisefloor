@@ -27,7 +27,7 @@ type Envelope struct {
 }
 
 // Start - init envelope generator
-func (e *Envelope) Start(sampleRate int) {
+func (e *Envelope) Start(sampleRate int, connectedMask int) {
 	e.sampleRate = float32(sampleRate)
 }
 

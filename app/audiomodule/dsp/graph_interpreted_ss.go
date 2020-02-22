@@ -10,10 +10,17 @@ type interpretedEngineSingleSample struct {
 
 func (g *interpretedEngineSingleSample) Start(sampleRate int) {
 	for i := 0; i < len(g.graphExecutor.ops); i++ {
-		g.graphExecutor.ops[i].processor.Start(sampleRate)
+		op := &g.graphExecutor.ops[i]
+		connectedMask := 0
+		for j := 0; j < len(op.connectorIn); j++ {
+			if op.connectorIn[j].FromProcessor != nil {
+				connectedMask |= (1 << uint(j))
+			}
+		}
+		g.graphExecutor.ops[i].processor.Start(sampleRate, connectedMask)
 	}
 
-	g.graphExecutor.midiInput.Start(sampleRate)
+	g.graphExecutor.midiInput.Start(sampleRate, 0)
 	g.graphExecutor.midiInput.SetMono()
 }
 
