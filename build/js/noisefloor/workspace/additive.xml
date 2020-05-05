@@ -38,7 +38,7 @@
       <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
       <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
       <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
-      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="InA"></connector>
       <connector fromProcessor="Constant2" fromPort="Out" toProcessor="Multiply2" toPort="x"></connector>
       <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Multiply2" toPort="y"></connector>
       <connector fromProcessor="Constant3" fromPort="Out" toProcessor="Multiply3" toPort="x"></connector>
@@ -55,13 +55,13 @@
       <connector fromProcessor="Constant2" fromPort="Out" toProcessor="Divide2" toPort="y"></connector>
       <connector fromProcessor="Oscillator3" fromPort="Out" toProcessor="Divide3" toPort="x"></connector>
       <connector fromProcessor="Constant3" fromPort="Out" toProcessor="Divide3" toPort="y"></connector>
-      <connector fromProcessor="Divide" fromPort="Out" toProcessor="Scope1" toPort="In"></connector>
-      <connector fromProcessor="Scope1" fromPort="Out" toProcessor="Sum" toPort="In1"></connector>
-      <connector fromProcessor="Scope3" fromPort="Out" toProcessor="Sum" toPort="In3"></connector>
-      <connector fromProcessor="Divide2" fromPort="Out" toProcessor="Scope3" toPort="In"></connector>
-      <connector fromProcessor="Scope4" fromPort="Out" toProcessor="Sum" toPort="In4"></connector>
-      <connector fromProcessor="Scope2" fromPort="Out" toProcessor="Sum" toPort="In2"></connector>
-      <connector fromProcessor="Divide1" fromPort="Out" toProcessor="Scope2" toPort="In"></connector>
-      <connector fromProcessor="Divide3" fromPort="Out" toProcessor="Scope4" toPort="In"></connector>
+      <connector fromProcessor="Divide" fromPort="Out" toProcessor="Scope1" toPort="InA"></connector>
+      <connector fromProcessor="Scope1" fromPort="OutA" toProcessor="Sum" toPort="In1"></connector>
+      <connector fromProcessor="Scope3" fromPort="OutA" toProcessor="Sum" toPort="In3"></connector>
+      <connector fromProcessor="Divide2" fromPort="Out" toProcessor="Scope3" toPort="InA"></connector>
+      <connector fromProcessor="Scope4" fromPort="OutA" toProcessor="Sum" toPort="In4"></connector>
+      <connector fromProcessor="Scope2" fromPort="OutA" toProcessor="Sum" toPort="In2"></connector>
+      <connector fromProcessor="Divide1" fromPort="Out" toProcessor="Scope2" toPort="InA"></connector>
+      <connector fromProcessor="Divide3" fromPort="Out" toProcessor="Scope4" toPort="InA"></connector>
    </connectors>
 </graph>

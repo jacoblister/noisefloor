@@ -16,7 +16,7 @@
       <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
       <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
       <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
-      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="In"></connector>
-      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="scope2" toPort="In"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Scope" toPort="InA"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="scope2" toPort="InA"></connector>
    </connectors>
 </graph>

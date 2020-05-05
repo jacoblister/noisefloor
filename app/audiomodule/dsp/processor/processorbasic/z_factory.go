@@ -263,6 +263,41 @@ func (r *Oscillator) ProcessSamples(in [][]float32, length int) (out [][]float32
 }
 
 // Stop - release module
+func (r *OscSync) Stop() {}
+
+// Definition exports the constant definition
+func (r *OscSync) Definition() (name string, inputs []string, outputs []string, parameters []processor.Parameter) {
+	return "OscSync", []string{"Frq","Syn","Pse"}, []string{"Out"},
+	[]processor.Parameter{
+		processor.Parameter{Name: "Waveform", Min: 0, Max: 3, Default: 0, Value: float32(r.Waveform)},
+	}
+}
+
+//SetParameter set a single processor parameter
+func (r *OscSync) SetParameter(index int, value float32) {
+	switch index {
+	case 0:
+		r.Waveform = Waveform(value + 0.5)
+	} 
+}
+
+//ProcessArgs calls process with an array of input/output samples
+func (r *OscSync) ProcessArgs(in []float32) (output []float32) {
+	out0 := r.Process(in[0],in[1],in[2])
+	return []float32{out0}
+}
+
+//ProcessSamples calls process with an array of input/output samples
+func (r *OscSync) ProcessSamples(in [][]float32, length int) (out [][]float32) {
+	out = make([][]float32, 1)
+	out[0] = make([]float32, length)
+	for i := 0; i < length; i++ {
+		out[0][i] = r.Process(in[0][i], in[1][i], in[2][i])
+	}
+	return
+}
+
+// Stop - release module
 func (r *Scope) Stop() {}
 
 // Definition exports the constant definition

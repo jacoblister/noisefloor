@@ -60,10 +60,22 @@ func (p *Processor) makeConnectorEventHandler(isInput bool, port int) vdom.Handl
 	}
 }
 
+var depressed bool
+
 func (p *Processor) makeParameterEventHandler(index int, factor float32) vdom.HandlerFunc {
 	return func(element *vdom.Element, event *vdom.Event) {
-		value := float32(event.Data["OffsetX"].(int)) / factor
-		p.ProcessorDefinition.Processor.SetParameter(index, value)
+		switch event.Type {
+		case "mouseup", "mouseleave":
+			depressed = false
+		case "mousedown", "mousemove":
+			if event.Type == "mousedown" {
+				depressed = true
+			}
+			if depressed {
+				value := float32(event.Data["OffsetX"].(int)) / factor
+				p.ProcessorDefinition.Processor.SetParameter(index, value)
+			}
+		}
 	}
 }
 
@@ -193,6 +205,9 @@ func (p *Processor) Render() vdom.Element {
 			"pointer-events", "all",
 			"cursor", "crosshair",
 			vdom.MakeEventHandler(vdom.MouseDown, p.makeParameterEventHandler(i, levelFactor)),
+			vdom.MakeEventHandler(vdom.MouseUp, p.makeParameterEventHandler(i, levelFactor)),
+			vdom.MakeEventHandler(vdom.MouseMove, p.makeParameterEventHandler(i, levelFactor)),
+			vdom.MakeEventHandler(vdom.MouseLeave, p.makeParameterEventHandler(i, levelFactor)),
 			vdom.MakeElement("title", vdom.MakeTextElement(levelValue)),
 		)
 		parameters = append(parameters, bound)

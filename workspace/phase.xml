@@ -1,0 +1,26 @@
+<graph>
+   <processors>
+      <processor type="MIDIInput" name="" x="184" y="48"></processor>
+      <processor type="Oscillator" name="Oscillator" x="312" y="8" Waveform="0"></processor>
+      <processor type="OscSync" name="OscSync" x="520" y="48" Waveform="0"></processor>
+      <processor type="Envelope" name="" x="312" y="192" Attack="6.6666665" Decay="366.6667" Sustain="0.75" Release="1000"></processor>
+      <processor type="Gain" name="" x="424" y="120" Level="0.8"></processor>
+      <processor type="Gain" name="Gain1" x="616" y="176" Level="0.56666666"></processor>
+      <processor type="Scope" name="Scope" x="728" y="176" Trigger="1" Skip="4"></processor>
+      <processor type="Terminal" name="" x="968" y="176"></processor>
+   </processors>
+   <connectors>
+      <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Trg" toProcessor="Envelope" toPort="Trg"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="OscSync" toPort="Pse"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="Oscillator" toPort="Frq"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="OscSync" toPort="Frq"></connector>
+      <connector fromProcessor="OscSync" fromPort="Out" toProcessor="Gain1" toPort="In"></connector>
+      <connector fromProcessor="Scope" fromPort="OutA" toProcessor="Terminal" toPort="In1"></connector>
+      <connector fromProcessor="Oscillator" fromPort="Out" toProcessor="Gain" toPort="In"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain1" toPort="Gai"></connector>
+      <connector fromProcessor="Gain1" fromPort="Out" toProcessor="Scope" toPort="InA"></connector>
+      <connector fromProcessor="Scope" fromPort="OutA" toProcessor="Terminal" toPort="In0"></connector>
+   </connectors>
+</graph>

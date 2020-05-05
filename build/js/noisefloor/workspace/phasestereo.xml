@@ -1,0 +1,36 @@
+<graph>
+   <processors>
+      <processor type="Constant" name="Constant" x="8" y="400" Value="1.6666666"></processor>
+      <processor type="Oscillator" name="Oscillator" x="104" y="400" Waveform="0"></processor>
+      <processor type="Gain" name="Gain2" x="216" y="400" Level="0.46666667"></processor>
+      <processor type="Constant" name="Constant1" x="104" y="496" Value="1"></processor>
+      <processor type="Scope" name="Scope1" x="328" y="400" Trigger="0" Skip="160"></processor>
+      <processor type="MIDIInput" name="" x="168" y="120"></processor>
+      <processor type="Oscillator" name="OscSync" x="328" y="16" Waveform="0"></processor>
+      <processor type="OscSync" name="OscSync1" x="328" y="120" Waveform="0"></processor>
+      <processor type="Envelope" name="" x="328" y="240" Attack="2" Decay="100" Sustain="0.75" Release="1000"></processor>
+      <processor type="Gain" name="" x="824" y="16" Level="1"></processor>
+      <processor type="Gain" name="Gain1" x="824" y="104" Level="1"></processor>
+      <processor type="Scope" name="" x="440" y="16" Trigger="1" Skip="4"></processor>
+      <processor type="Terminal" name="" x="944" y="64"></processor>
+   </processors>
+   <connectors>
+      <connector fromProcessor="MIDIInput" fromPort="Lvl" toProcessor="Envelope" toPort="Gte"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Trg" toProcessor="Envelope" toPort="Trg"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain" toPort="Gai"></connector>
+      <connector fromProcessor="Gain" fromPort="Out" toProcessor="Terminal" toPort="In0"></connector>
+      <connector fromProcessor="Constant" fromPort="Out" toProcessor="Oscillator" toPort="Frq"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="OscSync" toPort="Frq"></connector>
+      <connector fromProcessor="OscSync1" fromPort="Out" toProcessor="Scope" toPort="InB"></connector>
+      <connector fromProcessor="OscSync" fromPort="Out" toProcessor="Scope" toPort="InA"></connector>
+      <connector fromProcessor="Scope" fromPort="OutA" toProcessor="Gain" toPort="In"></connector>
+      <connector fromProcessor="Scope" fromPort="OutB" toProcessor="Gain1" toPort="In"></connector>
+      <connector fromProcessor="Gain1" fromPort="Out" toProcessor="Terminal" toPort="In1"></connector>
+      <connector fromProcessor="Envelope" fromPort="Out" toProcessor="Gain1" toPort="Gai"></connector>
+      <connector fromProcessor="Constant1" fromPort="Out" toProcessor="Gain2" toPort="Gai"></connector>
+      <connector fromProcessor="Oscillator" fromPort="Out" toProcessor="Gain2" toPort="In"></connector>
+      <connector fromProcessor="Gain2" fromPort="Out" toProcessor="Scope1" toPort="InA"></connector>
+      <connector fromProcessor="Gain2" fromPort="Out" toProcessor="OscSync1" toPort="Pse"></connector>
+      <connector fromProcessor="MIDIInput" fromPort="Frq" toProcessor="OscSync1" toPort="Frq"></connector>
+   </connectors>
+</graph>
