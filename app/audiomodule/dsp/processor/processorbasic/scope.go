@@ -3,7 +3,6 @@ package processorbasic
 import (
 	"strconv"
 	"strings"
-	"unsafe"
 
 	"github.com/jacoblister/noisefloor/pkg/vdom"
 )
@@ -101,16 +100,5 @@ func (s *Scope) Render() vdom.Element {
 	element := vdom.MakeElement("g",
 		pathElements)
 
-	s.getScopeState(nil)
 	return element
-}
-
-// ScopeState - display state
-type ScopeState struct {
-	samples [2][80]float32
-}
-
-func (s *Scope) getScopeState(state unsafe.Pointer) {
-	scopeState := *(*ScopeState)(state)
-	scopeState.samples[0][0] = 88
 }
