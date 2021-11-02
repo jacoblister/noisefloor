@@ -18,7 +18,7 @@ typedef struct {
 	uint8_t byte_buffer[1024];
 } jack_midi_client;
 
-jack_midi_client midi_client;
+static jack_midi_client midi_client;
 
 static inline jack_midi_client* gojack_midi_client_open(void) {
     const char **ports;

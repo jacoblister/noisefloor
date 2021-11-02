@@ -24,7 +24,7 @@ typedef struct {
 	float* channel_out[MAX_CHANNELS];
 } jack_c_client;
 
-jack_c_client client;
+static jack_c_client client;
 
 extern void goAudioJackCallback(void *arg, int blockLength,
 	int channelInCount, void *channelIn,
