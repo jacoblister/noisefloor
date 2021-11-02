@@ -38,8 +38,8 @@ func (e *Engine) Start(sampleRate int) {
 
 	e.midiinput.Start(sampleRate, 0)
 	e.patch.Start(sampleRate)
-	e.osc.Start(sampleRate, 0)
 	e.osc.Waveform = processorbasic.Sin
+	e.osc.Start(sampleRate, 0)
 }
 
 // Stop suspends the engine
@@ -49,23 +49,20 @@ func (e *Engine) Stop() {
 
 // Process processes a block of samples and midi events
 func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut [][]float32, midiOut []midi.Event) {
-	// e.midiinput.ProcessMIDI(midiIn)
+	e.midiinput.ProcessMIDI(midiIn)
 	// var len = len(samplesIn[0])
+
 	// for i := 0; i < len; i++ {
-	// 	// var sample = e.osc.Process()
-	// 	// freqs := e.midiinput.Process()
+	// 	var sample = e.osc.Process(440.0)
+	//  sample += samplesIn[0][i]
+
+	// 	samplesIn[0][i] = sample
+	// 	samplesIn[1][i] = sample
+	// }
+
+	// for i := 0; i < len; i++ {
 	// 	var sample = e.patch.Process(&e.midiinput)
-	// 	sample += samplesIn[0][i]
-	//
-	// 	// mic := samplesIn[0][i] * 500
-	// 	// mod := e.osc.Process()
-	// 	// if mod < 0 {
-	// 	// 	mod = 0
-	// 	// }
-	// 	// mic *= mod
-	// 	// sample += mic
-	// 	// sample = e.osc.Process()
-	//
+
 	// 	samplesIn[0][i] = sample
 	// 	samplesIn[1][i] = sample
 	// }
@@ -74,14 +71,14 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 		samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
 	}
 
-	// notify front end if registered
-	if e.processEventFunc != nil {
-		e.processEventSkip--
-		if e.processEventSkip <= 0 {
-			e.processEventSkip = 1
-			e.processEventFunc()
-		}
-	}
+	// // notify front end if registered
+	// if e.processEventFunc != nil {
+	// 	e.processEventSkip--
+	// 	if e.processEventSkip <= 0 {
+	// 		e.processEventSkip = 1
+	// 		e.processEventFunc()
+	// 	}
+	// }
 
 	return samplesIn, midiIn
 }
