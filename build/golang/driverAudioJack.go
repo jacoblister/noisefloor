@@ -117,7 +117,7 @@ func (d *driverAudioJack) setAudioProcessor(audioProcessor audiomodule.AudioProc
 
 func (d *driverAudioJack) start() {
 	uintPtr := uintptr(unsafe.Pointer(d))
-	C.gojack_client_open((C.ulongx)(uintPtr))
+	C.gojack_client_open((C.uintptr_t)(uintPtr))
 }
 
 func (d *driverAudioJack) stop() {
