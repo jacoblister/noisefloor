@@ -99,3 +99,5 @@ func (d *driverMidiJack) readEvents() []midi.Event {
 
 func (d *driverMidiJack) writeEvents([]midi.Event) {
 }
+
+var driverMidiDefault = &driverMidiJack{}

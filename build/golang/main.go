@@ -27,12 +27,8 @@ func (nf *noiseFloor) Stop(hardwareDevices app.HardwareDevices) {
 func Main() {
 	// debug.SetGCPercent(-1)
 
-	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiMock{}}
-	// nf := noiseFloor{driverAudio: &driverAudioWASAPI{}, driverMidi: &driverMidiMock{}}
-	// nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiWDM{}}
-	// nf := noiseFloor{driverAudio: &driverAudioASIO{}, driverMidi: &driverMidiMock{}}
-	nf := noiseFloor{driverAudio: &driverAudioWASAPI{}, driverMidi: &driverMidiMock{}}
-	// nf := noiseFloor{driverAudio: &driverAudioMock{}, driverMidi: &driverMidiWDM{}}
-	// nf := noiseFloor{driverAudio: &driverAudioJack{}, driverMidi: &driverMidiJack{}}
+	nf := noiseFloor{driverAudio: driverAudioDefault, driverMidi: driverMidiDefault}
+	// nf := noiseFloor{driverAudio: driverAudioDefault, driverMidi: &driverMidiMock{}}
+
 	app.App(&nf, fs)
 }

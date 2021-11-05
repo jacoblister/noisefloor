@@ -126,3 +126,5 @@ func (d *driverMidiWDM) readEvents() []midi.Event {
 
 func (d *driverMidiWDM) writeEvents([]midi.Event) {
 }
+
+var driverMidiDefault = &driverMidiWDM{}

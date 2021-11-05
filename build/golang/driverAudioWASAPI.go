@@ -216,3 +216,5 @@ func (d *driverAudioWASAPI) stop() {
 func (d *driverAudioWASAPI) samplingRate() int {
 	return 48000
 }
+
+var driverAudioDefault = &driverAudioWASAPI{}
