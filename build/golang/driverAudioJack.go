@@ -126,3 +126,5 @@ func (d *driverAudioJack) stop() {
 func (d *driverAudioJack) samplingRate() int {
 	return int(C.gojack_client_sampling_rate())
 }
+
+var driverAudioDefault = &driverAudioJack{}
