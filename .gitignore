@@ -1,6 +1,7 @@
 /.idea
 /vendor
 /noisefloor
+*.a
 *.js
 *.js.map
 !*.inc.js

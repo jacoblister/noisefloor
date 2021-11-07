@@ -11,9 +11,17 @@
     </script>
 
     <script>
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
       // audio context setup - todo move to export.inc.js
-      window.onload = function() {
-        var audioContext = new AudioContext();
+      window.onload = async function() {
+        console.log('web sleep...');
+	      await sleep(1000);
+	      console.log('done sleep');
+
+	      var audioContext = new AudioContext();
 
         console.log(document.getElementById("root"));
 

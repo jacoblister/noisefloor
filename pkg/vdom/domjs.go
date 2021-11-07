@@ -84,7 +84,7 @@ func createElementRecursive(svgNamespace bool, element *Element) js.Value {
 
 func getElementByPath(path []int) js.Value {
 	element := js.Global().Get("document").Get("body").Get("firstElementChild")
-	if element != js.Null() {
+	if !element.IsNull() {
 		for i := 0; i < len(path); i++ {
 			element = element.Get("children").Index(path[i])
 		}
@@ -108,7 +108,7 @@ func applyPatchToDom(patchList PatchList) {
 
 		parent := js.Global().Get("document").Get("body")
 		target := getElementByPath(patch.Path)
-		if target != js.Null() {
+		if !target.IsNull() {
 			parent = target.Get("parentElement")
 		}
 
@@ -124,7 +124,7 @@ func applyPatchToDom(patchList PatchList) {
 		case Replace:
 			element := createElementRecursive(patchList.SVGNamespace, &patch.Element)
 
-			if target != js.Null() {
+			if !target.IsNull() {
 				parent.Call("replaceChild", element, target)
 			} else {
 				parent.Call("appendChild", element)
