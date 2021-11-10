@@ -67,6 +67,37 @@ func BenchmarkSingleCallWithReflection(b *testing.B) {
 	}
 }
 
+func BenchmarkGain(b *testing.B) {
+	gain := processorbasic.Gain{}
+
+	for i := 0; i < b.N; i++ {
+		gain.Process(1, 1)
+	}
+}
+
+func BenchmarkOsc(b *testing.B) {
+	osc := processorbasic.Oscillator{}
+	osc.Start(48000, 0)
+
+	for i := 0; i < b.N; i++ {
+		osc.Process(440)
+	}
+}
+
+func BenchmarkEnv(b *testing.B) {
+	env := processorbasic.Envelope{}
+	env.Attack = 2
+	env.Decay = 100
+	env.Sustain = 0.75
+	env.Release = 1000
+	env.Start(48000, 0)
+	env.Process(1, 1)
+
+	for i := 0; i < b.N; i++ {
+		env.Process(0, 0)
+	}
+}
+
 type golangEngine struct {
 	osc  processorbasic.Oscillator
 	env  processorbasic.Envelope
