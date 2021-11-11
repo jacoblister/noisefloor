@@ -89,12 +89,12 @@ func exampleGraph() Graph {
 	outputTerminal.SetParameters(true, 2)
 	graph.Processors = append(graph.Processors,
 		processor.Definition{X: 328, Y: 16, Processor: &outputTerminal})
-	scope := processorbasic.Scope{Trigger: 1, Skip: 4}
-	graph.Processors = append(graph.Processors,
-		processor.Definition{X: 328, Y: 96, Processor: &scope})
-	scope2 := processorbasic.Scope{Trigger: 0, Skip: 200}
-	graph.Processors = append(graph.Processors,
-		processor.Definition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
+	// scope := processorbasic.Scope{Trigger: 1, Skip: 4}
+	// graph.Processors = append(graph.Processors,
+	// 	processor.Definition{X: 328, Y: 96, Processor: &scope})
+	// scope2 := processorbasic.Scope{Trigger: 0, Skip: 200}
+	// graph.Processors = append(graph.Processors,
+	// 	processor.Definition{X: 224, Y: 208, Name: "scope2", Processor: &scope2})
 
 	graph.Connectors = append(graph.Connectors,
 		processor.Connector{FromProcessor: &midiInput, FromPort: 0, ToProcessor: &osc, ToPort: 0})
@@ -111,10 +111,10 @@ func exampleGraph() Graph {
 		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 0})
 	graph.Connectors = append(graph.Connectors,
 		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &outputTerminal, ToPort: 1})
-	graph.Connectors = append(graph.Connectors,
-		processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &scope, ToPort: 0})
-	graph.Connectors = append(graph.Connectors,
-		processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &scope2, ToPort: 0})
+	// graph.Connectors = append(graph.Connectors,
+	// 	processor.Connector{FromProcessor: &gain, FromPort: 0, ToProcessor: &scope, ToPort: 0})
+	// graph.Connectors = append(graph.Connectors,
+	// 	processor.Connector{FromProcessor: &env, FromPort: 0, ToProcessor: &scope2, ToPort: 0})
 
 	return graph
 }
