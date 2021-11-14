@@ -170,8 +170,7 @@ func writeMethodProcessArgs(f *os.File, processor Processor) {
 
 func writeMethodProcessSamples(f *os.File, processor Processor) {
 	f.WriteString("//ProcessSamples calls process with an array of input/output samples\n")
-	f.WriteString("func (r *" + processor.name + ") ProcessSamples(in [][]float32, length int) (out [][]float32) {\n")
-	f.WriteString("\tout = make([][]float32, " + strconv.Itoa(len(processor.outputs)) + ")\n")
+	f.WriteString("func (r *" + processor.name + ") ProcessSamples(in [][]float32, out [][]float32, length int) {\n")
 
 	outputs := []string{}
 	inputs := []string{}
@@ -179,13 +178,11 @@ func writeMethodProcessSamples(f *os.File, processor Processor) {
 		inputs = append(inputs, "in["+strconv.Itoa(i)+"][i]")
 	}
 	for i := 0; i < len(processor.outputs); i++ {
-		f.WriteString("\tout[" + strconv.Itoa(i) + "] = make([]float32, length)\n")
 		outputs = append(outputs, "out["+strconv.Itoa(i)+"][i]")
 	}
 	f.WriteString("\tfor i := 0; i < length; i++ {\n")
 	f.WriteString("\t\t" + strings.Join(outputs, ", ") + " = r.Process(" + strings.Join(inputs, ", ") + ")\n")
 	f.WriteString("\t}\n")
-	f.WriteString("\treturn\n")
 	f.WriteString("}\n\n")
 }
 

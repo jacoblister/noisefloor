@@ -146,19 +146,10 @@ func (m *MIDIInput) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (m *MIDIInput) ProcessSamples(in [][]float32, length int) (output [][]float32) {
-	output = make([][]float32, 7)
-	output[0] = make([]float32, length)
-	output[1] = make([]float32, length)
-	output[2] = make([]float32, length)
-	output[3] = make([]float32, length)
-	output[4] = make([]float32, length)
-	output[5] = make([]float32, length)
-	output[6] = make([]float32, length)
+func (m *MIDIInput) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
-		output[0][i], output[1][i], output[2][i], output[3][i], output[4][i], output[5][i], output[6][i] = m.Process(0)
+		out[0][i], out[1][i], out[2][i], out[3][i], out[4][i], out[5][i], out[6][i] = m.Process(0)
 	}
-	return
 }
 
 //SetParameter set a single processor parameter

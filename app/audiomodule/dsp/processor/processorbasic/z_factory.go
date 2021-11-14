@@ -28,9 +28,7 @@ func (r *Add) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Add) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Add) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -66,9 +64,7 @@ func (r *Constant) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Constant) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Constant) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process()
 	}
@@ -101,9 +97,7 @@ func (r *Divide) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Divide) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Divide) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -145,9 +139,7 @@ func (r *Envelope) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Envelope) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Envelope) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -183,9 +175,7 @@ func (r *Gain) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Gain) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Gain) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -218,9 +208,7 @@ func (r *Multiply) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Multiply) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Multiply) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -253,9 +241,7 @@ func (r *Oscillator) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Oscillator) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Oscillator) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i])
 	}
@@ -288,9 +274,7 @@ func (r *OscSync) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *OscSync) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *OscSync) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i], in[2][i])
 	}
@@ -326,10 +310,7 @@ func (r *Scope) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Scope) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 2)
-	out[0] = make([]float32, length)
-	out[1] = make([]float32, length)
+func (r *Scope) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i], out[1][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -365,9 +346,7 @@ func (r *Select) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Select) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Select) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i])
 	}
@@ -400,12 +379,7 @@ func (r *Splitter) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Splitter) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 4)
-	out[0] = make([]float32, length)
-	out[1] = make([]float32, length)
-	out[2] = make([]float32, length)
-	out[3] = make([]float32, length)
+func (r *Splitter) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i], out[1][i], out[2][i], out[3][i] = r.Process(in[0][i])
 	}
@@ -438,9 +412,7 @@ func (r *Sum) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (r *Sum) ProcessSamples(in [][]float32, length int) (out [][]float32) {
-	out = make([][]float32, 1)
-	out[0] = make([]float32, length)
+func (r *Sum) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < length; i++ {
 		out[0][i] = r.Process(in[0][i], in[1][i], in[2][i], in[3][i])
 	}

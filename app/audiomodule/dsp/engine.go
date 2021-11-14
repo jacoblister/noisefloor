@@ -71,14 +71,14 @@ func (e *Engine) Process(samplesIn [][]float32, midiIn []midi.Event) (samplesOut
 		samplesIn, midiIn = e.compiledGraph.Process(samplesIn, midiIn)
 	}
 
-	// // notify front end if registered
-	// if e.processEventFunc != nil {
-	// 	e.processEventSkip--
-	// 	if e.processEventSkip <= 0 {
-	// 		e.processEventSkip = 1
-	// 		e.processEventFunc()
-	// 	}
-	// }
+	// notify front end if registered
+	if e.processEventFunc != nil {
+		e.processEventSkip--
+		if e.processEventSkip <= 0 {
+			e.processEventSkip = 1
+			e.processEventFunc()
+		}
+	}
 
 	return samplesIn, midiIn
 }

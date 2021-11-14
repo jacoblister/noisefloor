@@ -6,17 +6,34 @@ import (
 
 type interpretedEngine struct {
 	graphExecutor graphExecutor
+	inArgs        [][]float32
+	outArgs       [][]float32
 }
 
-const frameLength = 4096
+const maxFrameLength = 4096
+const maxArgs = 8
 
 func (g *interpretedEngine) Start(sampleRate int) {
+	g.inArgs = make([][]float32, maxArgs)
+	for i := 0; i < 8; i++ {
+		g.inArgs[i] = make([]float32, maxFrameLength)
+	}
+
+	g.outArgs = make([][]float32, maxArgs)
+	for i := 0; i < 8; i++ {
+		g.outArgs[i] = make([]float32, maxFrameLength)
+	}
+
+	for i := 0; i < len(g.graphExecutor.connectors); i++ {
+		g.graphExecutor.connectors[i].SetSamples(make([]float32, maxFrameLength))
+	}
+
 	for i := 0; i < len(g.graphExecutor.ops); i++ {
 		op := &g.graphExecutor.ops[i]
 		connectedMask := 0
 		for j := 0; j < len(op.connectorIn); j++ {
 			if op.connectorIn[j].Samples() == nil {
-				op.connectorIn[j].SetSamples(make([]float32, frameLength, frameLength))
+				op.connectorIn[j].SetSamples(make([]float32, maxFrameLength))
 			}
 			if op.connectorIn[j].FromProcessor != nil {
 				connectedMask |= (1 << uint(j))
@@ -33,20 +50,23 @@ func (g *interpretedEngine) Process(samplesIn [][]float32, midiIn []midi.Event) 
 	g.graphExecutor.outputTerm.SetSamples(samplesIn)
 
 	var length = len(samplesIn[0])
-	inArgs := make([][]float32, 0, 8)
+
 	for j := 0; j < len(g.graphExecutor.ops); j++ {
 		op := g.graphExecutor.ops[j]
-		inArgs := inArgs[:len(op.connectorIn)]
+
+		g.inArgs = g.inArgs[:len(op.connectorIn)]
 		for k := 0; k < len(op.connectorIn); k++ {
-			inArgs[k] = op.connectorIn[k].Samples()
+			g.inArgs[k] = op.connectorIn[k].Samples()
 		}
-		outArgs := g.graphExecutor.ops[j].processor.ProcessSamples(inArgs, length)
+		g.outArgs = g.outArgs[:len(op.connectorOut)]
 		for k := 0; k < len(op.connectorOut); k++ {
 			for l := 0; l < len(op.connectorOut[k]); l++ {
-				op.connectorOut[k][l].SetSamples(outArgs[k])
-				op.connectorOut[k][l].Value = outArgs[k][0]
+				g.outArgs[k] = op.connectorOut[k][l].Samples()
+				op.connectorOut[k][l].Value = g.outArgs[k][0]
 			}
 		}
+
+		g.graphExecutor.ops[j].processor.ProcessSamples(g.inArgs, g.outArgs, length)
 	}
 
 	return samplesIn, midiIn

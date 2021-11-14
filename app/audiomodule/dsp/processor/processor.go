@@ -18,7 +18,7 @@ type Processor interface {
 	Start(sampleRate int, connectedMask int)
 	Stop()
 	ProcessArgs([]float32) []float32
-	ProcessSamples([][]float32, int) [][]float32
+	ProcessSamples(in [][]float32, out [][]float32, length int)
 	Definition() (name string, inputs []string, outputs []string, parameters []Parameter)
 	SetParameter(index int, value float32)
 }

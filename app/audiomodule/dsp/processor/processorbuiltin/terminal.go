@@ -69,13 +69,12 @@ func (t *Terminal) ProcessArgs(in []float32) (output []float32) {
 }
 
 //ProcessSamples calls process with an array of input/output samples
-func (t *Terminal) ProcessSamples(in [][]float32, length int) (output [][]float32) {
+func (t *Terminal) ProcessSamples(in [][]float32, out [][]float32, length int) {
 	for i := 0; i < len(in); i++ {
 		for j := 0; j < length; j++ {
 			t.samples[i][j] = in[i][j]
 		}
 	}
-	return in
 }
 
 //SetParameter set a single processor parameter
