@@ -2,6 +2,7 @@ package cppprocessor
 
 /*
 #cgo CFLAGS: -O2
+#cgo LDFLAGS: -lm
 
 #include "processor.h"
 
