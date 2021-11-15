@@ -117,6 +117,7 @@ func (g *golangEngine) Process(samplesIn [][]float32, midiIn []midi.Event) (samp
 		osc := g.osc.Process(440)
 		env := g.env.Process(0, 0)
 		out := g.gain.Process(osc, env)
+
 		samplesIn[0][i] = out
 		samplesIn[1][i] = out
 	}
@@ -127,11 +128,12 @@ func (g *golangEngine) Stop() {
 	g.osc.Stop()
 }
 
+const frameSize = 1024
+
 func BenchmarkCompileGolang(b *testing.B) {
-	blockSize := 1024
 	samples := [][]float32{}
-	samples = append(samples, make([]float32, blockSize, blockSize))
-	samples = append(samples, make([]float32, blockSize, blockSize))
+	samples = append(samples, make([]float32, frameSize))
+	samples = append(samples, make([]float32, frameSize))
 
 	process := golangEngine{}
 	// process := compileProcessorGraph(Graph{}, CompileGolang)
@@ -145,10 +147,9 @@ func BenchmarkCompileGolang(b *testing.B) {
 }
 
 func BenchmarkCompileIntepreted(b *testing.B) {
-	blockSize := 1024
 	samples := [][]float32{}
-	samples = append(samples, make([]float32, blockSize, blockSize))
-	samples = append(samples, make([]float32, blockSize, blockSize))
+	samples = append(samples, make([]float32, frameSize))
+	samples = append(samples, make([]float32, frameSize))
 
 	graph := exampleGraph()
 	process := compileProcessorGraph(graph, CompileInterpreted)
@@ -163,10 +164,9 @@ func BenchmarkCompileIntepreted(b *testing.B) {
 }
 
 func BenchmarkCompileIntepretedSingleSample(b *testing.B) {
-	blockSize := 1024
 	samples := [][]float32{}
-	samples = append(samples, make([]float32, blockSize, blockSize))
-	samples = append(samples, make([]float32, blockSize, blockSize))
+	samples = append(samples, make([]float32, frameSize))
+	samples = append(samples, make([]float32, frameSize))
 
 	graph := exampleGraph()
 	process := compileProcessorGraph(graph, CompileInterpretedSingleSample)
