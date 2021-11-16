@@ -27,7 +27,7 @@ struct patch {
     struct osc osc;
 };
 
-struct patch patch;
+static struct patch patch;
 
 static inline void start() {
     osc_start(&patch.osc, 48000);
