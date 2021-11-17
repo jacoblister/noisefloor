@@ -29,13 +29,13 @@ struct patch {
 
 static struct patch patch;
 
-static inline void start() {
+static inline void synth_start() {
     osc_start(&patch.osc, 48000);
 }
 
-static inline void process(int length, float *samples) {
+static inline void synth_process(int length, float *samples, float freq, float gate) {
     for (int i = 0; i < length; i++) {
-        samples[i] = osc_process(&patch.osc, 440.0);
+        samples[i] = osc_process(&patch.osc, freq) * gate;
     }
 }
 
