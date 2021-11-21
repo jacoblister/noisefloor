@@ -47,3 +47,10 @@ func BenchmarkCProcess(b *testing.B) {
 		CProcess()
 	}
 }
+
+func BenchmarkCPolyProcess(b *testing.B) {
+	CPolyStart()
+	for i := 0; i < b.N; i++ {
+		CPolyProcess()
+	}
+}

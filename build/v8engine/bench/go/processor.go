@@ -4,7 +4,7 @@ package cppprocessor
 #cgo CFLAGS: -O2
 #cgo LDFLAGS: -lm
 
-#include "processor.h"
+#include "../processor.h"
 
 static inline void CCall() {
 }
@@ -32,14 +32,24 @@ func CCallCallback() {
 	C.CCallCallback()
 }
 
+const frameLength = 48000
+
 func CStart() {
-	C.start()
+	C.synth_start()
 }
 
 func CProcess() {
-	const frameLength = 1024
-
 	var samples [frameLength]float32
 
-	C.process(frameLength, (*C.float)(unsafe.Pointer(&samples)))
+	C.synth_process(frameLength, (*C.float)(unsafe.Pointer(&samples)), 0, 0, 0)
+}
+
+func CPolyStart() {
+	C.synthpoly_start()
+}
+
+func CPolyProcess() {
+	var samples [frameLength]float32
+
+	C.synthpoly_silenceprocess(frameLength, (*C.float)(unsafe.Pointer(&samples)))
 }
