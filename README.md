@@ -50,4 +50,8 @@ To Build
    gopherjs build
    ```
 
-3. Open `noisefloor/build/js/noisefloor/index.html` in a web browser
+3. Run the build
+   ```
+   gopherjs server
+   ```
+   Then open http://localhost:8080 in browser
