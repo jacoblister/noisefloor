@@ -52,6 +52,6 @@ To Build
 
 3. Run the build
    ```
-   gopherjs server
+   gopherjs serve
    ```
    Then open http://localhost:8080 in browser
